@@ -26,8 +26,8 @@ export const MembersManagementTab = () => {
   const [email, setEmail] = useState('');
   const [kelas, setKelas] = useState('');
   const [nomorWa, setNomorWa] = useState('');
-  const [peranUtama, setPeranUtama] = useState('Fotografer');
-  const [manualPeran, setManualPeran] = useState('');
+  const [divisi, setDivisi] = useState('Public Relation');
+  const [manualDivisi, setManualDivisi] = useState('');
 
   const handleAddSubmit = (e) => {
     e.preventDefault();
@@ -36,29 +36,33 @@ export const MembersManagementTab = () => {
       return;
     }
 
-    const finalPeran = peranUtama === 'MANUAL' ? (manualPeran.trim() || 'Anggota Kreatif') : peranUtama;
+    const finalDivisi = divisi === 'MANUAL' ? (manualDivisi.trim() || 'Content Creator') : divisi;
 
     addMember({
       nama,
       email: email.trim(),
       kelas: kelas.trim() || 'Anggota Tim Studio',
       nomorWa: nomorWa.replace(/[^0-9]/g, '') || '6281200000000',
-      peranUtama: finalPeran
+      divisi: finalDivisi,
+      peranUtama: finalDivisi
     });
 
     setNama('');
     setEmail('');
     setKelas('');
     setNomorWa('');
-    setManualPeran('');
+    setManualDivisi('');
     setIsAddModalOpen(false);
   };
 
   const filteredMembers = members.filter((m) => {
+    const q = searchQuery.toLowerCase();
     return (
-      m.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.kelas.toLowerCase().includes(searchQuery.toLowerCase())
+      m.nama.toLowerCase().includes(q) ||
+      m.email.toLowerCase().includes(q) ||
+      (m.divisi && m.divisi.toLowerCase().includes(q)) ||
+      (m.peranUtama && m.peranUtama.toLowerCase().includes(q)) ||
+      m.kelas.toLowerCase().includes(q)
     );
   });
 
@@ -143,7 +147,7 @@ export const MembersManagementTab = () => {
                 <th>Alamat Email</th>
                 <th>Hak Akses</th>
                 <th>Kelas / Jabatan</th>
-                <th>Peran Studio</th>
+                <th>Divisi</th>
                 <th>Nomor WhatsApp</th>
                 <th>Aksi</th>
               </tr>
@@ -151,6 +155,7 @@ export const MembersManagementTab = () => {
             <tbody>
               {filteredMembers.map((m) => {
                 const isAdmin = isAdminEmail(m.email);
+                const memberDivisi = m.divisi || m.peranUtama || 'Public Relation';
                 return (
                   <tr key={m.id}>
                     <td>
@@ -187,7 +192,24 @@ export const MembersManagementTab = () => {
                     </td>
                     <td>{m.kelas}</td>
                     <td>
-                      <span style={{ fontSize: '0.825rem', fontWeight: 600 }}>{m.peranUtama}</span>
+                      <span style={{
+                        fontSize: '0.785rem',
+                        fontWeight: 700,
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '6px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        background:
+                          memberDivisi === 'Admin' ? '#1E3A8A' :
+                          memberDivisi === 'Public Relation' ? '#0284C7' :
+                          memberDivisi === 'Editor' ? '#7C3AED' :
+                          memberDivisi === 'Desain Grafis' ? '#DB2777' :
+                          memberDivisi === 'Content Creator' ? '#059669' : '#475569',
+                        color: '#FFFFFF'
+                      }}>
+                        {memberDivisi}
+                      </span>
                     </td>
                     <td>
                       <code style={{ fontSize: '0.8rem', color: '#059669' }}>+{m.nomorWa}</code>
@@ -289,28 +311,27 @@ export const MembersManagementTab = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Peran Utama di Studio</label>
+              <label className="form-label">Divisi Anggota di Studio *</label>
               <select
                 className="form-select"
-                value={peranUtama}
-                onChange={(e) => setPeranUtama(e.target.value)}
+                value={divisi}
+                onChange={(e) => setDivisi(e.target.value)}
               >
-                <option value="Fotografer">Fotografer Lapangan</option>
-                <option value="Videografer">Videografer Lapangan</option>
-                <option value="Video Editor">Video Editor</option>
-                <option value="Desainer Grafis">Desainer Grafis</option>
-                <option value="Penulis Naskah">Penulis Naskah & Konseptor</option>
-                <option value="Koordinator Studio">Koordinator Studio / Administrator</option>
-                <option value="MANUAL">+ Peran Lainnya (Tulis Manual)...</option>
+                <option value="Public Relation">Public Relation</option>
+                <option value="Editor">Editor</option>
+                <option value="Desain Grafis">Desain Grafis</option>
+                <option value="Content Creator">Content Creator</option>
+                <option value="Admin">Admin</option>
+                <option value="MANUAL">+ Divisi Lainnya (Tulis Manual)...</option>
               </select>
-              {peranUtama === 'MANUAL' && (
+              {divisi === 'MANUAL' && (
                 <div style={{ marginTop: '0.5rem' }}>
                   <input
                     type="text"
                     className="form-input"
-                    value={manualPeran}
-                    onChange={(e) => setManualPeran(e.target.value)}
-                    placeholder="Ketik nama peran/keahlian manual (mis: Pilot Drone, Teknisi Audio)..."
+                    value={manualDivisi}
+                    onChange={(e) => setManualDivisi(e.target.value)}
+                    placeholder="Ketik nama divisi baru secara manual..."
                     autoFocus
                     required
                   />

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { StatusBadge } from '../common/StatusBadge';
+import { Modal } from '../common/Modal';
+import { FORMAT_SURAT_PEMINJAMAN_TEXT } from '../../data/seedData';
 import { 
   Camera, 
   Clock, 
@@ -16,7 +18,14 @@ import {
   AlertCircle,
   Sparkles,
   ShieldAlert,
-  ArrowRight
+  ArrowRight,
+  Download,
+  Upload,
+  Image,
+  Eye,
+  Trash2,
+  Paperclip,
+  FileCheck
 } from 'lucide-react';
 
 export const PublicGuestPortal = ({ onOpenLoginModal }) => {
@@ -35,9 +44,51 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
   const [catatan, setCatatan] = useState('');
   const [isAgreed, setIsAgreed] = useState(false);
 
+  // Bukti Surat Peminjaman (Foto / Dokumen) & Unduh Format
+  const [buktiSuratFile, setBuktiSuratFile] = useState(null);
+  const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
+  const [previewBuktiModal, setPreviewBuktiModal] = useState(null);
+
   // Status Pencarian Resi Tiket
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedLoan, setSubmittedLoan] = useState(null);
+
+  // Unduh Format Surat Peminjaman Resmi Creative Corner (.TXT)
+  const handleDownloadFormatSurat = () => {
+    const blob = new Blob([FORMAT_SURAT_PEMINJAMAN_TEXT], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Format_Surat_Peminjaman_Alat_Creative_Corner.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Handler Upload File Foto atau Dokumen
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Ukuran file maksimal 10MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setBuktiSuratFile({
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        type: file.type || 'document',
+        isImage: file.type.startsWith('image/'),
+        dataUrl: event.target.result,
+        uploadedAt: new Date().toLocaleString('id-ID')
+      });
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Toggle pilihan alat yang dipinjam
   const handleToggleEquipment = (id) => {
@@ -59,6 +110,11 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
       return;
     }
 
+    if (!buktiSuratFile) {
+      alert('Wajib melampirkan foto lembar surat peminjaman atau berkas dokumen perizinan resmi! Jika Anda belum memiliki format suratnya, silakan klik tombol "Unduh Format Resmi (.TXT)" yang telah disediakan pada formulir.');
+      return;
+    }
+
     if (!isAgreed) {
       alert('Anda wajib menyetujui ketentuan pemeliharaan dan pengembalian studio.');
       return;
@@ -71,7 +127,8 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
       peralatanIds: selectedEquipmentIds,
       keperluan: keperluan.trim() || 'Peminjaman Tugas Siswa/Guru Non-Anggota',
       batasWaktuKembali: batasKembali,
-      catatan: catatan.trim()
+      catatan: catatan.trim(),
+      buktiSurat: buktiSuratFile
     });
 
     if (newLoan) {
@@ -83,6 +140,7 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
       setSelectedEquipmentIds([]);
       setKeperluan('');
       setCatatan('');
+      setBuktiSuratFile(null);
       setIsAgreed(false);
     }
   };
@@ -227,6 +285,7 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
               <div><strong>Alat / Ruang:</strong> {submittedLoan.peralatanNama}</div>
               <div><strong>Tanggal Pinjam:</strong> {submittedLoan.tanggalPinjam} (Pukul {submittedLoan.jamPinjam})</div>
               <div><strong>Batas Waktu Pengembalian:</strong> Pukul {submittedLoan.batasWaktuKembali} WIB</div>
+              <div><strong>Bukti Surat:</strong> <span style={{ color: '#15803D', fontWeight: 700 }}>✓ {submittedLoan.buktiSurat?.name || 'Terlampir'}</span></div>
               <div><strong>Status:</strong> <span className="badge badge-amber">Aktif Dipinjam</span></div>
             </div>
           </div>
@@ -425,6 +484,157 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
                   onChange={(e) => setCatatan(e.target.value)}
                   placeholder="Contoh: Membutuhkan baterai cadangan dan tripod video..."
                 ></textarea>
+              </div>
+
+              {/* WAJIB: BUKTI SURAT PEMINJAMAN (FOTO / DOKUMEN) */}
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <label className="form-label" style={{ margin: 0, fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <FileCheck size={18} color="#1E3A8A" />
+                    <span>Bukti Surat Peminjaman Resmi (Foto / Dokumen) *</span>
+                  </label>
+                  <span className="badge badge-rose" style={{ fontSize: '0.7rem', padding: '2px 8px' }}>
+                    WAJIB DILAMPIRKAN
+                  </span>
+                </div>
+
+                {/* Banner Arahkan Pengunduhan Format jika Belum Memiliki Surat */}
+                <div style={{
+                  background: '#EFF6FF',
+                  border: '1.5px dashed #3B82F6',
+                  borderRadius: '10px',
+                  padding: '0.9rem 1.15rem',
+                  marginBottom: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.75rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <FileText size={22} color="#1E3A8A" style={{ flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: '0.825rem', fontWeight: 800, color: '#1E3A8A' }}>
+                        Belum memiliki format surat peminjaman resmi?
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#334155', marginTop: '2px' }}>
+                        Unduh format standar surat yang telah disediakan oleh Creative Corner (.TXT / Cetak) untuk ditandatangani.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={handleDownloadFormatSurat}
+                      style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem' }}
+                      id="btn-download-loan-format"
+                    >
+                      <Download size={14} />
+                      <span>Unduh Format Resmi (.TXT)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setIsFormatModalOpen(true)}
+                      style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem' }}
+                    >
+                      <Eye size={14} />
+                      <span>Lihat Format</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Upload Box Foto / Dokumen */}
+                {!buktiSuratFile ? (
+                  <div style={{
+                    border: '2px dashed #CBD5E1',
+                    borderRadius: '10px',
+                    padding: '1.25rem',
+                    textAlign: 'center',
+                    background: '#FAFAFA',
+                    cursor: 'pointer'
+                  }}>
+                    <Upload size={28} color="#64748B" style={{ margin: '0 auto 0.5rem' }} />
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A', marginBottom: '0.25rem' }}>
+                      Unggah Foto Lembar Surat atau File Dokumen Bukti Izin
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.75rem' }}>
+                      Mendukung format Foto Kamera (JPG, PNG, WebP) atau Dokumen (PDF, Word, TXT) maks. 10MB
+                    </p>
+                    <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Upload size={14} />
+                      <span>Pilih Foto / Dokumen</span>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf,.doc,.docx,.txt"
+                        onChange={handleFileUpload}
+                        style={{ display: 'none' }}
+                        id="file-input-loan-proof"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <div style={{
+                    background: '#F0FDF4',
+                    border: '1.5px solid #86EFAC',
+                    borderRadius: '10px',
+                    padding: '0.85rem 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      {buktiSuratFile.isImage ? (
+                        <img
+                          src={buktiSuratFile.dataUrl}
+                          alt="Bukti Surat"
+                          style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #86EFAC' }}
+                        />
+                      ) : (
+                        <div style={{ width: '48px', height: '48px', background: '#DCFCE7', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <FileText size={24} color="#16A34A" />
+                        </div>
+                      )}
+                      <div>
+                        <div style={{ fontSize: '0.825rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <CheckCircle size={15} color="#16A34A" />
+                          <span>{buktiSuratFile.name}</span>
+                        </div>
+                        <div style={{ fontSize: '0.725rem', color: '#15803D' }}>
+                          Ukuran: {buktiSuratFile.size} • Diunggah: {buktiSuratFile.uploadedAt}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => setPreviewBuktiModal(buktiSuratFile)}
+                        style={{ fontSize: '0.75rem' }}
+                      >
+                        <Eye size={13} />
+                        <span>Pratinjau Bukti</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => setBuktiSuratFile(null)}
+                        style={{ fontSize: '0.75rem' }}
+                        title="Hapus dan pilih file lain"
+                      >
+                        <Trash2 size={13} />
+                        <span>Hapus</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Pernyataan Tanggung Jawab */}
@@ -655,6 +865,7 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
                     <th>Alat Dipinjam</th>
                     <th>Waktu Pinjam</th>
                     <th>Batas Pengembalian</th>
+                    <th>Bukti Surat</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -670,6 +881,21 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
                       <td>{b.tanggalPinjam} • {b.jamPinjam} WIB</td>
                       <td style={{ color: '#D97706', fontWeight: 600 }}>{b.batasWaktuKembali} WIB</td>
                       <td>
+                        {b.buktiSurat ? (
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => setPreviewBuktiModal(b.buktiSurat)}
+                            style={{ fontSize: '0.725rem', padding: '0.25rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                          >
+                            <Eye size={12} />
+                            <span>Lihat Surat</span>
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: '0.725rem', color: '#94A3B8' }}>-</span>
+                        )}
+                      </td>
+                      <td>
                         <StatusBadge status={b.status} />
                       </td>
                     </tr>
@@ -679,6 +905,106 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
             </div>
           )}
         </div>
+      )}
+
+      {/* MODAL 1: FORMAT RESMI SURAT PEMINJAMAN ALAT */}
+      {isFormatModalOpen && (
+        <Modal
+          isOpen={isFormatModalOpen}
+          onClose={() => setIsFormatModalOpen(false)}
+          size="large"
+          title="Format Resmi Surat Perizinan Peminjaman Alat"
+          footer={
+            <>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsFormatModalOpen(false)}>
+                Tutup
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  navigator.clipboard.writeText(FORMAT_SURAT_PEMINJAMAN_TEXT);
+                  alert('Teks format surat berhasil disalin ke clipboard!');
+                }}
+              >
+                <span>Salin Teks Format</span>
+              </button>
+              <button type="button" className="btn btn-primary" onClick={handleDownloadFormatSurat}>
+                <Download size={15} />
+                <span>Unduh File Format (.TXT)</span>
+              </button>
+            </>
+          }
+        >
+          <div>
+            <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.825rem', color: '#1E3A8A' }}>
+              💡 <strong>Petunjuk:</strong> Unduh atau salin format surat ini, lengkapi data permohonan peminjaman alat, mintakan tanda tangan penanggung jawab / guru pembina, lalu foto / pindai berkas tersebut untuk diunggah pada formulir peminjaman di atas.
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              border: '1.5px solid #CBD5E1',
+              borderRadius: '8px',
+              padding: '1.5rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.825rem',
+              lineHeight: '1.6',
+              color: '#0F172A',
+              whiteSpace: 'pre-wrap',
+              maxHeight: '400px',
+              overflowY: 'auto'
+            }}>
+              {FORMAT_SURAT_PEMINJAMAN_TEXT}
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* MODAL 2: PRATINJAU BUKTI SURAT PEMINJAMAN (FOTO / DOKUMEN) */}
+      {previewBuktiModal && (
+        <Modal
+          isOpen={Boolean(previewBuktiModal)}
+          onClose={() => setPreviewBuktiModal(null)}
+          size="large"
+          title={`Bukti Surat: ${previewBuktiModal.name || 'Dokumen Surat'}`}
+          footer={
+            <button type="button" className="btn btn-secondary" onClick={() => setPreviewBuktiModal(null)}>
+              Tutup
+            </button>
+          }
+        >
+          <div style={{ textAlign: 'center' }}>
+            {previewBuktiModal.isImage ? (
+              <div style={{ maxHeight: '520px', overflowY: 'auto', background: '#0F172A', borderRadius: '8px', padding: '1rem' }}>
+                <img
+                  src={previewBuktiModal.dataUrl}
+                  alt="Bukti Surat Peminjaman"
+                  style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
+                />
+              </div>
+            ) : (
+              <div style={{ padding: '2.5rem 1.5rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <FileText size={48} color="#1E3A8A" style={{ margin: '0 auto 1rem' }} />
+                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.25rem' }}>
+                  {previewBuktiModal.name}
+                </h4>
+                <p style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '1rem' }}>
+                  Tipe File: {previewBuktiModal.type} • Ukuran: {previewBuktiModal.size}
+                </p>
+                {previewBuktiModal.dataUrl && (
+                  <a
+                    href={previewBuktiModal.dataUrl}
+                    download={previewBuktiModal.name}
+                    className="btn btn-primary btn-sm"
+                  >
+                    <Download size={14} />
+                    <span>Unduh Dokumen Bukti</span>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </Modal>
       )}
     </div>
   );

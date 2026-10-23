@@ -14,8 +14,8 @@ export const DocumentsTab = () => {
     // Gantikan placeholder dengan data siswa aktif
     let personalizedContent = doc.kontenTemplat
       .replace(/\[NAMA_PEMINJAM\]/g, currentMember.nama)
-      .replace(/\[KELAS_PEMINJAM\]/g, currentMember.kelas)
-      .replace(/\[PERAN_ANGGOTA\]/g, currentMember.peranUtama)
+      .replace(/\[PERAN_ANGGOTA\]/g, currentMember.divisi || currentMember.peranUtama)
+      .replace(/\[DIVISI_ANGGOTA\]/g, currentMember.divisi || currentMember.peranUtama)
       .replace(/\[NOMOR_WHATSAPP\]/g, currentMember.nomorWa)
       .replace(/\[DAFTAR_PERALATAN\]/g, 'Sony Alpha 7 III + Lensa 24-70mm f/2.8 GM')
       .replace(/\[KEPERLUAN_LIPUTAN\]/g, 'Dokumentasi Acara Pensi & Apresiasi Seni Sekolah')

@@ -23,7 +23,8 @@ export const DEFAULT_ADMIN_USER = {
   email: 'admin1.creativecorner@gmail.com',
   kelas: 'Guru Pembina & Koordinator Studio',
   nomorWa: '6281200000000',
-  peranUtama: 'Administrator Studio',
+  divisi: 'Admin',
+  peranUtama: 'Admin',
   role: 'admin',
   avatar: 'CC'
 };
@@ -97,15 +98,8 @@ export const SEED_PC_CLIENTS = [
 // Arsip Log Aktivitas PC (Dimulai Kosong)
 export const SEED_PC_LOGS = [];
 
-// Templat Dokumen Resmi Creative Corner (Bentuk Format Standar Surat)
-export const SEED_OFFICIAL_DOCUMENTS = [
-  {
-    id: 'DOC-01',
-    kodeSurat: 'CC-FORM-01/RESMI',
-    judul: 'Surat Perizinan Peminjaman Alat Creative Corner',
-    kategori: 'Peminjaman Alat',
-    deskripsi: 'Format standar permohonan peminjaman unit kamera, lensa, dan perlengkapan studio untuk penugasan dokumentasi sekolah.',
-    kontenTemplat: `KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI
+// Format Standar Surat Peminjaman Alat yang Disediakan Web
+export const FORMAT_SURAT_PEMINJAMAN_TEXT = `KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI
 SMK / SMA NEGERI UNGGULAN
 KOMUNITAS KREATIF & MULTIMEDIA "CREATIVE CORNER"
 Jl. Pendidikan No. 45, Kota Pelajar. Telp: (021) 7654321
@@ -114,27 +108,38 @@ SURAT PERIZINAN PEMINJAMAN ALAT
 Nomor: CC-FORM-01/RESMI
 
 Yang bertanda tangan di bawah ini:
-Nama Anggota        : [NAMA_PEMINJAM]
-Kelas / NIS         : [KELAS_PEMINJAM]
-Peran di Tim        : [PERAN_ANGGOTA]
-Nomor WhatsApp      : [NOMOR_WHATSAPP]
+Nama Peminjam / Anggota : [NAMA_PEMINJAM]
+Kelas / NIS / Instansi  : [KELAS_PEMINJAM]
+Divisi / Peran di Tim   : [DIVISI_ANGGOTA]
+Nomor WhatsApp          : [NOMOR_WHATSAPP]
 
 Dengan ini mengajukan permohonan peminjaman peralatan studio Creative Corner:
-Daftar Alat         : [DAFTAR_PERALATAN]
-Keperluan           : [KEPERLUAN_LIPUTAN]
-Hari / Tanggal      : [TANGGAL_PINJAM]
-Waktu Peminjaman    : [WAKTU_PINJAM] s/d [WAKTU_KEMBALI] WIB
+Daftar Alat             : [DAFTAR_PERALATAN]
+Keperluan Peminjaman    : [KEPERLUAN_LIPUTAN]
+Hari / Tanggal          : [TANGGAL_PINJAM]
+Waktu Peminjaman        : [WAKTU_PINJAM] s/d [WAKTU_KEMBALI] WIB
 
 SYARAT & KETENTUAN PEMINJAMAN:
 1. Peminjam bertanggung jawab penuh atas keamanan, kebersihan, dan keutuhan unit alat.
-2. Wajib mengisi formulir inspeksi pengambilan (awal) dan pengembalian (akhir) pada sistem Creative Corner.
-3. Segala bentuk kelalaian yang menyebabkan kerusakan fisik atau hilangnya aksesori wajib diganti sesuai spesifikasi unit.
-4. Peralatan wajib dikembalikan tepat waktu sesuai jadwal yang telah disetujui.
+2. Wajib melampirkan bukti surat perizinan yang telah ditandatangani saat mengajukan peminjaman.
+3. Wajib mengisi formulir inspeksi pengambilan (awal) dan pengembalian (akhir) pada sistem Creative Corner.
+4. Segala bentuk kelalaian yang menyebabkan kerusakan fisik atau hilangnya aksesori wajib diganti sesuai spesifikasi unit.
+5. Peralatan wajib dikembalikan tepat waktu sesuai batas jam yang disetujui.
 
 Mengetahui,                                     Peminjam,
 Koordinator Alat Creative Corner                
 
-(                                 )            ( [NAMA_PEMINJAM] )`,
+(                                 )            ( [NAMA_PEMINJAM] )`;
+
+// Templat Dokumen Resmi Creative Corner (Bentuk Format Standar Surat)
+export const SEED_OFFICIAL_DOCUMENTS = [
+  {
+    id: 'DOC-01',
+    kodeSurat: 'CC-FORM-01/RESMI',
+    judul: 'Surat Perizinan Peminjaman Alat Creative Corner',
+    kategori: 'Peminjaman Alat',
+    deskripsi: 'Format standar permohonan peminjaman unit kamera, lensa, dan perlengkapan studio untuk penugasan dokumentasi sekolah.',
+    kontenTemplat: FORMAT_SURAT_PEMINJAMAN_TEXT,
     tanggalUpdate: '2026-10-23',
     versi: '1.0'
   },

@@ -44,6 +44,8 @@ export const EventCoverageTab = () => {
   const [manualPhotoName, setManualPhotoName] = useState('');
   const [assignedVideographerId, setAssignedVideographerId] = useState('');
   const [manualVideoName, setManualVideoName] = useState('');
+  const [assignedEditorId, setAssignedEditorId] = useState('');
+  const [manualEditorName, setManualEditorName] = useState('');
 
   // Modal State untuk Tambah / Edit Roster Piket
   const [isAddDutyModalOpen, setIsAddDutyModalOpen] = useState(false);
@@ -63,6 +65,7 @@ export const EventCoverageTab = () => {
   };
 
   // Submit Penjadwalan Liputan Sekolah (State-Machine Trigger 1)
+  // Submit Penjadwalan Liputan Sekolah (Dipilih Manual oleh Admin creativecorner@gmail.com)
   const handleScheduleSubmit = (e) => {
     e.preventDefault();
     if (!judul.trim() || !tanggal) {
@@ -70,40 +73,76 @@ export const EventCoverageTab = () => {
       return;
     }
 
+    const DITUGASKAN_ADMIN = 'creativecorner@gmail.com (Administrator Studio)';
     const personil = [];
+
+    // 1. Fotografer Lapangan (Dipilih Manual oleh Admin)
     if (assignedPhotographerId === 'MANUAL' && manualPhotoName.trim()) {
       personil.push({
         anggotaId: `photo-manual-${Date.now()}`,
         nama: manualPhotoName.trim(),
         peran: 'Fotografer',
+        divisi: 'Dokumentasi',
+        ditugaskanOleh: 'creativecorner@gmail.com',
         statusTugas: 'Belum Mengambil Alat'
       });
-    } else {
+    } else if (assignedPhotographerId) {
       const photoMember = members.find((m) => m.id === assignedPhotographerId);
       if (photoMember) {
         personil.push({
           anggotaId: photoMember.id,
           nama: photoMember.nama,
           peran: 'Fotografer',
+          divisi: photoMember.divisi || photoMember.peranUtama || 'Public Relation',
+          ditugaskanOleh: 'creativecorner@gmail.com',
           statusTugas: 'Belum Mengambil Alat'
         });
       }
     }
 
+    // 2. Videografer Lapangan (Dipilih Manual oleh Admin)
     if (assignedVideographerId === 'MANUAL' && manualVideoName.trim()) {
       personil.push({
         anggotaId: `video-manual-${Date.now()}`,
         nama: manualVideoName.trim(),
         peran: 'Videografer',
+        divisi: 'Dokumentasi',
+        ditugaskanOleh: 'creativecorner@gmail.com',
         statusTugas: 'Belum Mengambil Alat'
       });
-    } else {
+    } else if (assignedVideographerId) {
       const videoMember = members.find((m) => m.id === assignedVideographerId);
       if (videoMember) {
         personil.push({
           anggotaId: videoMember.id,
           nama: videoMember.nama,
           peran: 'Videografer',
+          divisi: videoMember.divisi || videoMember.peranUtama || 'Editor',
+          ditugaskanOleh: 'creativecorner@gmail.com',
+          statusTugas: 'Belum Mengambil Alat'
+        });
+      }
+    }
+
+    // 3. Petugas Dokumentasi & Editor Liputan Tambahan
+    if (assignedEditorId === 'MANUAL' && manualEditorName.trim()) {
+      personil.push({
+        anggotaId: `editor-manual-${Date.now()}`,
+        nama: manualEditorName.trim(),
+        peran: 'Petugas Liputan / Editor',
+        divisi: 'Editor & Media',
+        ditugaskanOleh: 'creativecorner@gmail.com',
+        statusTugas: 'Belum Mengambil Alat'
+      });
+    } else if (assignedEditorId) {
+      const editorMember = members.find((m) => m.id === assignedEditorId);
+      if (editorMember) {
+        personil.push({
+          anggotaId: editorMember.id,
+          nama: editorMember.nama,
+          peran: 'Petugas Liputan / Editor',
+          divisi: editorMember.divisi || editorMember.peranUtama || 'Editor',
+          ditugaskanOleh: 'creativecorner@gmail.com',
           statusTugas: 'Belum Mengambil Alat'
         });
       }
@@ -117,6 +156,7 @@ export const EventCoverageTab = () => {
       lokasi: lokasi || 'Area Sekolah',
       deskripsi,
       peralatanTerkunciIds: selectedToolIds,
+      ditugaskanOleh: DITUGASKAN_ADMIN,
       personil
     });
 
@@ -130,6 +170,8 @@ export const EventCoverageTab = () => {
     setManualPhotoName('');
     setAssignedVideographerId('');
     setManualVideoName('');
+    setAssignedEditorId('');
+    setManualEditorName('');
     setIsScheduleModalOpen(false);
   };
 
@@ -293,6 +335,9 @@ export const EventCoverageTab = () => {
                         <td>{ev.lokasi}</td>
                         <td>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#0369A1', background: '#E0F2FE', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, width: 'fit-content' }}>
+                              📋 Ditugaskan manual: creativecorner@gmail.com
+                            </div>
                             {ev.personil.map((p, idx) => (
                               <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', background: '#F8FAFC', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>
                                 <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>
@@ -604,10 +649,32 @@ export const EventCoverageTab = () => {
             ></textarea>
           </div>
 
-          {/* Penetapan Personil */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+          {/* Penetapan Personil Dokumentasi - Dipilih Manual oleh creativecorner@gmail.com */}
+          <div style={{
+            background: '#F0FDF4',
+            border: '1.5px solid #86EFAC',
+            borderRadius: '10px',
+            padding: '0.85rem 1.15rem',
+            marginBottom: '1.25rem',
+            display: 'flex',
+            gap: '0.75rem',
+            alignItems: 'center'
+          }}>
+            <CheckCircle size={22} color="#16A34A" style={{ flexShrink: 0 }} />
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '0.875rem', color: '#166534' }}>
+                Penetapan Petugas Dokumentasi Dipilih Manual oleh Akun: <code>creativecorner@gmail.com</code>
+              </div>
+              <p style={{ fontSize: '0.775rem', color: '#15803D', margin: '2px 0 0' }}>
+                Admin studio berhak menentukan siswa/petugas dokumentasi lapangan (Fotografer, Videografer, Editor) berdasarkan divisi masing-masing.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+            {/* Fotografer */}
             <div className="form-group">
-              <label className="form-label">Tugaskan Fotografer Lapangan</label>
+              <label className="form-label">Tugaskan Fotografer Lapangan *</label>
               <select
                 className="form-select"
                 value={assignedPhotographerId}
@@ -616,7 +683,7 @@ export const EventCoverageTab = () => {
                 <option value="">-- Pilih Fotografer Terdaftar --</option>
                 {members.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.nama} ({m.kelas})
+                    {m.nama} ({m.kelas} • Divisi: {m.divisi || m.peranUtama})
                   </option>
                 ))}
                 <option value="MANUAL">+ Tulis Nama Fotografer Manual...</option>
@@ -636,8 +703,9 @@ export const EventCoverageTab = () => {
               )}
             </div>
 
+            {/* Videografer */}
             <div className="form-group">
-              <label className="form-label">Tugaskan Videografer Lapangan</label>
+              <label className="form-label">Tugaskan Videografer Lapangan *</label>
               <select
                 className="form-select"
                 value={assignedVideographerId}
@@ -646,7 +714,7 @@ export const EventCoverageTab = () => {
                 <option value="">-- Pilih Videografer Terdaftar --</option>
                 {members.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.nama} ({m.kelas})
+                    {m.nama} ({m.kelas} • Divisi: {m.divisi || m.peranUtama})
                   </option>
                 ))}
                 <option value="MANUAL">+ Tulis Nama Videografer Manual...</option>
@@ -659,6 +727,37 @@ export const EventCoverageTab = () => {
                     value={manualVideoName}
                     onChange={(e) => setManualVideoName(e.target.value)}
                     placeholder="Ketik nama lengkap videografer..."
+                    autoFocus
+                    required
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Petugas Tambahan / Editor Liputan */}
+            <div className="form-group">
+              <label className="form-label">Petugas Dokumentasi & Editor Tambahan (Opsional)</label>
+              <select
+                className="form-select"
+                value={assignedEditorId}
+                onChange={(e) => setAssignedEditorId(e.target.value)}
+              >
+                <option value="">-- Tanpa Petugas Tambahan --</option>
+                {members.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nama} ({m.kelas} • Divisi: {m.divisi || m.peranUtama})
+                  </option>
+                ))}
+                <option value="MANUAL">+ Tulis Nama Petugas Manual...</option>
+              </select>
+              {assignedEditorId === 'MANUAL' && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={manualEditorName}
+                    onChange={(e) => setManualEditorName(e.target.value)}
+                    placeholder="Ketik nama petugas tambahan..."
                     autoFocus
                     required
                   />

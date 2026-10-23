@@ -80,7 +80,7 @@ export const MemberPortal = () => {
               </span>
             </div>
             <p style={{ fontSize: '0.825rem', color: '#475569' }}>
-              Peran: <strong>{currentMember.peranUtama}</strong> • WhatsApp: <code>+{currentMember.nomorWa}</code>
+              Divisi: <strong>{currentMember.divisi || currentMember.peranUtama}</strong> • WhatsApp: <code>+{currentMember.nomorWa}</code>
             </p>
           </div>
         </div>

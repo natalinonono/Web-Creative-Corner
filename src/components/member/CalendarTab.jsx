@@ -111,6 +111,21 @@ export const CalendarTab = () => {
                       <MapPin size={14} color="#64748B" />
                       <span>{event.lokasi}</span>
                     </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      background: '#EFF6FF',
+                      border: '1px solid #BFDBFE',
+                      padding: '0.35rem 0.65rem',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      color: '#1E3A8A',
+                      marginTop: '0.25rem'
+                    }}>
+                      <ShieldCheck size={14} color="#1E3A8A" />
+                      <span>Petugas Dokumentasi Ditetapkan oleh: <strong>{event.ditugaskanOleh || 'creativecorner@gmail.com'}</strong></span>
+                    </div>
                   </div>
 
                   {lockedTools.length > 0 && (

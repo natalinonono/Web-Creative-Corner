@@ -14,7 +14,9 @@ import {
   Eye, 
   ShieldAlert,
   Layers,
-  Inbox
+  Inbox,
+  FileText,
+  Download
 } from 'lucide-react';
 
 export const InventoryMasterTab = () => {
@@ -42,6 +44,7 @@ export const InventoryMasterTab = () => {
 
   // Modal State untuk Validasi Laporan Fisik (Side-by-Side)
   const [selectedBorrowingForCompare, setSelectedBorrowingForCompare] = useState(null);
+  const [previewProofModal, setPreviewProofModal] = useState(null);
 
   // Filter Aset
   const filteredAssets = equipment.filter((eq) => {
@@ -114,7 +117,7 @@ export const InventoryMasterTab = () => {
     }
   };
 
-  const inspectableBorrowings = borrowings.filter((b) => b.inspeksiPengambilan);
+  const inspectableBorrowings = borrowings.filter((b) => b.inspeksiPengambilan || b.buktiSurat);
 
   return (
     <div>
@@ -124,10 +127,10 @@ export const InventoryMasterTab = () => {
           <div>
             <h3 className="card-title">
               <ClipboardCheck size={20} color="#1E3A8A" />
-              <span>Validasi Laporan Fisik & Komparasi Inspeksi Berdampingan (Side-by-Side)</span>
+              <span>Validasi Laporan Fisik & Surat Peminjaman (Side-by-Side)</span>
             </h3>
             <div className="card-subtitle">
-              Bandingkan catatan kondisi fisik saat alat diambil vs saat dikembalikan. Anomali seperti kondisi menurun atau lensa kotor akan ditandai otomatis.
+              Bandingkan catatan kondisi fisik saat alat diambil vs dikembalikan, serta verifikasi kelengkapan berkas bukti surat peminjaman resmi.
             </div>
           </div>
         </div>
@@ -137,7 +140,7 @@ export const InventoryMasterTab = () => {
             <ClipboardCheck size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
             <div style={{ fontWeight: 600, color: '#334155' }}>Belum Ada Laporan Fisik Peminjaman</div>
             <p style={{ fontSize: '0.8rem' }}>
-              Saat siswa mengisi Formulir Inspeksi Pengambilan dan Pengembalian, data komparasi awal vs akhir akan muncul di sini untuk divalidasi.
+              Saat siswa mengisi Formulir Peminjaman dan Inspeksi, data komparasi fisik & bukti surat resmi akan muncul di sini untuk divalidasi.
             </p>
           </div>
         ) : (
@@ -148,6 +151,7 @@ export const InventoryMasterTab = () => {
                   <th>No. Peminjaman</th>
                   <th>Peminjam & Siswa</th>
                   <th>Peralatan</th>
+                  <th>Bukti Surat</th>
                   <th>Status Pengembalian</th>
                   <th>Catatan Temuan / Anomali</th>
                   <th>Aksi Verifikasi</th>
@@ -167,6 +171,21 @@ export const InventoryMasterTab = () => {
                       </td>
                       <td style={{ maxWidth: '240px' }}>
                         <strong>{b.peralatanNama}</strong>
+                      </td>
+                      <td>
+                        {b.buktiSurat ? (
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => setPreviewProofModal(b.buktiSurat)}
+                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                          >
+                            <Eye size={12} />
+                            <span>Lihat Surat</span>
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Tanpa Berkas</span>
+                        )}
                       </td>
                       <td>
                         <StatusBadge status={b.status} />
@@ -610,6 +629,53 @@ export const InventoryMasterTab = () => {
           )}
         </form>
       </Modal>
+
+      {/* MODAL PRATINJAU BUKTI SURAT PEMINJAMAN RESMI */}
+      {previewProofModal && (
+        <Modal
+          isOpen={Boolean(previewProofModal)}
+          onClose={() => setPreviewProofModal(null)}
+          size="large"
+          title={`Bukti Surat Peminjaman: ${previewProofModal.name || 'Dokumen Surat'}`}
+          footer={
+            <button type="button" className="btn btn-secondary" onClick={() => setPreviewProofModal(null)}>
+              Tutup
+            </button>
+          }
+        >
+          <div style={{ textAlign: 'center' }}>
+            {previewProofModal.isImage ? (
+              <div style={{ maxHeight: '520px', overflowY: 'auto', background: '#0F172A', borderRadius: '8px', padding: '1rem' }}>
+                <img
+                  src={previewProofModal.dataUrl}
+                  alt="Bukti Surat Peminjaman"
+                  style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
+                />
+              </div>
+            ) : (
+              <div style={{ padding: '2.5rem 1.5rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <FileText size={48} color="#1E3A8A" style={{ margin: '0 auto 1rem' }} />
+                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.25rem' }}>
+                  {previewProofModal.name}
+                </h4>
+                <p style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '1rem' }}>
+                  Tipe File: {previewProofModal.type} • Ukuran: {previewProofModal.size} • Diunggah: {previewProofModal.uploadedAt}
+                </p>
+                {previewProofModal.dataUrl && (
+                  <a
+                    href={previewProofModal.dataUrl}
+                    download={previewProofModal.name}
+                    className="btn btn-primary btn-sm"
+                  >
+                    <Download size={14} />
+                    <span>Unduh Berkas Surat</span>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

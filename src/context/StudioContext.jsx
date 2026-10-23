@@ -185,9 +185,11 @@ export const StudioProvider = ({ children }) => {
   // -------------------------------------------------------------
   // FUNGSI GANTI / LOGIN PENGGUNA DENGAN ATURAN EMAIL
   // -------------------------------------------------------------
-  const switchOrLoginUser = ({ email, nama, kelas, nomorWa, peranUtama }) => {
+  const switchOrLoginUser = ({ email, nama, kelas, nomorWa, divisi, peranUtama }) => {
     const isTargetAdmin = isAdminEmail(email);
     const existing = members.find((m) => m.email?.toLowerCase() === email.toLowerCase());
+
+    const userDivisi = isTargetAdmin ? 'Admin' : (divisi || peranUtama || 'Content Creator');
 
     let targetUser;
     if (existing) {
@@ -197,9 +199,10 @@ export const StudioProvider = ({ children }) => {
         id: isTargetAdmin ? `ADM-${Date.now().toString().slice(-4)}` : `MEM-${Date.now().toString().slice(-4)}`,
         nama: nama || (isTargetAdmin ? 'Admin Studio' : 'Anggota Studio'),
         email,
-        kelas: kelas || (isTargetAdmin ? 'Pengelola' : 'Kelas Siswa'),
+        kelas: kelas || (isTargetAdmin ? 'Pengelola Studio' : 'Kelas Siswa'),
         nomorWa: nomorWa || '6281200000000',
-        peranUtama: peranUtama || (isTargetAdmin ? 'Administrator' : 'Kreator Konten'),
+        divisi: userDivisi,
+        peranUtama: userDivisi,
         role: isTargetAdmin ? 'admin' : 'member',
         avatar: (nama || 'CC').slice(0, 2).toUpperCase()
       };
@@ -235,7 +238,8 @@ export const StudioProvider = ({ children }) => {
     peralatanIds,
     keperluan,
     batasWaktuKembali,
-    catatan
+    catatan,
+    buktiSurat
   }) => {
     if (!peralatanIds || peralatanIds.length === 0) {
       alert('Pilihlah minimal satu alat/ruang yang ingin dipinjam.');
@@ -278,6 +282,7 @@ export const StudioProvider = ({ children }) => {
       status: 'Dipinjam',
       isGuest: true,
       catatan: catatan || 'Peminjaman langsung tanpa login email',
+      buktiSurat: buktiSurat || null,
       inspeksiPengambilan: {
         kondisiFisik: 'Baik (Pemeriksaan Mandiri Tamu)',
         fungsiTombol: 'Normal',
@@ -303,6 +308,7 @@ export const StudioProvider = ({ children }) => {
     const newEvent = {
       ...newEventData,
       id: eventId,
+      ditugaskanOleh: newEventData.ditugaskanOleh || 'creativecorner@gmail.com (Administrator Studio)',
       status: 'Akan Datang'
     };
 
@@ -335,7 +341,8 @@ export const StudioProvider = ({ children }) => {
     peralatanIds,
     keperluan,
     batasWaktuKembali,
-    inspeksiData
+    inspeksiData,
+    buktiSurat
   }) => {
     // 1. Ubah status peralatan jadi "Dipinjam"
     setEquipment((prev) =>
@@ -393,6 +400,7 @@ export const StudioProvider = ({ children }) => {
       batasWaktuKembali: batasWaktuKembali || '17:00',
       keperluan: keperluan || 'Penugasan Liputan Studio',
       status: 'Dipinjam',
+      buktiSurat: buktiSurat || null,
       inspeksiPengambilan: {
         ...inspeksiData,
         tanggalInspeksi: new Date().toLocaleString('id-ID')
@@ -674,14 +682,17 @@ export const StudioProvider = ({ children }) => {
   const addMember = (newMem) => {
     const isTargetAdmin = isAdminEmail(newMem.email);
     const id = isTargetAdmin ? `ADM-${String(members.length + 1).padStart(2, '0')}` : `MEM-${String(members.length + 1).padStart(2, '0')}`;
+    const memDivisi = isTargetAdmin ? 'Admin' : (newMem.divisi || newMem.peranUtama || 'Public Relation');
     const mem = {
       ...newMem,
       id,
+      divisi: memDivisi,
+      peranUtama: memDivisi,
       role: isTargetAdmin ? 'admin' : 'member',
       avatar: (newMem.nama || 'MB').slice(0, 2).toUpperCase()
     };
     setMembers((prev) => [...prev, mem]);
-    showToast(`Akun ${mem.nama} (${mem.email}) berhasil didaftarkan.`, 'success');
+    showToast(`Akun ${mem.nama} (${mem.email}) [Divisi: ${memDivisi}] berhasil didaftarkan.`, 'success');
   };
 
   const deleteMember = (id) => {
