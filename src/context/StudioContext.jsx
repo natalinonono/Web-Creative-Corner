@@ -150,6 +150,98 @@ export const StudioProvider = ({ children }) => {
     fetchSupabaseData();
   }, []);
 
+  // -------------------------------------------------------------
+  // FUNGSI SINKRONISASI LATAR KE SUPABASE CLOUD (POSTGRESQL)
+  // -------------------------------------------------------------
+  const syncLoanToSupabase = (loan) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('loan_records').upsert([{
+      id: loan.id,
+      tipe: loan.isGuest ? 'Publik' : 'Anggota',
+      peminjam: loan.peminjamNama,
+      kelas_instansi: loan.peminjamKelas,
+      kontak: loan.peminjamWa,
+      keperluan: loan.keperluan,
+      tanggal_pinjam: loan.tanggalPinjam,
+      target_kembali: loan.batasWaktuKembali,
+      status: loan.status,
+      peralatan_ids: loan.peralatanIds,
+      peralatan_nama: [loan.peralatanNama],
+      bukti_surat: loan.buktiSurat
+    }]).then(() => {}).catch((err) => console.warn('Supabase loan sync error:', err));
+  };
+
+  const syncEquipmentToSupabase = (item) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('equipment').upsert([{
+      id: item.id,
+      nama: item.nama,
+      kategori: item.kategori,
+      nomor_seri: item.nomorSeri || null,
+      lokasi_rak: item.lokasiRak || null,
+      spesifikasi: item.spesifikasi || null,
+      status: item.status,
+      kondisi_fisik: item.kondisiFisik || 'Baik & Terawat',
+      baterai_persen: item.baterai || 100
+    }]).then(() => {}).catch((err) => console.warn('Supabase equipment sync error:', err));
+  };
+
+  const syncEventToSupabase = (evt) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('events').upsert([{
+      id: evt.id,
+      judul: evt.judul,
+      lokasi: evt.lokasi,
+      tanggal: evt.tanggal,
+      waktu_mulai: evt.waktuMulai,
+      waktu_selesai: evt.waktuSelesai,
+      deskripsi: evt.deskripsi,
+      status: evt.status,
+      peralatan_terkunci_ids: evt.peralatanTerkunciIds || [],
+      penugasan: evt.personil || []
+    }]).then(() => {}).catch((err) => console.warn('Supabase event sync error:', err));
+  };
+
+  const syncMemberToSupabase = (mem) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('members').upsert([{
+      id: mem.id,
+      nama: mem.nama,
+      kelas: mem.kelas,
+      divisi: mem.divisi || mem.peranUtama || 'Admin',
+      email: mem.email,
+      whatsapp: mem.nomorWa,
+      avatar: mem.avatar,
+      status: mem.status || 'Tersedia'
+    }]).then(() => {}).catch((err) => console.warn('Supabase member sync error:', err));
+  };
+
+  const syncPCToSupabase = (pc) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('pc_clients').upsert([{
+      id: pc.id,
+      nama_unit: pc.namaUnit,
+      spesifikasi: pc.spesifikasi,
+      status: pc.status,
+      pengguna_aktif: pc.penggunaAktif || null
+    }]).then(() => {}).catch((err) => console.warn('Supabase PC sync error:', err));
+  };
+
+  const syncPCLogToSupabase = (log) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('pc_logs').upsert([{
+      id: log.id,
+      pc_id: log.pcId,
+      nama_siswa: log.namaSiswa,
+      kelas: log.kelas,
+      keperluan: log.keperluan,
+      durasi_menit: log.durasiMenit,
+      waktu_mulai: log.waktuMulai,
+      waktu_selesai: log.waktuSelesai,
+      status: log.status
+    }]).then(() => {}).catch((err) => console.warn('Supabase PC log sync error:', err));
+  };
+
   // Toast Notification
   const [toast, setToast] = useState(null);
   const showToast = (message, type = 'success') => {
@@ -343,6 +435,7 @@ export const StudioProvider = ({ children }) => {
     };
 
     setBorrowings((prev) => [newBorrowing, ...prev]);
+    syncLoanToSupabase(newBorrowing);
     showToast(`Peminjaman alat berhasil diajukan! Tiket: ${borrowingId}. Silakan ambil di studio.`, 'success');
     return newBorrowing;
   };
@@ -376,6 +469,7 @@ export const StudioProvider = ({ children }) => {
     );
 
     setEvents((prev) => [newEvent, ...prev]);
+    syncEventToSupabase(newEvent);
     showToast(`Agenda liputan "${newEvent.judul}" berhasil disimpan & ${lockedIds.length} unit alat otomatis terkunci event.`, 'success');
     return newEvent;
   };
@@ -458,6 +552,7 @@ export const StudioProvider = ({ children }) => {
     };
 
     setBorrowings((prev) => [newBorrowing, ...prev]);
+    syncLoanToSupabase(newBorrowing);
     showToast(`Inspeksi Pengambilan selesai! Status tugas kini "Sedang Melaksanakan Tugas" & alat berstatus "Dipinjam".`, 'success');
     return newBorrowing;
   };
@@ -711,6 +806,7 @@ export const StudioProvider = ({ children }) => {
     const id = `EQ-${String(equipment.length + 1).padStart(2, '0')}`;
     const item = { ...newItem, id, status: 'Tersedia', terkunciOlehEventId: null };
     setEquipment((prev) => [...prev, item]);
+    syncEquipmentToSupabase(item);
     showToast(`Aset baru "${item.nama}" berhasil ditambahkan ke inventaris studio.`, 'success');
   };
 
@@ -741,6 +837,7 @@ export const StudioProvider = ({ children }) => {
       avatar: (newMem.nama || 'MB').slice(0, 2).toUpperCase()
     };
     setMembers((prev) => [...prev, mem]);
+    syncMemberToSupabase(mem);
     showToast(`Akun ${mem.nama} (${mem.email}) [Divisi: ${memDivisi}] berhasil didaftarkan.`, 'success');
   };
 
