@@ -45,8 +45,15 @@ export const StudioProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : DEFAULT_ADMIN_USER;
   });
 
-  // Tampilan Antarmuka Aktif ('admin' | 'member' | 'kiosk')
+  // Tampilan Antarmuka Aktif ('admin' | 'member' | 'kiosk' | 'public')
   const [currentRole, setCurrentRole] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const modeParam = params.get('mode') || params.get('role');
+      if (modeParam === 'kiosk' || params.get('kiosk') || params.get('pc')) {
+        return 'kiosk';
+      }
+    }
     const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_ROLE);
     return saved || 'admin'; // Mulai dari Portal Pengelola agar Admin langsung bisa input data
   });

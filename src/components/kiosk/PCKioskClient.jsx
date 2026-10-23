@@ -10,7 +10,9 @@ import {
   Layers, 
   Play, 
   ShieldAlert,
-  FastForward
+  FastForward,
+  Maximize,
+  Minimize
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
@@ -26,8 +28,19 @@ export const PCKioskClient = () => {
     currentUser
   } = useStudio();
 
-  // Selected PC tab for kiosk testing (PC-01 to PC-06)
-  const [selectedPCId, setSelectedPCId] = useState('PC-01');
+  // Selected PC tab (otomatis dari parameter URL ?pc=PC-01 jika mode startup)
+  const [selectedPCId, setSelectedPCId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const pcParam = params.get('pc') || params.get('kiosk');
+      if (pcParam && pcParam.toUpperCase().startsWith('PC-')) {
+        return pcParam.toUpperCase();
+      }
+    }
+    return 'PC-01';
+  });
+
+  const isUnitLockedByUrl = typeof window !== 'undefined' && Boolean(new URLSearchParams(window.location.search).get('pc'));
 
   // Form State untuk Sesi Masuk (Bersih dari data dummy)
   const [namaSiswa, setNamaSiswa] = useState(() => currentUser?.nama || '');
@@ -42,6 +55,27 @@ export const PCKioskClient = () => {
   // Modal peringatan waktu habis otomatis
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningDismissedForId, setWarningDismissedForId] = useState(null);
+
+  // State Fullscreen
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
 
   // Ambil data PC yang sedang dilihat
   const currentPC = pcClients.find((pc) => pc.id === selectedPCId) || pcClients[0];
@@ -130,6 +164,36 @@ export const PCKioskClient = () => {
 
   return (
     <div className="kiosk-canvas">
+      {/* Tombol Toggle Layar Penuh (Fullscreen / F11) */}
+      <button
+        type="button"
+        onClick={toggleFullscreen}
+        style={{
+          position: 'fixed',
+          top: '1rem',
+          right: '1rem',
+          zIndex: 1000,
+          background: 'rgba(15, 23, 42, 0.8)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          color: '#F8FAFC',
+          padding: '0.45rem 0.85rem',
+          borderRadius: '9999px',
+          fontSize: '0.75rem',
+          fontWeight: 700,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.4rem',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+          transition: 'all 0.2s ease'
+        }}
+        title="Buka / Tutup Layar Penuh (F11)"
+      >
+        {isFullscreen ? <Minimize size={14} color="#60A5FA" /> : <Maximize size={14} color="#60A5FA" />}
+        <span>{isFullscreen ? 'Keluar Fullscreen' : 'Layar Penuh (F11)'}</span>
+      </button>
+
       {/* Top Kiosk Header Bar */}
       <div style={{
         display: 'flex',
@@ -164,18 +228,36 @@ export const PCKioskClient = () => {
           Sistem pembatasan waktu operasional PC studio terpadu dengan perlindungan jendela dan integrasi tugas kreatif otomatis.
         </p>
 
-        {/* Pemilih Unit PC Studio (PC-01 s/d PC-06) */}
-        <div style={{
-          display: 'flex',
-          gap: '0.5rem',
-          background: 'rgba(255, 255, 255, 0.08)',
-          padding: '6px',
-          borderRadius: '12px',
-          marginTop: '1.25rem',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          flexWrap: 'wrap',
-          justifyContent: 'center'
-        }}>
+        {/* Pemilih Unit PC Studio atau Indikator Terkunci Startup */}
+        {isUnitLockedByUrl ? (
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            background: 'rgba(30, 58, 138, 0.85)',
+            border: '2px solid #60A5FA',
+            padding: '0.6rem 1.5rem',
+            borderRadius: '9999px',
+            marginTop: '1.25rem',
+            boxShadow: '0 4px 15px rgba(37, 99, 235, 0.4)'
+          }}>
+            <Lock size={18} color="#93C5FD" />
+            <span style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '0.925rem', letterSpacing: '0.02em' }}>
+              Workstation Ini Terkunci Otomatis: <span style={{ color: '#93C5FD' }}>{selectedPCId}</span>
+            </span>
+          </div>
+        ) : (
+          <div style={{
+            display: 'flex',
+            gap: '0.5rem',
+            background: 'rgba(255, 255, 255, 0.08)',
+            padding: '6px',
+            borderRadius: '12px',
+            marginTop: '1.25rem',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
           {pcClients.map((pc) => {
             const isPcActive = pc.status === 'Aktif';
             const isSelected = pc.id === selectedPCId;
@@ -217,6 +299,7 @@ export const PCKioskClient = () => {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* KIOSK CARD: LAYAR KUNCI ATAU SESI AKTIF */}
