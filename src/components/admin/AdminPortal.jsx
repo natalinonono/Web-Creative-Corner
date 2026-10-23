@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const AdminPortal = () => {
-  const { borrowings, pcClients, events, equipment, members } = useStudio();
+  const { borrowings, pcClients, events, equipment, members, isSupabaseConfigured } = useStudio();
   const [activeTab, setActiveTab] = useState('inventory'); // default ke inventory agar admin langsung dapat input data
 
   // Hitung notifikasi untuk tab
@@ -76,6 +76,27 @@ export const AdminPortal = () => {
                 border: '1px solid #A7F3D0'
               }}>
                 Akses Penuh Studio
+              </span>
+
+              <span style={{
+                fontSize: '0.72rem',
+                background: isSupabaseConfigured ? '#EFF6FF' : '#F1F5F9',
+                color: isSupabaseConfigured ? '#1E3A8A' : '#64748B',
+                padding: '2px 8px',
+                borderRadius: '9999px',
+                fontWeight: 700,
+                border: isSupabaseConfigured ? '1px solid #BFDBFE' : '1px solid #CBD5E1',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem'
+              }}>
+                <span style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: isSupabaseConfigured ? '#10B981' : '#94A3B8'
+                }}></span>
+                <span>{isSupabaseConfigured ? 'Supabase Cloud (Aktif)' : 'Database: LocalStorage'}</span>
               </span>
             </div>
             <p style={{ fontSize: '0.825rem', color: '#475569' }}>

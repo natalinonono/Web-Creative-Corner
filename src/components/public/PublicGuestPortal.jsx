@@ -3,6 +3,7 @@ import { useStudio } from '../../context/StudioContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { Modal } from '../common/Modal';
 import { FORMAT_SURAT_PEMINJAMAN_TEXT } from '../../data/seedData';
+import { downloadLoanLetterDocx, downloadLoanLetterPdf } from '../../utils/documentGenerator';
 import { 
   Camera, 
   Clock, 
@@ -53,18 +54,48 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedLoan, setSubmittedLoan] = useState(null);
 
-  // Unduh Format Surat Peminjaman Resmi Creative Corner (.TXT)
-  const handleDownloadFormatSurat = () => {
-    const blob = new Blob([FORMAT_SURAT_PEMINJAMAN_TEXT], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Format_Surat_Peminjaman_Alat_Creative_Corner.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  // Unduh Format Surat Peminjaman Resmi Creative Corner (.DOCX & .PDF)
+  const handleDownloadDocx = () => {
+    downloadLoanLetterDocx({
+      namaPeminjam: namaPeminjam || '[NAMA PEMINJAM]',
+      kelas: kelasInstansi || '[KELAS / INSTANSI / ORGANISASI]',
+      kontak: kontakHp || '[NOMOR WHATSAPP]',
+      keperluan: keperluan || 'Peminjaman Alat Studio Creative Corner',
+      tanggalPinjam: tanggalMulai || new Date().toISOString().split('T')[0],
+      targetKembali: `${tanggalSelesai || new Date().toISOString().split('T')[0]} (17:00 WIB)`,
+      daftarAlat: equipment
+        .filter((eq) => selectedEquipmentIds.includes(eq.id))
+        .map((eq, i) => ({
+          no: i + 1,
+          nama: eq.nama,
+          kode: eq.id,
+          jumlah: '1 Unit',
+          kondisi: eq.kondisiFisik || 'Baik & Normal'
+        }))
+    });
   };
+
+  const handleDownloadPdf = () => {
+    downloadLoanLetterPdf({
+      namaPeminjam: namaPeminjam || '[NAMA PEMINJAM]',
+      kelas: kelasInstansi || '[KELAS / INSTANSI / ORGANISASI]',
+      kontak: kontakHp || '[NOMOR WHATSAPP]',
+      keperluan: keperluan || 'Peminjaman Alat Studio Creative Corner',
+      tanggalPinjam: tanggalMulai || new Date().toISOString().split('T')[0],
+      targetKembali: `${tanggalSelesai || new Date().toISOString().split('T')[0]} (17:00 WIB)`,
+      daftarAlat: equipment
+        .filter((eq) => selectedEquipmentIds.includes(eq.id))
+        .map((eq, i) => ({
+          no: i + 1,
+          nama: eq.nama,
+          kode: eq.id,
+          jumlah: '1 Unit',
+          kondisi: eq.kondisiFisik || 'Baik & Normal'
+        }))
+    });
+  };
+
+  const handleDownloadFormatSurat = handleDownloadDocx;
 
   // Handler Upload File Foto atau Dokumen
   const handleFileUpload = (e) => {
@@ -518,21 +549,32 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
                         Belum memiliki format surat peminjaman resmi?
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#334155', marginTop: '2px' }}>
-                        Unduh format standar surat yang telah disediakan oleh Creative Corner (.TXT / Cetak) untuk ditandatangani.
+                        Unduh format resmi Creative Corner dalam bentuk <strong>Word (.docx)</strong> atau <strong>PDF (.pdf)</strong> untuk dicetak dan ditandatangani.
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={handleDownloadDocx}
+                      style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#FFFFFF', fontWeight: 700 }}
+                      id="btn-download-loan-format-docx"
+                    >
+                      <Download size={14} color="#2563EB" />
+                      <span>Unduh .DOCX (Word)</span>
+                    </button>
+
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      onClick={handleDownloadFormatSurat}
-                      style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem' }}
-                      id="btn-download-loan-format"
+                      onClick={handleDownloadPdf}
+                      style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem', fontWeight: 700 }}
+                      id="btn-download-loan-format-pdf"
                     >
                       <Download size={14} />
-                      <span>Unduh Format Resmi (.TXT)</span>
+                      <span>Unduh .PDF</span>
                     </button>
 
                     <button
@@ -916,8 +958,13 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
           title="Format Resmi Surat Perizinan Peminjaman Alat"
           footer={
             <>
-              <button type="button" className="btn btn-secondary" onClick={() => setIsFormatModalOpen(false)}>
-                Tutup
+              <button type="button" className="btn btn-secondary" onClick={handleDownloadDocx}>
+                <Download size={14} color="#2563EB" />
+                <span>Unduh .DOCX (Word)</span>
+              </button>
+              <button type="button" className="btn btn-primary" onClick={handleDownloadPdf}>
+                <Download size={14} />
+                <span>Unduh .PDF</span>
               </button>
               <button
                 type="button"
@@ -927,11 +974,10 @@ export const PublicGuestPortal = ({ onOpenLoginModal }) => {
                   alert('Teks format surat berhasil disalin ke clipboard!');
                 }}
               >
-                <span>Salin Teks Format</span>
+                <span>Salin Teks</span>
               </button>
-              <button type="button" className="btn btn-primary" onClick={handleDownloadFormatSurat}>
-                <Download size={15} />
-                <span>Unduh File Format (.TXT)</span>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsFormatModalOpen(false)}>
+                Tutup
               </button>
             </>
           }

@@ -10,8 +10,10 @@ import {
   CheckCircle, 
   Upload, 
   Save,
-  Layers
+  Layers,
+  Download
 } from 'lucide-react';
+import { downloadLoanLetterDocx, downloadLoanLetterPdf } from '../../utils/documentGenerator';
 
 export const DocumentCenterTab = () => {
   const { documents, updateDocumentTemplate, addDocumentTemplate } = useStudio();
@@ -165,27 +167,51 @@ export const DocumentCenterTab = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #E2E8F0', paddingTop: '1rem' }}>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                style={{ flex: 1 }}
-                onClick={() => setPreviewDoc(doc)}
-              >
-                <Eye size={15} />
-                <span>Pratinjau Surat</span>
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', borderTop: '1px solid #E2E8F0', paddingTop: '1rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ flex: 1 }}
+                  onClick={() => setPreviewDoc(doc)}
+                >
+                  <Eye size={15} />
+                  <span>Pratinjau Surat</span>
+                </button>
 
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                style={{ flex: 1 }}
-                onClick={() => handleOpenEdit(doc)}
-                id={`btn-edit-doc-${doc.id}`}
-              >
-                <Edit size={15} />
-                <span>Ubah Templat</span>
-              </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  style={{ flex: 1 }}
+                  onClick={() => handleOpenEdit(doc)}
+                  id={`btn-edit-doc-${doc.id}`}
+                >
+                  <Edit size={15} />
+                  <span>Ubah Templat</span>
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.45rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ flex: 1, fontSize: '0.75rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#F8FAFC', fontWeight: 600 }}
+                  onClick={() => downloadLoanLetterDocx({ keperluan: doc.judul })}
+                >
+                  <Download size={13} color="#2563EB" />
+                  <span>Unduh .DOCX (Word)</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ flex: 1, fontSize: '0.75rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#F0F9FF', fontWeight: 600 }}
+                  onClick={() => downloadLoanLetterPdf({ keperluan: doc.judul })}
+                >
+                  <Download size={13} color="#2563EB" />
+                  <span>Unduh .PDF</span>
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -370,9 +396,27 @@ export const DocumentCenterTab = () => {
           size="large"
           title={`Pratinjau Format: ${previewDoc.judul}`}
           footer={
-            <button type="button" className="btn btn-secondary" onClick={() => setPreviewDoc(null)}>
-              Tutup
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => downloadLoanLetterDocx({ keperluan: previewDoc.judul })}
+              >
+                <Download size={14} color="#2563EB" />
+                <span>Unduh Format .DOCX (Word)</span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => downloadLoanLetterPdf({ keperluan: previewDoc.judul })}
+              >
+                <Download size={14} />
+                <span>Unduh Format .PDF</span>
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={() => setPreviewDoc(null)}>
+                Tutup
+              </button>
+            </div>
           }
         >
           <div style={{

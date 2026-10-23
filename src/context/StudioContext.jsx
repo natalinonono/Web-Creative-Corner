@@ -14,6 +14,7 @@ import {
   SEED_PC_LOGS,
   SEED_OFFICIAL_DOCUMENTS
 } from '../data/seedData';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const StudioContext = createContext();
 
@@ -107,6 +108,47 @@ export const StudioProvider = ({ children }) => {
   const [activeMemberId, setActiveMemberId] = useState(() => {
     return currentUser?.id || 'ADM-01';
   });
+
+  // Status Sinkronisasi Supabase Database
+  const [supabaseStatus, setSupabaseStatus] = useState(
+    isSupabaseConfigured ? 'connecting' : 'not_configured'
+  );
+
+  // Sinkronisasi Data Awal dari Supabase (Jika Kredensial Valid)
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      setSupabaseStatus('not_configured');
+      return;
+    }
+
+    const fetchSupabaseData = async () => {
+      try {
+        setSupabaseStatus('connecting');
+
+        const { data: pcs } = await supabase.from('pc_clients').select('*');
+        if (pcs && pcs.length > 0) setPcClients(pcs);
+
+        const { data: eq } = await supabase.from('equipment').select('*');
+        if (eq && eq.length > 0) setEquipment(eq);
+
+        const { data: evts } = await supabase.from('events').select('*');
+        if (evts && evts.length > 0) setEvents(evts);
+
+        const { data: mems } = await supabase.from('members').select('*');
+        if (mems && mems.length > 0) setMembers(mems);
+
+        const { data: loans } = await supabase.from('loan_records').select('*');
+        if (loans && loans.length > 0) setBorrowings(loans);
+
+        setSupabaseStatus('connected');
+      } catch (err) {
+        console.warn('Gagal sinkronisasi data Supabase, menggunakan data lokal:', err);
+        setSupabaseStatus('error');
+      }
+    };
+
+    fetchSupabaseData();
+  }, []);
 
   // Toast Notification
   const [toast, setToast] = useState(null);
@@ -788,6 +830,8 @@ export const StudioProvider = ({ children }) => {
         ADMIN_EMAIL_SUFFIX,
         STUDENT_EMAIL_SUFFIX,
         isAdminEmail,
+        isSupabaseConfigured,
+        supabaseStatus,
         currentUser,
         currentRole,
         setCurrentRole,
