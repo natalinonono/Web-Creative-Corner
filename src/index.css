@@ -745,22 +745,346 @@ h1, h2, h3, h4, .brand-font {
   50% { opacity: 0.85; transform: scale(1.02); }
 }
 
-/* Responsive */
+/* ====================================================================
+   TABS NAVIGATION
+==================================================================== */
+.tabs-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border-light);
+  margin-bottom: 1.75rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.tabs-header::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.tab-btn:hover {
+  color: var(--navy-brand);
+  background-color: rgba(30, 58, 138, 0.04);
+}
+
+.tab-btn.active {
+  color: var(--navy-brand);
+  border-bottom-color: var(--navy-brand);
+  font-weight: 700;
+  background-color: #FFFFFF;
+}
+
+.tab-pill-count {
+  background-color: #EFF6FF;
+  color: var(--navy-brand);
+  border: 1px solid #BFDBFE;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  margin-left: 0.25rem;
+}
+
+.tab-pill-alert {
+  background-color: #FFF1F2;
+  color: #E11D48;
+  border: 1px solid #FECDD3;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  margin-left: 0.25rem;
+}
+
+/* ====================================================================
+   RESPONSIVE DESIGN (LAPTOP, TABLET & MOBILE HP)
+==================================================================== */
+
+/* 1. TABLET & COMPACT LAPTOP (<= 1024px) */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .top-navbar {
+    padding: 0.75rem 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .role-switcher-container {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .role-switcher-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .role-switcher-btn {
+    flex-shrink: 0;
+    padding: 0.45rem 0.95rem;
+    font-size: 0.825rem;
+  }
+
+  .top-navbar-right {
+    gap: 0.65rem;
+  }
+}
+
+/* 2. MOBILE PHONES & SMALL SCREENS (<= 768px) */
 @media (max-width: 768px) {
+  /* Navbar Responsif di HP */
   .top-navbar {
     flex-direction: column;
+    align-items: stretch;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
+    position: sticky;
+    top: 0;
   }
+
+  .brand-section {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .brand-title {
+    font-size: 1.15rem;
+  }
+
+  .brand-subtitle {
+    font-size: 0.675rem;
+  }
+
   .role-switcher-container {
     width: 100%;
     overflow-x: auto;
     justify-content: flex-start;
+    gap: 0.35rem;
+    padding: 4px;
   }
+
+  .role-switcher-btn {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.785rem;
+  }
+
+  .top-navbar-right {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 0.5rem;
+  }
+
+  /* Konten Utama */
+  .main-content {
+    padding: 1rem 0.85rem;
+  }
+
+  /* Kartu & Header */
+  .card {
+    padding: 1.15rem;
+    border-radius: var(--radius-md);
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .card-header > div:last-child {
+    width: 100%;
+  }
+
+  /* Perataan Grid Otomatis: Susun vertikal pada layar sempit */
+  div[style*="grid-template-columns: 1."],
+  div[style*="grid-template-columns: 1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 2fr"],
+  div[style*="grid-template-columns: 2fr 1fr"],
+  div[style*="gridTemplateColumns: '1."],
+  div[style*="gridTemplateColumns: '2."],
+  div[style*="gridTemplateColumns: '1fr 1fr"],
+  div[style*="gridTemplateColumns: '1fr 2fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Kolom minmax yang terlalu lebar di HP */
+  div[style*="minmax(320px"],
+  div[style*="minmax(360px"],
+  div[style*="minmax(380px"],
+  div[style*="minmax(420px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Side by side perbandingan inspeksi */
   .inspection-comparison-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
-  .main-content {
-    padding: 1rem;
+
+  /* Formulir & Input Responsif di HP */
+  .form-input, .form-select, .form-textarea {
+    font-size: 16px !important; /* Mencegah auto-zoom di browser smartphone iOS / Android */
+    padding: 0.7rem 0.85rem;
+  }
+
+  .btn {
+    min-height: 40px;
+  }
+
+  /* Tabel dengan Scroll Horizontal Halus */
+  .table-container,
+  div[style*="overflowX: 'auto'"],
+  div[style*="overflow-x: auto"] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    margin-bottom: 0.75rem;
+  }
+
+  table.table, table.custom-table {
+    min-width: 560px;
+  }
+
+  /* Modal Responsif di HP */
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content,
+  .modal-content-lg {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: 94vh !important;
+    margin: 0 auto !important;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 1rem 1.15rem;
+  }
+
+  .modal-title {
+    font-size: 1.05rem;
+  }
+
+  .modal-body {
+    padding: 1.15rem;
+    max-height: calc(94vh - 125px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 0.85rem 1.15rem;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Kiosk Mode Responsif di HP */
+  .kiosk-canvas {
+    padding: 1.5rem 0.75rem;
+    min-height: calc(100vh - 120px);
+  }
+
+  .kiosk-card {
+    border-radius: var(--radius-lg);
+  }
+
+  .kiosk-card-header {
+    padding: 1.25rem 1rem;
+  }
+
+  .kiosk-card-body {
+    padding: 1.25rem 1rem;
+  }
+
+  .countdown-digits {
+    font-size: clamp(2.4rem, 11vw, 3.75rem);
+  }
+
+  /* Toast Notifikasi di Layar Sempit */
+  div[style*="position: fixed"][style*="bottom: 24px"] {
+    bottom: 16px !important;
+    right: 16px !important;
+    left: 16px !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+}
+
+/* 3. EXTRA SMALL PHONES (<= 480px) */
+@media (max-width: 480px) {
+  .top-navbar {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .brand-logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+  }
+
+  .brand-subtitle {
+    display: none; /* Sembunyikan subtitle agar hemat ruang di layar sangat sempit */
+  }
+
+  .role-switcher-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .card {
+    padding: 1rem 0.85rem;
+  }
+
+  .card-title {
+    font-size: 1.05rem;
   }
 }

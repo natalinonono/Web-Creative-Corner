@@ -406,7 +406,7 @@ export const PCKioskClient = () => {
                   </span>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr) 1.2fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: '0.5rem', marginBottom: '0.5rem' }}>
                   {[30, 60, 90, 120].map((dur) => (
                     <button
                       key={dur}
