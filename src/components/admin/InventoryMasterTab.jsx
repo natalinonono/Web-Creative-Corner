@@ -79,6 +79,36 @@ export const InventoryMasterTab = () => {
     setIsAssetModalOpen(true);
   };
 
+  const getKondisiFieldInfo = (cat) => {
+    switch (cat) {
+      case 'Kamera':
+        return {
+          label: 'Kondisi Kamera & Sensor *',
+          placeholder: 'Contoh: Sensor bersih bebas debu, fungsi shutter normal, bodi mulus tanpa lecet, tombol & dial berfungsi optimal...'
+        };
+      case 'Lensa':
+        return {
+          label: 'Kondisi Lensa & Optik *',
+          placeholder: 'Contoh: Elemen kaca optik jernih bebas jamur/scratch, ring fokus & zoom mulus, autofokus presisi, mount kokoh...'
+        };
+      case 'Aksesori':
+        return {
+          label: 'Kondisi Aksesori / Perlengkapan *',
+          placeholder: 'Contoh: Baut & engsel kencang, pengunci kokoh, kabel utuh tanpa terkelupas, tas pembungkus lengkap...'
+        };
+      case 'Ruang Studio':
+        return {
+          label: 'Kondisi & Kelayakan Ruang Studio *',
+          placeholder: 'Contoh: AC dingin, peredam suara rapi, sistem kelistrikan & lighting gantung normal, kebersihan ruangan terjaga...'
+        };
+      default:
+        return {
+          label: `Kondisi Barang / ${cat || 'Peralatan'} *`,
+          placeholder: `Kondisi fisik ${cat || 'barang'}, kelayakan fungsi operasional, kelengkapan pendukung...`
+        };
+    }
+  };
+
   const handleSaveAsset = (e) => {
     e.preventDefault();
     if (!nama.trim() || !spesifikasi.trim()) {
@@ -313,7 +343,7 @@ export const InventoryMasterTab = () => {
                 <tr>
                   <th>Kode & Nama Unit</th>
                   <th>Kategori</th>
-                  <th>Spesifikasi Teknis</th>
+                  <th>Kondisi & Spesifikasi</th>
                   <th>Lokasi Rak / Studio</th>
                   <th>Kondisi & Baterai</th>
                   <th>Status Kuota</th>
@@ -578,17 +608,22 @@ export const InventoryMasterTab = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Spesifikasi Teknis Ringkas *</label>
-            <textarea
-              className="form-textarea"
-              rows="2"
-              value={spesifikasi}
-              onChange={(e) => setSpesifikasi(e.target.value)}
-              placeholder="Karakteristik sensor, resolusi, bukaan diafragma, kapasitas ruang, daya watt..."
-              required
-            ></textarea>
-          </div>
+          {(() => {
+            const fieldInfo = getKondisiFieldInfo(kategori);
+            return (
+              <div className="form-group">
+                <label className="form-label">{fieldInfo.label}</label>
+                <textarea
+                  className="form-textarea"
+                  rows="2"
+                  value={spesifikasi}
+                  onChange={(e) => setSpesifikasi(e.target.value)}
+                  placeholder={fieldInfo.placeholder}
+                  required
+                ></textarea>
+              </div>
+            );
+          })()}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1rem' }}>
             <div className="form-group">
