@@ -35,6 +35,7 @@ export const TopNavbar = () => {
   // Form State Login
   const [inputEmail, setInputEmail] = useState('');
   const [inputNama, setInputNama] = useState('');
+  const [inputAngkatan, setInputAngkatan] = useState('25');
   const [inputDivisi, setInputDivisi] = useState('Editor');
 
   const handleLoginSubmit = (e) => {
@@ -405,19 +406,44 @@ export const TopNavbar = () => {
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Divisi di Creative Corner</label>
-                  <select
-                    className="form-select"
-                    value={inputDivisi}
-                    onChange={(e) => setInputDivisi(e.target.value)}
-                  >
-                    <option value="Editor">Editor</option>
-                    <option value="Desain Grafis">Desain Grafis</option>
-                    <option value="Content Creator">Content Creator</option>
-                    <option value="Public Relation">Public Relation</option>
-                    <option value="Admin">Admin</option>
-                  </select>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">Angkatan Berapa?</label>
+                    <select
+                      className="form-select"
+                      value={inputAngkatan}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setInputAngkatan(val);
+                        if (val !== '25' && inputDivisi === 'Dokumentasi') {
+                          setInputDivisi('Editor');
+                        }
+                      }}
+                    >
+                      <option value="25">Angkatan 25</option>
+                      <option value="26">Angkatan 26</option>
+                      <option value="27">Angkatan 27</option>
+                      <option value="28">Angkatan 28</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Divisi Anggota di Creative Corner</label>
+                    <select
+                      className="form-select"
+                      value={inputDivisi}
+                      onChange={(e) => setInputDivisi(e.target.value)}
+                    >
+                      <option value="Public Relation">Public Relation</option>
+                      <option value="Editor">Editor</option>
+                      <option value="Desain Grafis">Desain Grafis</option>
+                      <option value="Content Creator">Content Creator</option>
+                      {inputAngkatan === '25' && (
+                        <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
+                      )}
+                      <option value="Admin">Admin</option>
+                    </select>
+                  </div>
                 </div>
               </>
             ) : (

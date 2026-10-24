@@ -25,6 +25,7 @@ export const MembersManagementTab = () => {
   const [nama, setNama] = useState('');
   const [email, setEmail] = useState('');
   const [kelas, setKelas] = useState('');
+  const [angkatan, setAngkatan] = useState('25');
   const [nomorWa, setNomorWa] = useState('');
   const [divisi, setDivisi] = useState('Public Relation');
   const [manualDivisi, setManualDivisi] = useState('');
@@ -42,6 +43,7 @@ export const MembersManagementTab = () => {
       nama,
       email: email.trim(),
       kelas: kelas.trim() || 'Anggota Tim Studio',
+      angkatan: `Angkatan ${angkatan}`,
       nomorWa: nomorWa.replace(/[^0-9]/g, '') || '6281200000000',
       divisi: finalDivisi,
       peranUtama: finalDivisi
@@ -50,6 +52,7 @@ export const MembersManagementTab = () => {
     setNama('');
     setEmail('');
     setKelas('');
+    setAngkatan('25');
     setNomorWa('');
     setManualDivisi('');
     setIsAddModalOpen(false);
@@ -190,7 +193,14 @@ export const MembersManagementTab = () => {
                         {isAdmin ? '🛡️ Administrator' : '👤 Anggota Siswa'}
                       </span>
                     </td>
-                    <td>{m.kelas}</td>
+                    <td>
+                      <div>{m.kelas}</div>
+                      {m.angkatan && (
+                        <div style={{ fontSize: '0.725rem', color: '#64748B', fontWeight: 600 }}>
+                          {m.angkatan}
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <span style={{
                         fontSize: '0.785rem',
@@ -205,7 +215,8 @@ export const MembersManagementTab = () => {
                           memberDivisi === 'Public Relation' ? '#0284C7' :
                           memberDivisi === 'Editor' ? '#7C3AED' :
                           memberDivisi === 'Desain Grafis' ? '#DB2777' :
-                          memberDivisi === 'Content Creator' ? '#059669' : '#475569',
+                          memberDivisi === 'Content Creator' ? '#059669' :
+                          memberDivisi === 'Dokumentasi' ? '#D97706' : '#475569',
                         color: '#FFFFFF'
                       }}>
                         {memberDivisi}
@@ -310,34 +321,66 @@ export const MembersManagementTab = () => {
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Divisi Anggota di Studio *</label>
-              <select
-                className="form-select"
-                value={divisi}
-                onChange={(e) => setDivisi(e.target.value)}
-              >
-                <option value="Public Relation">Public Relation</option>
-                <option value="Editor">Editor</option>
-                <option value="Desain Grafis">Desain Grafis</option>
-                <option value="Content Creator">Content Creator</option>
-                <option value="Admin">Admin</option>
-                <option value="MANUAL">+ Divisi Lainnya (Tulis Manual)...</option>
-              </select>
-              {divisi === 'MANUAL' && (
-                <div style={{ marginTop: '0.5rem' }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={manualDivisi}
-                    onChange={(e) => setManualDivisi(e.target.value)}
-                    placeholder="Ketik nama divisi baru secara manual..."
-                    autoFocus
-                    required
-                  />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Pilihan Angkatan *</label>
+                <select
+                  className="form-select"
+                  value={angkatan}
+                  onChange={(e) => {
+                    const newAngkatan = e.target.value;
+                    setAngkatan(newAngkatan);
+                    if (newAngkatan !== '25' && divisi === 'Dokumentasi') {
+                      setDivisi('Public Relation');
+                    }
+                  }}
+                >
+                  <option value="25">Angkatan 25</option>
+                  <option value="26">Angkatan 26</option>
+                  <option value="27">Angkatan 27</option>
+                  <option value="28">Angkatan 28</option>
+                </select>
+                <div className="form-hint" style={{ fontSize: '0.725rem' }}>
+                  {angkatan === '25' ? (
+                    <span style={{ color: '#059669', fontWeight: 600 }}>✓ Divisi Dokumentasi tersedia untuk Angkatan 25.</span>
+                  ) : (
+                    <span style={{ color: '#64748B' }}>Divisi Dokumentasi hanya ada di Angkatan 25.</span>
+                  )}
                 </div>
-              )}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Divisi Anggota di Creative Corner *</label>
+                <select
+                  className="form-select"
+                  value={divisi}
+                  onChange={(e) => setDivisi(e.target.value)}
+                >
+                  <option value="Public Relation">Public Relation</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Desain Grafis">Desain Grafis</option>
+                  <option value="Content Creator">Content Creator</option>
+                  {angkatan === '25' && (
+                    <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
+                  )}
+                  <option value="Admin">Admin</option>
+                  <option value="MANUAL">+ Divisi Lainnya (Tulis Manual)...</option>
+                </select>
+              </div>
             </div>
+            {divisi === 'MANUAL' && (
+              <div className="form-group" style={{ marginTop: '-0.5rem' }}>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={manualDivisi}
+                  onChange={(e) => setManualDivisi(e.target.value)}
+                  placeholder="Ketik nama divisi baru secara manual..."
+                  autoFocus
+                  required
+                />
+              </div>
+            )}
           </form>
         </Modal>
       )}
