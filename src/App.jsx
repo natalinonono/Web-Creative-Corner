@@ -5,7 +5,7 @@ import { PublicGuestPortal } from './components/public/PublicGuestPortal';
 import { MemberPortal } from './components/member/MemberPortal';
 import { PCKioskClient } from './components/kiosk/PCKioskClient';
 import { AdminPortal } from './components/admin/AdminPortal';
-import { CheckCircle2, AlertTriangle, ShieldCheck, User, LogIn, ArrowRight, KeyRound } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ShieldCheck, User, LogIn, ArrowRight, KeyRound, UserPlus, Sparkles } from 'lucide-react';
 
 // Tampilan Saat Akses Admin Belum Terverifikasi Email 'creativecorner'
 const AdminAccessRestricted = ({ onGoPublic }) => {
@@ -69,61 +69,277 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
   );
 };
 
-// Tampilan Saat Masuk ke Portal Anggota tapi Belum Login
+// Tampilan Saat Masuk ke Portal Anggota tapi Belum Login (Disediakan Pilihan Masuk & Daftar)
 const MemberLoginPrompt = ({ onGoPublic }) => {
+  const [memberAction, setMemberAction] = useState('login'); // 'login' | 'register'
   const [emailInput, setEmailInput] = useState('');
   const [namaInput, setNamaInput] = useState('');
-  const { switchOrLoginUser } = useStudio();
+  const [waInput, setWaInput] = useState('');
+  const [angkatanInput, setAngkatanInput] = useState('25');
+  const [divisiInput, setDivisiInput] = useState('Public Relation');
+  const { switchOrLoginUser, registerMember, members } = useStudio();
 
-  const handleMemberLogin = (e) => {
+  const handleMemberSubmit = (e) => {
     e.preventDefault();
-    if (!emailInput.trim()) return;
-    switchOrLoginUser({
-      email: emailInput.trim(),
-      nama: namaInput.trim() || emailInput.split('@')[0],
-      kelas: 'Anggota Tim Studio'
-    });
+    const email = emailInput.trim();
+    if (!email) {
+      alert('Silakan masukkan alamat email Anda.');
+      return;
+    }
+
+    if (memberAction === 'login') {
+      const existing = members.find((m) => m.email?.toLowerCase().trim() === email.toLowerCase());
+      if (!existing) {
+        alert("Alamat email belum terdaftar sebagai anggota Creative Corner.\n\nJika kamu adalah anggota baru di Creative Corner, silakan pilih tab '+ Daftar Anggota Baru'.");
+        return;
+      }
+      switchOrLoginUser({
+        email: existing.email,
+        nama: existing.nama,
+        kelas: existing.kelas,
+        nomorWa: existing.nomorWa,
+        divisi: existing.divisi,
+        angkatan: existing.angkatan
+      });
+    } else {
+      // Registrasi Baru Khusus Anggota Creative Corner
+      if (!namaInput.trim()) {
+        alert('Silakan masukkan Nama Lengkap Anda.');
+        return;
+      }
+      if (!waInput.trim()) {
+        alert('Silakan masukkan Nomor WhatsApp aktif Anda.');
+        return;
+      }
+      registerMember({
+        nama: namaInput.trim(),
+        email,
+        nomorWa: waInput.trim(),
+        angkatan: angkatanInput,
+        divisi: divisiInput
+      });
+    }
   };
 
   return (
-    <div style={{ maxWidth: '620px', margin: '3.5rem auto', textAlign: 'center', padding: '2.5rem', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: 'var(--shadow-lg)' }}>
+    <div style={{ maxWidth: '620px', margin: '3rem auto', textAlign: 'center', padding: '2.5rem', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: 'var(--shadow-lg)' }}>
       <div style={{ width: '64px', height: '64px', background: '#F0FDF4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
         <User size={36} color="#059669" />
       </div>
-      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
-        Masuk ke Portal Anggota Creative Corner
+      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+        Portal Resmi Anggota Creative Corner
       </h2>
-      <p style={{ fontSize: '0.875rem', color: '#64748B', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-        Halaman ini diperuntukkan bagi anggota tim internal Creative Corner. Masukkan akun email Anda untuk mengakses Papan Tugas Kreatif, Kalender Liputan Resmi, dan Roster Piket Studio.
+      <p style={{ fontSize: '0.85rem', color: '#64748B', lineHeight: '1.5', marginBottom: '1.5rem' }}>
+        Akses khusus anggota tim internal Creative Corner untuk melihat kalender liputan, papan tugas kreatif, dan roster piket studio.
       </p>
 
-      <form onSubmit={handleMemberLogin} style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
-        <div className="form-group">
-          <label className="form-label">Alamat Email Anggota *</label>
-          <input
-            type="email"
-            className="form-input"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            placeholder="nama@gmail.com / siswa@sekolah.sch.id"
-            required
-            autoFocus
-          />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Nama Lengkap (Opsional)</label>
-          <input
-            type="text"
-            className="form-input"
-            value={namaInput}
-            onChange={(e) => setNamaInput(e.target.value)}
-            placeholder="Contoh: Budi Santoso"
-          />
-        </div>
-        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.75rem' }}>
-          <LogIn size={16} />
-          <span>Masuk sebagai Anggota</span>
+      {/* Subtab Toggle Masuk vs Daftar */}
+      <div style={{
+        display: 'flex',
+        background: '#F8FAFC',
+        border: '1px solid #E2E8F0',
+        borderRadius: '10px',
+        padding: '4px',
+        marginBottom: '1.25rem',
+        gap: '4px'
+      }}>
+        <button
+          type="button"
+          onClick={() => setMemberAction('login')}
+          style={{
+            flex: 1,
+            padding: '0.55rem',
+            borderRadius: '8px',
+            border: 'none',
+            background: memberAction === 'login' ? '#1E3A8A' : 'transparent',
+            color: memberAction === 'login' ? '#FFFFFF' : '#64748B',
+            fontWeight: memberAction === 'login' ? 700 : 500,
+            fontSize: '0.825rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.45rem',
+            transition: 'all 0.2s'
+          }}
+        >
+          <LogIn size={15} />
+          <span>Masuk (Sudah Terdaftar)</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setMemberAction('register')}
+          style={{
+            flex: 1,
+            padding: '0.55rem',
+            borderRadius: '8px',
+            border: 'none',
+            background: memberAction === 'register' ? '#059669' : 'transparent',
+            color: memberAction === 'register' ? '#FFFFFF' : '#64748B',
+            fontWeight: memberAction === 'register' ? 700 : 500,
+            fontSize: '0.825rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.45rem',
+            transition: 'all 0.2s'
+          }}
+        >
+          <UserPlus size={15} />
+          <span>+ Daftar Anggota Baru</span>
+        </button>
+      </div>
+
+      {/* Banner Penjelasan Khusus Anggota */}
+      <div style={{
+        background: memberAction === 'register' ? '#F0FDF4' : '#EFF6FF',
+        border: `1px solid ${memberAction === 'register' ? '#BBF7D0' : '#BFDBFE'}`,
+        borderRadius: '10px',
+        padding: '0.85rem 1rem',
+        marginBottom: '1.5rem',
+        fontSize: '0.8rem',
+        color: memberAction === 'register' ? '#166534' : '#1E3A8A',
+        textAlign: 'left',
+        lineHeight: '1.5'
+      }}>
+        <div style={{ fontWeight: 700, marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <Sparkles size={15} color={memberAction === 'register' ? '#059669' : '#1E3A8A'} />
+          <span>Khusus Anggota Creative Corner:</span>
+        </div>
+        {memberAction === 'register'
+          ? 'Formulir pendaftaran ini diperuntukkan khusus bagi anggota resmi Creative Corner (Divisi PR, Editor, Desain Grafis, Content Creator, Dokumentasi). Untuk peminjam umum/guru/siswa lain, Anda dapat langsung menggunakan formulir peminjaman tanpa perlu mendaftar.'
+          : 'Masukkan alamat email yang telah Anda daftarkan di Creative Corner untuk mengakses Papan Tugas Liputan, Kalender Acara & Roster Piket Studio.'}
+      </div>
+
+      <form onSubmit={handleMemberSubmit} style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
+        {memberAction === 'login' ? (
+          <>
+            <div className="form-group">
+              <label className="form-label">Alamat Email Anggota Terdaftar *</label>
+              <input
+                type="email"
+                className="form-input"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                placeholder="nama@gmail.com / siswa@sekolah.sch.id"
+                required
+                autoFocus
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', marginTop: '0.5rem' }}>
+              <LogIn size={16} />
+              <span>Masuk Portal Anggota</span>
+            </button>
+
+            <div style={{ textAlign: 'center', marginTop: '0.85rem', fontSize: '0.8rem', color: '#64748B' }}>
+              Belum terdaftar sebagai anggota Creative Corner?{' '}
+              <button
+                type="button"
+                onClick={() => setMemberAction('register')}
+                style={{ background: 'none', border: 'none', color: '#059669', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+              >
+                Daftar Anggota Baru di Sini
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="form-group">
+              <label className="form-label">Nama Lengkap Anggota *</label>
+              <input
+                type="text"
+                className="form-input"
+                value={namaInput}
+                onChange={(e) => setNamaInput(e.target.value)}
+                placeholder="Contoh: Muhammad Rizky"
+                required
+                autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Alamat Email Aktif *</label>
+              <input
+                type="email"
+                className="form-input"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                placeholder="nama@gmail.com / siswa@sekolah.sch.id"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Nomor WhatsApp Aktif *</label>
+              <input
+                type="tel"
+                className="form-input"
+                value={waInput}
+                onChange={(e) => setWaInput(e.target.value)}
+                placeholder="Contoh: 081234567890"
+                required
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Angkatan Berapa?</label>
+                <select
+                  className="form-select"
+                  value={angkatanInput}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAngkatanInput(val);
+                    if (val !== '25' && divisiInput === 'Dokumentasi') {
+                      setDivisiInput('Editor');
+                    }
+                  }}
+                >
+                  <option value="25">Angkatan 25</option>
+                  <option value="26">Angkatan 26</option>
+                  <option value="27">Angkatan 27</option>
+                  <option value="28">Angkatan 28</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Divisi Anggota di Creative Corner</label>
+                <select
+                  className="form-select"
+                  value={divisiInput}
+                  onChange={(e) => setDivisiInput(e.target.value)}
+                >
+                  <option value="Public Relation">Public Relation</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Desain Grafis">Desain Grafis</option>
+                  <option value="Content Creator">Content Creator</option>
+                  {angkatanInput === '25' && (
+                    <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
+                  )}
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', background: '#059669', borderColor: '#059669' }}>
+              <UserPlus size={16} />
+              <span>Daftar Jadi Anggota Creative Corner</span>
+            </button>
+
+            <div style={{ textAlign: 'center', marginTop: '0.85rem', fontSize: '0.8rem', color: '#64748B' }}>
+              Sudah pernah mendaftar sebelumnya?{' '}
+              <button
+                type="button"
+                onClick={() => setMemberAction('login')}
+                style={{ background: 'none', border: 'none', color: '#1E3A8A', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+              >
+                Masuk Akun di Sini
+              </button>
+            </div>
+          </>
+        )}
       </form>
 
       <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem', display: 'flex', justifyContent: 'center' }}>
@@ -132,7 +348,7 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
           className="btn btn-secondary btn-sm"
           onClick={onGoPublic}
         >
-          Bukan Anggota? Buka Formulir Peminjaman (Tanpa Login)
+          Bukan Anggota Creative Corner? Buka Formulir Peminjaman (Tanpa Login)
         </button>
       </div>
     </div>

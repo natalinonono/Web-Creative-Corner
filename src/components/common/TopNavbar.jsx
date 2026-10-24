@@ -12,7 +12,9 @@ import {
   KeyRound,
   CheckCircle2,
   Users,
-  ChevronRight
+  ChevronRight,
+  UserPlus,
+  Sparkles
 } from 'lucide-react';
 import { Modal } from './Modal';
 
@@ -24,19 +26,23 @@ export const TopNavbar = () => {
     setPublicTab,
     currentUser, 
     switchOrLoginUser, 
+    registerMember,
     logoutUser,
     pcClients,
-    isAdminEmail
+    isAdminEmail,
+    members
   } = useStudio();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginType, setLoginType] = useState('member'); // 'member' | 'admin'
+  const [memberAction, setMemberAction] = useState('login'); // 'login' | 'register'
 
-  // Form State Login
+  // Form State Login & Registrasi
   const [inputEmail, setInputEmail] = useState('');
   const [inputNama, setInputNama] = useState('');
+  const [inputWa, setInputWa] = useState('');
   const [inputAngkatan, setInputAngkatan] = useState('25');
-  const [inputDivisi, setInputDivisi] = useState('Editor');
+  const [inputDivisi, setInputDivisi] = useState('Public Relation');
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -57,18 +63,52 @@ export const TopNavbar = () => {
         kelas: 'Pengelola Studio'
       });
       setCurrentRole('admin');
+      setIsLoginModalOpen(false);
+      setInputEmail('');
+      setInputNama('');
     } else {
-      switchOrLoginUser({
-        email,
-        nama: inputNama.trim() || email.split('@')[0],
-        kelas: inputDivisi || 'Anggota Tim Studio'
-      });
-      setCurrentRole('member');
+      // Member Flow (Khusus Anggota Creative Corner)
+      if (memberAction === 'login') {
+        const existing = members.find((m) => m.email?.toLowerCase().trim() === email.toLowerCase().trim());
+        if (!existing) {
+          alert("Alamat email belum terdaftar sebagai anggota Creative Corner.\n\nJika kamu adalah anggota baru di Creative Corner, silakan klik opsi '+ Daftar Anggota Baru'.");
+          return;
+        }
+        switchOrLoginUser({
+          email: existing.email,
+          nama: existing.nama,
+          kelas: existing.kelas,
+          nomorWa: existing.nomorWa,
+          divisi: existing.divisi,
+          angkatan: existing.angkatan
+        });
+        setCurrentRole('member');
+        setIsLoginModalOpen(false);
+        setInputEmail('');
+        setInputNama('');
+      } else {
+        // Registrasi Anggota Baru Creative Corner
+        if (!inputNama.trim()) {
+          alert('Silakan masukkan Nama Lengkap Anda.');
+          return;
+        }
+        if (!inputWa.trim()) {
+          alert('Silakan masukkan Nomor WhatsApp aktif Anda.');
+          return;
+        }
+        registerMember({
+          nama: inputNama.trim(),
+          email,
+          nomorWa: inputWa.trim(),
+          angkatan: inputAngkatan,
+          divisi: inputDivisi
+        });
+        setIsLoginModalOpen(false);
+        setInputEmail('');
+        setInputNama('');
+        setInputWa('');
+      }
     }
-
-    setIsLoginModalOpen(false);
-    setInputEmail('');
-    setInputNama('');
   };
 
   const isUserAdmin = currentUser && isAdminEmail(currentUser.email);
@@ -259,6 +299,7 @@ export const TopNavbar = () => {
             type="button"
             onClick={() => {
               setLoginType('member');
+              setMemberAction('login');
               setIsLoginModalOpen(true);
             }}
             className="btn btn-secondary btn-sm"
@@ -273,19 +314,26 @@ export const TopNavbar = () => {
               alignItems: 'center',
               gap: '0.45rem'
             }}
+            title="Masuk atau Daftar Akun Anggota Creative Corner / Admin"
           >
             <LogIn size={14} />
-            <span>Masuk Tim Studio</span>
+            <span>Masuk / Daftar Anggota</span>
           </button>
         )}
       </div>
 
-      {/* MODAL MASUK AKUN ANGGOTA / ADMIN */}
+      {/* MODAL MASUK / DAFTAR AKUN ANGGOTA ATAU ADMIN */}
       {isLoginModalOpen && (
         <Modal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
-          title="Masuk Akun Studio Creative Corner"
+          title={
+            loginType === 'admin'
+              ? 'Akses Administrator Studio'
+              : memberAction === 'login'
+              ? 'Masuk Portal Anggota Creative Corner'
+              : 'Daftar Anggota Baru Creative Corner'
+          }
           footer={
             <>
               <button 
@@ -300,13 +348,27 @@ export const TopNavbar = () => {
                 className="btn btn-primary" 
                 onClick={handleLoginSubmit}
               >
-                <LogIn size={15} />
-                <span>Masuk Sekarang</span>
+                {loginType === 'admin' ? (
+                  <>
+                    <ShieldCheck size={15} />
+                    <span>Masuk Administrator</span>
+                  </>
+                ) : memberAction === 'login' ? (
+                  <>
+                    <LogIn size={15} />
+                    <span>Masuk Portal Anggota</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={15} />
+                    <span>Daftar Jadi Anggota</span>
+                  </>
+                )}
               </button>
             </>
           }
         >
-          {/* Tab Pilihan Jenis Akun */}
+          {/* Tab Pilihan Jenis Akun (Anggota vs Admin) */}
           <div style={{
             display: 'flex',
             background: '#F1F5F9',
@@ -337,7 +399,7 @@ export const TopNavbar = () => {
               }}
             >
               <Users size={15} color={loginType === 'member' ? '#059669' : '#64748B'} />
-              <span>Anggota Tim Studio</span>
+              <span>Anggota Creative Corner</span>
             </button>
 
             <button
@@ -369,82 +431,201 @@ export const TopNavbar = () => {
           <form onSubmit={handleLoginSubmit}>
             {loginType === 'member' ? (
               <>
+                {/* Sub-tab: Masuk vs Daftar Anggota Baru */}
                 <div style={{
-                  background: '#F0FDF4',
-                  border: '1px solid #BBF7D0',
+                  display: 'flex',
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  padding: '3px',
+                  marginBottom: '1rem',
+                  gap: '4px'
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => setMemberAction('login')}
+                    style={{
+                      flex: 1,
+                      padding: '0.5rem',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: memberAction === 'login' ? '#1E3A8A' : 'transparent',
+                      color: memberAction === 'login' ? '#FFFFFF' : '#64748B',
+                      fontWeight: memberAction === 'login' ? 700 : 500,
+                      fontSize: '0.8rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <LogIn size={14} />
+                    <span>Masuk (Sudah Terdaftar)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMemberAction('register')}
+                    style={{
+                      flex: 1,
+                      padding: '0.5rem',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: memberAction === 'register' ? '#059669' : 'transparent',
+                      color: memberAction === 'register' ? '#FFFFFF' : '#64748B',
+                      fontWeight: memberAction === 'register' ? 700 : 500,
+                      fontSize: '0.8rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <UserPlus size={14} />
+                    <span>+ Daftar Anggota Baru</span>
+                  </button>
+                </div>
+
+                {/* Banner Penjelasan Khusus Anggota */}
+                <div style={{
+                  background: memberAction === 'register' ? '#F0FDF4' : '#EFF6FF',
+                  border: `1px solid ${memberAction === 'register' ? '#BBF7D0' : '#BFDBFE'}`,
                   borderRadius: '8px',
                   padding: '0.75rem 1rem',
                   marginBottom: '1rem',
                   fontSize: '0.8rem',
-                  color: '#166534',
+                  color: memberAction === 'register' ? '#166534' : '#1E3A8A',
                   lineHeight: '1.5'
                 }}>
-                  Untuk anggota tim Creative Corner (Public Relation, Editor, Desain Grafis, Content Creator, Admin) guna melihat papan tugas liputan dan roster piket harian.
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Alamat Email Anggota *</label>
-                  <input
-                    type="email"
-                    className="form-input"
-                    value={inputEmail}
-                    onChange={(e) => setInputEmail(e.target.value)}
-                    placeholder="nama@gmail.com / siswa@sekolah.sch.id"
-                    required
-                    autoFocus
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Nama Lengkap (Opsional)</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={inputNama}
-                    onChange={(e) => setInputNama(e.target.value)}
-                    placeholder="Contoh: Muhammad Rizky"
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="form-group">
-                    <label className="form-label">Angkatan Berapa?</label>
-                    <select
-                      className="form-select"
-                      value={inputAngkatan}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setInputAngkatan(val);
-                        if (val !== '25' && inputDivisi === 'Dokumentasi') {
-                          setInputDivisi('Editor');
-                        }
-                      }}
-                    >
-                      <option value="25">Angkatan 25</option>
-                      <option value="26">Angkatan 26</option>
-                      <option value="27">Angkatan 27</option>
-                      <option value="28">Angkatan 28</option>
-                    </select>
+                  <div style={{ fontWeight: 700, marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Sparkles size={14} color={memberAction === 'register' ? '#059669' : '#1E3A8A'} />
+                    <span>Khusus Anggota Creative Corner:</span>
                   </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Divisi Anggota di Creative Corner</label>
-                    <select
-                      className="form-select"
-                      value={inputDivisi}
-                      onChange={(e) => setInputDivisi(e.target.value)}
-                    >
-                      <option value="Public Relation">Public Relation</option>
-                      <option value="Editor">Editor</option>
-                      <option value="Desain Grafis">Desain Grafis</option>
-                      <option value="Content Creator">Content Creator</option>
-                      {inputAngkatan === '25' && (
-                        <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
-                      )}
-                      <option value="Admin">Admin</option>
-                    </select>
-                  </div>
+                  {memberAction === 'register'
+                    ? 'Pendaftaran ini khusus untuk siswa/anggota resmi Creative Corner (Divisi PR, Editor, Desain Grafis, Content Creator, Dokumentasi). Akun Anda akan langsung aktif untuk melihat kalender liputan & penugasan tugas kreatif.'
+                    : 'Masukkan alamat email yang telah Anda daftarkan di Creative Corner untuk mengakses Papan Tugas Liputan, Kalender Acara & Roster Piket Studio.'}
                 </div>
+
+                {memberAction === 'login' ? (
+                  <>
+                    <div className="form-group">
+                      <label className="form-label">Alamat Email Anggota Terdaftar *</label>
+                      <input
+                        type="email"
+                        className="form-input"
+                        value={inputEmail}
+                        onChange={(e) => setInputEmail(e.target.value)}
+                        placeholder="nama@gmail.com / siswa@sekolah.sch.id"
+                        required
+                        autoFocus
+                      />
+                    </div>
+
+                    <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.8rem', color: '#64748B' }}>
+                      Belum mendaftar sebagai anggota Creative Corner?{' '}
+                      <button
+                        type="button"
+                        onClick={() => setMemberAction('register')}
+                        style={{ background: 'none', border: 'none', color: '#059669', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                      >
+                        Daftar Anggota Baru di Sini
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="form-group">
+                      <label className="form-label">Nama Lengkap Anggota *</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={inputNama}
+                        onChange={(e) => setInputNama(e.target.value)}
+                        placeholder="Contoh: Muhammad Rizky"
+                        required
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Alamat Email Aktif *</label>
+                      <input
+                        type="email"
+                        className="form-input"
+                        value={inputEmail}
+                        onChange={(e) => setInputEmail(e.target.value)}
+                        placeholder="nama@gmail.com / siswa@sekolah.sch.id"
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Nomor WhatsApp Aktif *</label>
+                      <input
+                        type="tel"
+                        className="form-input"
+                        value={inputWa}
+                        onChange={(e) => setInputWa(e.target.value)}
+                        placeholder="Contoh: 081234567890"
+                        required
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                      <div className="form-group">
+                        <label className="form-label">Angkatan Berapa?</label>
+                        <select
+                          className="form-select"
+                          value={inputAngkatan}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInputAngkatan(val);
+                            if (val !== '25' && inputDivisi === 'Dokumentasi') {
+                              setInputDivisi('Editor');
+                            }
+                          }}
+                        >
+                          <option value="25">Angkatan 25</option>
+                          <option value="26">Angkatan 26</option>
+                          <option value="27">Angkatan 27</option>
+                          <option value="28">Angkatan 28</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">Divisi Anggota di Creative Corner</label>
+                        <select
+                          className="form-select"
+                          value={inputDivisi}
+                          onChange={(e) => setInputDivisi(e.target.value)}
+                        >
+                          <option value="Public Relation">Public Relation</option>
+                          <option value="Editor">Editor</option>
+                          <option value="Desain Grafis">Desain Grafis</option>
+                          <option value="Content Creator">Content Creator</option>
+                          {inputAngkatan === '25' && (
+                            <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
+                          )}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.8rem', color: '#64748B' }}>
+                      Sudah pernah mendaftar sebelumnya?{' '}
+                      <button
+                        type="button"
+                        onClick={() => setMemberAction('login')}
+                        style={{ background: 'none', border: 'none', color: '#1E3A8A', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                      >
+                        Masuk Akun di Sini
+                      </button>
+                    </div>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -499,7 +680,7 @@ export const TopNavbar = () => {
               color: '#64748B',
               textAlign: 'center'
             }}>
-              Bukan anggota tim studio dan hanya ingin meminjam alat?{' '}
+              Bukan anggota Creative Corner dan hanya ingin meminjam alat?{' '}
               <button
                 type="button"
                 onClick={() => {

@@ -14,18 +14,25 @@ import {
 } from 'lucide-react';
 
 export const MemberPortal = () => {
-  const { activeMemberId, members, borrowings, creativeTasks } = useStudio();
-  const currentMember = members.find((m) => m.id === activeMemberId) || members[0];
+  const { activeMemberId, currentUser, members, borrowings, creativeTasks } = useStudio();
+  const currentMember = currentUser || members.find((m) => m.id === activeMemberId) || members[0] || {
+    id: 'MEM-TEMP',
+    nama: 'Anggota Creative Corner',
+    kelas: 'Angkatan 25',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    nomorWa: '6281200000000'
+  };
 
   const [activeTab, setActiveTab] = useState('calendar');
 
   // Hitung badge notifikasi
   const activeLoansCount = borrowings.filter(
-    (b) => b.status === 'Dipinjam' && (b.anggotaId === activeMemberId || b.peminjamNama === currentMember.nama)
+    (b) => b.status === 'Dipinjam' && (b.anggotaId === activeMemberId || b.peminjamNama === currentMember?.nama)
   ).length;
 
   const activeTasksCount = creativeTasks.filter(
-    (t) => (t.status === 'Belum Dimulai' || t.status === 'Dalam Proses') && (t.penanggungJawabId === activeMemberId || t.penanggungJawabNama === currentMember.nama)
+    (t) => (t.status === 'Belum Dimulai' || t.status === 'Dalam Proses') && (t.penanggungJawabId === activeMemberId || t.penanggungJawabNama === currentMember?.nama)
   ).length;
 
   return (

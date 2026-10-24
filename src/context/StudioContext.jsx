@@ -173,7 +173,15 @@ export const StudioProvider = ({ children }) => {
         if (Array.isArray(evts)) setEvents(evts);
 
         const { data: mems } = await supabase.from('members').select('*');
-        if (Array.isArray(mems)) setMembers(mems);
+        if (Array.isArray(mems) && mems.length > 0) {
+          const formattedMems = mems.map((m) => ({
+            ...m,
+            nomorWa: m.nomorWa || m.whatsapp || '6281200000000',
+            angkatan: m.angkatan || m.kelas || 'Angkatan 25',
+            divisi: m.divisi || m.peranUtama || 'Public Relation'
+          }));
+          setMembers(formattedMems);
+        }
 
         const { data: loans } = await supabase.from('loan_records').select('*');
         if (Array.isArray(loans)) setBorrowings(loans);
@@ -370,11 +378,12 @@ export const StudioProvider = ({ children }) => {
   // -------------------------------------------------------------
   // FUNGSI GANTI / LOGIN PENGGUNA DENGAN ATURAN EMAIL
   // -------------------------------------------------------------
-  const switchOrLoginUser = ({ email, nama, kelas, nomorWa, divisi, peranUtama }) => {
-    const isTargetAdmin = isAdminEmail(email);
-    const existing = members.find((m) => m.email?.toLowerCase() === email.toLowerCase());
+  const switchOrLoginUser = ({ email, nama, kelas, nomorWa, divisi, peranUtama, angkatan }) => {
+    const cleanEmail = email.toLowerCase().trim();
+    const isTargetAdmin = isAdminEmail(cleanEmail);
+    const existing = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail);
 
-    const userDivisi = isTargetAdmin ? 'Admin' : (divisi || peranUtama || 'Content Creator');
+    const userDivisi = isTargetAdmin ? 'Admin' : (divisi || peranUtama || 'Public Relation');
 
     let targetUser;
     if (existing) {
@@ -383,8 +392,9 @@ export const StudioProvider = ({ children }) => {
       targetUser = {
         id: isTargetAdmin ? `ADM-${Date.now().toString().slice(-4)}` : `MEM-${Date.now().toString().slice(-4)}`,
         nama: nama || (isTargetAdmin ? 'Admin Studio' : 'Anggota Studio'),
-        email,
-        kelas: kelas || (isTargetAdmin ? 'Pengelola Studio' : 'Kelas Siswa'),
+        email: cleanEmail,
+        kelas: kelas || (isTargetAdmin ? 'Pengelola Studio' : 'Anggota Tim Studio'),
+        angkatan: angkatan ? (angkatan.includes('Angkatan') ? angkatan : `Angkatan ${angkatan}`) : 'Angkatan 25',
         nomorWa: nomorWa || '6281200000000',
         divisi: userDivisi,
         peranUtama: userDivisi,
@@ -392,6 +402,7 @@ export const StudioProvider = ({ children }) => {
         avatar: (nama || 'CC').slice(0, 2).toUpperCase()
       };
       setMembers((prev) => [targetUser, ...prev]);
+      syncMemberToSupabase(targetUser);
     }
 
     setCurrentUser(targetUser);
@@ -402,8 +413,48 @@ export const StudioProvider = ({ children }) => {
       showToast(`Login berhasil sebagai Administrator (${targetUser.email}). Akses penuh Portal Pengelola aktif.`, 'success');
     } else {
       setCurrentRole('member');
-      showToast(`Login berhasil sebagai Anggota (${targetUser.nama}). Beralih ke Portal Anggota.`, 'success');
+      showToast(`Login berhasil sebagai Anggota Creative Corner (${targetUser.nama}). Beralih ke Portal Anggota.`, 'success');
     }
+  };
+
+  // Pendaftaran Anggota Baru khusus Creative Corner
+  const registerMember = ({ nama, email, nomorWa, angkatan, divisi }) => {
+    const cleanEmail = email.toLowerCase().trim();
+    const isTargetAdmin = isAdminEmail(cleanEmail);
+    const existing = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail);
+
+    if (existing) {
+      setCurrentUser(existing);
+      setActiveMemberId(existing.id);
+      setCurrentRole(existing.role === 'admin' ? 'admin' : 'member');
+      showToast(`Email ${cleanEmail} sudah terdaftar atas nama ${existing.nama}. Anda langsung dialihkan ke Portal Anggota.`, 'info');
+      return { success: true, member: existing, isNew: false };
+    }
+
+    const finalAngkatan = angkatan ? (angkatan.includes('Angkatan') ? angkatan : `Angkatan ${angkatan}`) : 'Angkatan 25';
+    const userDivisi = isTargetAdmin ? 'Admin' : (divisi || 'Public Relation');
+
+    const newMember = {
+      id: isTargetAdmin ? `ADM-${Date.now().toString().slice(-4)}` : `MEM-${Date.now().toString().slice(-4)}`,
+      nama: nama.trim() || 'Anggota Creative Corner',
+      email: cleanEmail,
+      kelas: finalAngkatan,
+      angkatan: finalAngkatan,
+      nomorWa: (nomorWa || '').replace(/[^0-9]/g, '') || '6281200000000',
+      divisi: userDivisi,
+      peranUtama: userDivisi,
+      role: isTargetAdmin ? 'admin' : 'member',
+      status: 'Tersedia',
+      avatar: (nama.trim() || 'CC').slice(0, 2).toUpperCase()
+    };
+
+    setMembers((prev) => [newMember, ...prev]);
+    syncMemberToSupabase(newMember);
+    setCurrentUser(newMember);
+    setActiveMemberId(newMember.id);
+    setCurrentRole(newMember.role === 'admin' ? 'admin' : 'member');
+    showToast(`Pendaftaran berhasil! Selamat bergabung di Creative Corner, ${newMember.nama}.`, 'success');
+    return { success: true, member: newMember, isNew: true };
   };
 
   // Logout akun (Kembali ke Versi Publik / Tamu)
@@ -996,6 +1047,7 @@ export const StudioProvider = ({ children }) => {
         publicTab,
         setPublicTab,
         switchOrLoginUser,
+        registerMember,
         logoutUser,
         submitPublicLoan,
         members,
