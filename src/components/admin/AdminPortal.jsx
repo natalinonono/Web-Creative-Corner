@@ -97,7 +97,7 @@ export const AdminPortal = () => {
                   borderRadius: '50%',
                   background: isSupabaseConfigured ? '#10B981' : '#94A3B8'
                 }}></span>
-                <span>{isSupabaseConfigured ? 'Supabase Cloud (Aktif)' : 'Database: LocalStorage'}</span>
+                <span>{isSupabaseConfigured ? 'Supabase Cloud (Database Utama)' : 'Menghubungkan ke Supabase Cloud...'}</span>
               </span>
             </div>
             <p style={{ fontSize: '0.825rem', color: '#475569' }}>

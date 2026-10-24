@@ -112,6 +112,16 @@ CREATE TABLE IF NOT EXISTS public.official_documents (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 9. TABEL ROSTER PIKET STUDIO (duty_roster)
+CREATE TABLE IF NOT EXISTS public.duty_roster (
+    id TEXT PRIMARY KEY,
+    hari TEXT NOT NULL,
+    petugas JSONB DEFAULT '[]'::jsonb,
+    jam_piket TEXT DEFAULT '14:00 - 17:00',
+    status TEXT DEFAULT 'Terjadwal',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ===================================================================
 -- PENGATURAN HAK AKSES ROW LEVEL SECURITY (RLS)
 -- Mengizinkan pembacaan publik & pengiriman peminjaman / log PC
@@ -125,6 +135,7 @@ ALTER TABLE public.pc_clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pc_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.creative_tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.official_documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.duty_roster ENABLE ROW LEVEL SECURITY;
 
 -- Kebijakan Akses: Akses Penuh untuk Anon Key (Frontend Web CC)
 CREATE POLICY "Akses Penuh Publik Members" ON public.members FOR ALL USING (true) WITH CHECK (true);
@@ -135,6 +146,7 @@ CREATE POLICY "Akses Penuh Publik PC Clients" ON public.pc_clients FOR ALL USING
 CREATE POLICY "Akses Penuh Publik PC Logs" ON public.pc_logs FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Akses Penuh Publik Creative Tasks" ON public.creative_tasks FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Akses Penuh Publik Official Documents" ON public.official_documents FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Akses Penuh Publik Duty Roster" ON public.duty_roster FOR ALL USING (true) WITH CHECK (true);
 
 -- ===================================================================
 -- SEED DATA AWAL (OPSIONAL: Menambahkan data awal workstation PC)
