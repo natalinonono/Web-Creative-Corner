@@ -32,7 +32,7 @@ import {
   BatteryCharging,
   HardDrive
 } from 'lucide-react';
-import { getCameraRequirements, isEquipmentCompatible, isCameraItem } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
 
 export const PublicGuestPortal = () => {
   const { 
@@ -58,7 +58,6 @@ export const PublicGuestPortal = () => {
   // Bukti Surat Peminjaman
   const [buktiSuratFile, setBuktiSuratFile] = useState(null);
   const [previewBuktiModal, setPreviewBuktiModal] = useState(null);
-  const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
 
   // Search & Filter Alat
   const [catalogSearch, setCatalogSearch] = useState('');
@@ -625,10 +624,11 @@ export const PublicGuestPortal = () => {
                       const isSelected = selectedEquipmentIds.includes(item.id);
 
                       // Info Kompatibilitas Item
-                      const itemCat = (item.kategori || '').toLowerCase();
-                      const itemReq = itemCat.includes('kamera') || item.nama.toLowerCase().includes('canon') ? getCameraRequirements(item) : null;
-                      const isBattery = itemCat.includes('baterai') || item.nama.toLowerCase().includes('baterai') || item.nama.toLowerCase().includes('battery');
-                      const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || item.nama.toLowerCase().includes('sd card') || item.nama.toLowerCase().includes('memory');
+                      const itemReq = isCameraItem(item) ? getCameraRequirements(item) : null;
+                      const isLens = isLensItem(item);
+                      const lensMount = isLens ? getLensMountType(item) : null;
+                      const isBattery = isBatteryItem(item);
+                      const isMemoryCard = isMemoryCardItem(item);
 
                       return (
                         <div
@@ -691,6 +691,26 @@ export const PublicGuestPortal = () => {
                               </div>
                             )}
 
+                            {/* Badge Mount Lensa */}
+                            {isLens && lensMount && (
+                              <div style={{ marginTop: '4px' }}>
+                                <span style={{
+                                  fontSize: '0.685rem',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: lensMount.includes('EF-M') ? '#F3E8FF' : '#E0E7FF',
+                                  color: lensMount.includes('EF-M') ? '#6B21A8' : '#3730A3',
+                                  border: `1px solid ${lensMount.includes('EF-M') ? '#D8B4FE' : '#C7D2FE'}`,
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
+                                }}>
+                                  🔍 Mount: {lensMount}
+                                </span>
+                              </div>
+                            )}
+
                             {/* Badge Kategori Baterai */}
                             {isBattery && (
                               <div style={{ marginTop: '4px' }}>
@@ -698,14 +718,14 @@ export const PublicGuestPortal = () => {
                                   fontSize: '0.685rem',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  background: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                                  color: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                                  background: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                                  color: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
                                   fontWeight: 700,
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '3px'
                                 }}>
-                                  🔋 {(item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                                  🔋 {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                                 </span>
                               </div>
                             )}
@@ -731,7 +751,7 @@ export const PublicGuestPortal = () => {
                             )}
 
                             {/* Spesifikasi / Keterangan Alat jika ada */}
-                            {!itemReq && !isBattery && !isMemoryCard && item.spesifikasi && (
+                            {!itemReq && !isLens && !isBattery && !isMemoryCard && item.spesifikasi && (
                               <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '2px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {item.spesifikasi}
                               </div>
@@ -1185,10 +1205,11 @@ export const PublicGuestPortal = () => {
           }}>
             {filteredEquipment.map((eq) => {
               const isAvailable = eq.status === 'Tersedia';
-              const itemCat = (eq.kategori || '').toLowerCase();
-              const itemReq = itemCat.includes('kamera') || eq.nama.toLowerCase().includes('canon') ? getCameraRequirements(eq) : null;
-              const isBattery = itemCat.includes('baterai') || eq.nama.toLowerCase().includes('baterai') || eq.nama.toLowerCase().includes('battery');
-              const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || eq.nama.toLowerCase().includes('sd card') || eq.nama.toLowerCase().includes('memory');
+              const itemReq = isCameraItem(eq) ? getCameraRequirements(eq) : null;
+              const isLens = isLensItem(eq);
+              const lensMount = isLens ? getLensMountType(eq) : null;
+              const isBattery = isBatteryItem(eq);
+              const isMemoryCard = isMemoryCardItem(eq);
 
               return (
                 <div
@@ -1236,6 +1257,24 @@ export const PublicGuestPortal = () => {
                       </div>
                     )}
 
+                    {/* Badge Mount Lensa */}
+                    {isLens && lensMount && (
+                      <div style={{ marginBottom: '0.65rem' }}>
+                        <span style={{
+                          fontSize: '0.7rem',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          background: lensMount.includes('EF-M') ? '#F3E8FF' : '#E0E7FF',
+                          color: lensMount.includes('EF-M') ? '#6B21A8' : '#3730A3',
+                          border: `1px solid ${lensMount.includes('EF-M') ? '#D8B4FE' : '#C7D2FE'}`,
+                          fontWeight: 700,
+                          width: 'fit-content'
+                        }}>
+                          🔍 Mount: {lensMount}
+                        </span>
+                      </div>
+                    )}
+
                     {/* Badge Kategori Baterai */}
                     {isBattery && (
                       <div style={{ marginBottom: '0.65rem' }}>
@@ -1243,12 +1282,12 @@ export const PublicGuestPortal = () => {
                           fontSize: '0.7rem',
                           padding: '2px 8px',
                           borderRadius: '4px',
-                          background: (eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                          color: (eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                          background: (eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                          color: (eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
-                          🔋 {(eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                          🔋 {(eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                         </span>
                       </div>
                     )}

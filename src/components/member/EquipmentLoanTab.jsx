@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { PickupInspectionModal } from './PickupInspectionModal';
 import { ReturnInspectionModal } from './ReturnInspectionModal';
-import { getCameraRequirements } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
 
 export const EquipmentLoanTab = () => {
   const { equipment, borrowings, activeMemberId, members } = useStudio();
@@ -208,9 +208,12 @@ export const EquipmentLoanTab = () => {
             const isAvailable = tool.status === 'Tersedia';
 
             const itemCat = (tool.kategori || '').toLowerCase();
-            const toolReq = itemCat.includes('kamera') || tool.nama.toLowerCase().includes('canon') ? getCameraRequirements(tool) : null;
-            const isBattery = itemCat.includes('baterai') || tool.nama.toLowerCase().includes('baterai') || tool.nama.toLowerCase().includes('battery');
-            const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || tool.nama.toLowerCase().includes('sd card') || tool.nama.toLowerCase().includes('memory');
+            const isCam = isCameraItem(tool);
+            const toolReq = isCam ? getCameraRequirements(tool) : null;
+            const isLens = isLensItem(tool);
+            const lensMount = isLens ? getLensMountType(tool) : null;
+            const isBattery = isBatteryItem(tool);
+            const isMemoryCard = isMemoryCardItem(tool);
 
             return (
               <div 
@@ -255,6 +258,24 @@ export const EquipmentLoanTab = () => {
                     </div>
                   )}
 
+                  {/* Badge Panduan Mount Lensa */}
+                  {isLens && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.65rem' }}>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        background: lensMount === 'EF-M' ? '#FAF5FF' : '#EEF2FF',
+                        color: lensMount === 'EF-M' ? '#7E22CE' : '#4338CA',
+                        border: `1px solid ${lensMount === 'EF-M' ? '#E9D5FF' : '#C7D2FE'}`,
+                        fontWeight: 700,
+                        width: 'fit-content'
+                      }}>
+                        🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Badge Kategori Baterai */}
                   {isBattery && (
                     <div style={{ marginBottom: '0.65rem' }}>
@@ -262,12 +283,12 @@ export const EquipmentLoanTab = () => {
                         fontSize: '0.7rem',
                         padding: '2px 8px',
                         borderRadius: '4px',
-                        background: (tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                        color: (tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                        background: (tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                        color: (tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
                         fontWeight: 700,
                         width: 'fit-content'
                       }}>
-                        🔋 {(tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                        🔋 {(tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                       </span>
                     </div>
                   )}

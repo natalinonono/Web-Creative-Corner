@@ -17,7 +17,7 @@ import {
   Sparkles,
   BatteryCharging
 } from 'lucide-react';
-import { getCameraRequirements, isEquipmentCompatible, isCameraItem } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
 
 export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledEquipmentIds = [] }) => {
   const { equipment, activeMemberId, members, submitPickupInspection } = useStudio();
@@ -348,7 +348,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
               <div style={{ flex: 1, lineHeight: 1.4 }}>
                 <span style={{ fontWeight: 800, color: '#1E3A8A' }}>Filter Kompatibilitas Otomatis:</span> Kamera <strong>{selectedCamera.nama}</strong> terpilih.{' '}
                 {cameraReq.needsAdapter ? 'Wajib pakai Adapter EF-M to EF & Lensa EF (DSLR).' : `Menggunakan ${cameraReq.lensLabel}.`}{' '}
-                Baterai: <strong>{cameraReq.batteryLabel}</strong>.
+                Rekomendasi Baterai: <strong>{cameraReq.batteryLabel}</strong>.
                 <span style={{ color: '#2563EB', display: 'block', fontSize: '0.685rem', marginTop: '1px', fontStyle: 'italic' }}>
                   * Lensa dan baterai yang tidak kompatibel dengan kamera ini otomatis disembunyikan.
                 </span>
@@ -375,9 +375,12 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
               {displayedEquipment.map((item) => {
                 const isSelected = selectedEqIds.includes(item.id);
                 const itemCat = (item.kategori || '').toLowerCase();
-                const itemReq = itemCat.includes('kamera') || item.nama.toLowerCase().includes('canon') ? getCameraRequirements(item) : null;
-                const isBattery = itemCat.includes('baterai') || item.nama.toLowerCase().includes('baterai') || item.nama.toLowerCase().includes('battery');
-                const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || item.nama.toLowerCase().includes('sd card') || item.nama.toLowerCase().includes('memory');
+                const isCam = isCameraItem(item);
+                const itemReq = isCam ? getCameraRequirements(item) : null;
+                const isLens = isLensItem(item);
+                const lensMount = isLens ? getLensMountType(item) : null;
+                const isBattery = isBatteryItem(item);
+                const isMemoryCard = isMemoryCardItem(item);
 
                 return (
                   <label 
@@ -423,6 +426,24 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                         </div>
                       )}
 
+                      {/* Badge Panduan Mount Lensa */}
+                      {isLens && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '3px' }}>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            background: lensMount === 'EF-M' ? '#FAF5FF' : '#EEF2FF',
+                            color: lensMount === 'EF-M' ? '#7E22CE' : '#4338CA',
+                            border: `1px solid ${lensMount === 'EF-M' ? '#E9D5FF' : '#C7D2FE'}`,
+                            fontWeight: 700,
+                            width: 'fit-content'
+                          }}>
+                            🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Badge Kategori Baterai */}
                       {isBattery && (
                         <div style={{ marginTop: '3px' }}>
@@ -430,11 +451,11 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             fontSize: '0.675rem',
                             padding: '1px 5px',
                             borderRadius: '3px',
-                            background: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                            color: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                            background: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                            color: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
                             fontWeight: 700
                           }}>
-                            🔋 {(item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                            🔋 {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                           </span>
                         </div>
                       )}
@@ -561,14 +582,48 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
-                onClick={() => setIsFormatModalOpen(true)}
+                onClick={() => setIsFormatModalOpen((prev) => !prev)}
                 style={{ fontSize: '0.725rem' }}
               >
                 <Eye size={13} />
-                <span>Lihat Format</span>
+                <span>{isFormatModalOpen ? 'Tutup Pratinjau' : 'Lihat Format'}</span>
               </button>
             </div>
           </div>
+
+          {/* Pratinjau Format Surat Langsung (Tanpa Modal Bertumpuk) */}
+          {isFormatModalOpen && (
+            <div style={{
+              background: '#FFFFFF',
+              border: '1.5px solid #CBD5E1',
+              borderRadius: '8px',
+              padding: '1rem',
+              marginBottom: '0.85rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.75rem',
+              lineHeight: '1.5',
+              color: '#0F172A',
+              whiteSpace: 'pre-wrap',
+              maxHeight: '260px',
+              overflowY: 'auto',
+              boxShadow: 'var(--shadow-sm)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.35rem' }}>
+                <strong style={{ color: '#1E3A8A', fontFamily: 'var(--font-sans)', fontSize: '0.8rem' }}>
+                  📄 Format Surat Resmi Creative Corner:
+                </strong>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setIsFormatModalOpen(false)}
+                  style={{ fontSize: '0.675rem', padding: '0.15rem 0.45rem' }}
+                >
+                  Tutup Pratinjau
+                </button>
+              </div>
+              {FORMAT_SURAT_PEMINJAMAN_TEXT}
+            </div>
+          )}
 
           {/* Upload Input */}
           {!buktiSuratFile ? (
@@ -625,47 +680,6 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
           )}
         </div>
       </form>
-
-      {/* Modal Format Surat */}
-      {isFormatModalOpen && (
-        <Modal
-          isOpen={isFormatModalOpen}
-          onClose={() => setIsFormatModalOpen(false)}
-          size="large"
-          title="Format Resmi Surat Perizinan Peminjaman Alat"
-          footer={
-            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-              <button type="button" className="btn btn-secondary" onClick={handleDownloadDocx}>
-                <Download size={14} color="#2563EB" />
-                <span>Unduh Format .DOCX (Word)</span>
-              </button>
-              <button type="button" className="btn btn-primary" onClick={handleDownloadPdf}>
-                <Download size={14} />
-                <span>Unduh Format .PDF</span>
-              </button>
-              <button type="button" className="btn btn-secondary" onClick={() => setIsFormatModalOpen(false)}>
-                Tutup
-              </button>
-            </div>
-          }
-        >
-          <div style={{
-            background: '#FFFFFF',
-            border: '1.5px solid #CBD5E1',
-            borderRadius: '8px',
-            padding: '1.5rem',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.825rem',
-            lineHeight: '1.6',
-            color: '#0F172A',
-            whiteSpace: 'pre-wrap',
-            maxHeight: '400px',
-            overflowY: 'auto'
-          }}>
-            {FORMAT_SURAT_PEMINJAMAN_TEXT}
-          </div>
-        </Modal>
-      )}
     </Modal>
   );
 };

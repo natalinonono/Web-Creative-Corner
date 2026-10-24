@@ -17,7 +17,7 @@ export const CAMERA_RULES = {
     adapterName: 'Adapter EOS EF-M to EF',
     batteryType: 'LP-E17',
     batteryLabel: 'Baterai LP-E17',
-    keteranganDefault: 'WAJIB PAKAI ADAPTER EOS EF-M TO EOS EF DAN CUMA BISA PAKAI LENSA DSLR (EF). Baterai: LP-E17.',
+    keteranganDefault: 'Body Only. WAJIB PAKAI ADAPTER EOS EF-M TO EOS EF DAN CUMA BISA PAKAI LENSA DSLR (EF).',
     ruleText: 'Canon EOS M6 II wajib memakai Adapter EF-M to EF dan hanya dapat menggunakan Lensa EF.'
   },
   'M6_I': {
@@ -29,7 +29,7 @@ export const CAMERA_RULES = {
     adapterName: null,
     batteryType: 'LP-E17',
     batteryLabel: 'Baterai LP-E17',
-    keteranganDefault: 'PAKAI LENSA EOS EF-M (Mirrorless Murni). Baterai: LP-E17.',
+    keteranganDefault: 'Body Only. PAKAI LENSA EOS EF-M (Mirrorless Murni).',
     ruleText: 'Canon EOS M6 I hanya dapat menggunakan Lensa EF-M murni (tanpa adapter).'
   },
   'CANON_250D': {
@@ -41,7 +41,7 @@ export const CAMERA_RULES = {
     adapterName: null,
     batteryType: 'LP-E17',
     batteryLabel: 'Baterai LP-E17',
-    keteranganDefault: 'PAKAI LENSA EOS EF. Baterai: LP-E17.',
+    keteranganDefault: 'Body Only. PAKAI LENSA EOS EF.',
     ruleText: 'Canon EOS 250D menggunakan Lensa EF dan memakai Baterai LP-E17.'
   },
   'CANON_1500D': {
@@ -53,7 +53,7 @@ export const CAMERA_RULES = {
     adapterName: null,
     batteryType: 'LP-E10',
     batteryLabel: 'Baterai LP-E10 (Khusus 1500D)',
-    keteranganDefault: 'PAKAI LENSA EOS EF. Khusus Baterai LP-E10.',
+    keteranganDefault: 'Body Only. PAKAI LENSA EOS EF.',
     ruleText: 'Canon EOS 1500D menggunakan Lensa EF dan khusus memakai Baterai LP-E10.'
   }
 };
@@ -94,6 +94,36 @@ export const isCameraItem = (item) => {
 
   // Bodi kamera
   return cat.includes('kamera') || name.includes('kamera') || name.includes('camera') || name.includes('eos');
+};
+
+/**
+ * Cek apakah sebuah item adalah lensa
+ */
+export const isLensItem = (item) => {
+  if (!item) return false;
+  const cat = (item.kategori || '').toLowerCase().trim();
+  const name = (item.nama || '').toLowerCase().trim();
+  return cat === 'lensa' || name.startsWith('lensa') || name.includes('lens');
+};
+
+/**
+ * Cek apakah sebuah item adalah baterai
+ */
+export const isBatteryItem = (item) => {
+  if (!item) return false;
+  const cat = (item.kategori || '').toLowerCase().trim();
+  const name = (item.nama || '').toLowerCase().trim();
+  return cat === 'baterai' || cat.includes('battery') || name.startsWith('baterai') || name.includes('battery');
+};
+
+/**
+ * Cek apakah sebuah item adalah memory card
+ */
+export const isMemoryCardItem = (item) => {
+  if (!item) return false;
+  const cat = (item.kategori || '').toLowerCase().trim();
+  const name = (item.nama || '').toLowerCase().trim();
+  return cat === 'memory card' || cat.includes('memory') || cat.includes('sd card') || name.includes('sd card') || name.includes('memory');
 };
 
 /**

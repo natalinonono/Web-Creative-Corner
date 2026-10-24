@@ -28,7 +28,7 @@ import {
   Sparkles,
   HardDrive
 } from 'lucide-react';
-import { getCameraRequirements, CAMERA_RULES } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, CAMERA_RULES, isCameraItem, isLensItem, getLensMountType } from '../../utils/cameraCompatibility';
 
 export const STANDARD_CATEGORIES = [
   'Kamera',
@@ -541,8 +541,10 @@ export const InventoryMasterTab = () => {
                       </thead>
                       <tbody>
                         {items.map((item) => {
-                          const isCam = (item.kategori || '').toLowerCase().includes('kamera') || (item.nama || '').toLowerCase().includes('canon');
+                          const isCam = isCameraItem(item);
                           const camReq = isCam ? getCameraRequirements(item) : null;
+                          const isLens = isLensItem(item);
+                          const lensMount = isLens ? getLensMountType(item) : null;
                           return (
                           <tr key={item.id}>
                             <td>
@@ -562,6 +564,21 @@ export const InventoryMasterTab = () => {
                                     borderRadius: '4px'
                                   }}>
                                     🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
+                                  </span>
+                                </div>
+                              )}
+                              {isLens && (
+                                <div style={{ marginTop: '0.35rem', display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                                  <span style={{
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    color: lensMount === 'EF-M' ? '#7E22CE' : '#4338CA',
+                                    background: lensMount === 'EF-M' ? '#FAF5FF' : '#EEF2FF',
+                                    border: `1px solid ${lensMount === 'EF-M' ? '#E9D5FF' : '#C7D2FE'}`,
+                                    padding: '1px 6px',
+                                    borderRadius: '4px'
+                                  }}>
+                                    🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                                   </span>
                                 </div>
                               )}
@@ -625,8 +642,10 @@ export const InventoryMasterTab = () => {
                 {filteredAssets.map((item) => {
                   const meta = getCategoryMeta(item.kategori);
                   const CatIcon = meta.icon;
-                  const isCam = (item.kategori || '').toLowerCase().includes('kamera') || (item.nama || '').toLowerCase().includes('canon');
+                  const isCam = isCameraItem(item);
                   const camReq = isCam ? getCameraRequirements(item) : null;
+                  const isLens = isLensItem(item);
+                  const lensMount = isLens ? getLensMountType(item) : null;
                   return (
                     <tr key={item.id}>
                       <td>
@@ -646,6 +665,21 @@ export const InventoryMasterTab = () => {
                               borderRadius: '4px'
                             }}>
                               🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
+                            </span>
+                          </div>
+                        )}
+                        {isLens && (
+                          <div style={{ marginTop: '0.35rem', display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                            <span style={{
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              color: lensMount === 'EF-M' ? '#7E22CE' : '#4338CA',
+                              background: lensMount === 'EF-M' ? '#FAF5FF' : '#EEF2FF',
+                              border: `1px solid ${lensMount === 'EF-M' ? '#E9D5FF' : '#C7D2FE'}`,
+                              padding: '1px 6px',
+                              borderRadius: '4px'
+                            }}>
+                              🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                             </span>
                           </div>
                         )}
@@ -872,7 +906,7 @@ export const InventoryMasterTab = () => {
                   onClick={() => {
                     setNama('CANON EOS M6 II');
                     setKondisiFisik('Sangat Baik');
-                    setSpesifikasi('WAJIB PAKAI ADAPTER EOS EF-M TO EOS EF DAN CUMA BISA PAKAI LENSA DSLR (EF). Baterai: LP-E17.');
+                    setSpesifikasi('WAJIB PAKAI ADAPTER EOS EF-M TO EOS EF DAN CUMA BISA PAKAI LENSA DSLR (EF).');
                   }}
                 >
                   Canon EOS M6 II (Adapter + EF)
@@ -884,7 +918,7 @@ export const InventoryMasterTab = () => {
                   onClick={() => {
                     setNama('CANON EOS M6 I');
                     setKondisiFisik('Sangat Baik');
-                    setSpesifikasi('PAKAI LENSA EOS EF-M (Mirrorless Murni). Baterai: LP-E17.');
+                    setSpesifikasi('PAKAI LENSA EOS EF-M (Mirrorless Murni).');
                   }}
                 >
                   Canon EOS M6 I (EF-M)
@@ -896,7 +930,7 @@ export const InventoryMasterTab = () => {
                   onClick={() => {
                     setNama('CANON EOS 250D');
                     setKondisiFisik('Sangat Baik');
-                    setSpesifikasi('PAKAI LENSA EOS EF. Baterai: LP-E17.');
+                    setSpesifikasi('PAKAI LENSA EOS EF.');
                   }}
                 >
                   Canon EOS 250D (EF)
@@ -908,10 +942,10 @@ export const InventoryMasterTab = () => {
                   onClick={() => {
                     setNama('CANON EOS 1500D');
                     setKondisiFisik('Sangat Baik');
-                    setSpesifikasi('PAKAI LENSA EOS EF. Khusus Baterai LP-E10.');
+                    setSpesifikasi('PAKAI LENSA EOS EF.');
                   }}
                 >
-                  Canon EOS 1500D (EF & LP-E10)
+                  Canon EOS 1500D (EF)
                 </button>
               </div>
             </div>
