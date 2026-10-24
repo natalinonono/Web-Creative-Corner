@@ -175,8 +175,8 @@ export const EquipmentLoanTab = () => {
         </div>
 
         {/* Tab Filter Kategori */}
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', overflowX: 'auto' }}>
-          {['Semua', 'Kamera', 'Lensa', 'Aksesori', 'Ruang Studio'].map((cat) => (
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', overflowX: 'auto', flexWrap: 'wrap' }}>
+          {['Semua', 'Kamera', 'Lensa', 'Audio & Mikrofon', 'Lighting & Tata Cahaya', 'Tripod & Aksesori', 'Ruang Studio'].map((cat) => (
             <button
               key={cat}
               type="button"

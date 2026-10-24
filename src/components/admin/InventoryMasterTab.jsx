@@ -16,8 +16,23 @@ import {
   Layers,
   Inbox,
   FileText,
-  Download
+  Download,
+  Mic,
+  Sun,
+  Video,
+  Sliders,
+  FolderTree,
+  Tag
 } from 'lucide-react';
+
+export const STANDARD_CATEGORIES = [
+  'Kamera',
+  'Lensa',
+  'Audio & Mikrofon',
+  'Lighting & Tata Cahaya',
+  'Tripod & Aksesori',
+  'Ruang Studio'
+];
 
 export const InventoryMasterTab = () => {
   const { 
@@ -29,12 +44,16 @@ export const InventoryMasterTab = () => {
   } = useStudio();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState('Semua');
+  const [groupByCategory, setGroupByCategory] = useState(true);
 
-  // Modal State untuk Tambah / Edit Alat Master (Hanya 3 data: Nama, Kondisi Fisik, Keterangan)
+  // Modal State untuk Tambah / Edit Alat Master (Nama, Kategori, Kondisi Fisik, Keterangan)
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [editingAssetId, setEditingAssetId] = useState(null);
   const [kode, setKode] = useState('');
   const [nama, setNama] = useState('');
+  const [kategori, setKategori] = useState('Kamera');
+  const [customKategori, setCustomKategori] = useState('');
   const [kondisiFisik, setKondisiFisik] = useState('Sangat Baik');
   const [spesifikasi, setSpesifikasi] = useState('');
 
@@ -42,21 +61,68 @@ export const InventoryMasterTab = () => {
   const [selectedBorrowingForCompare, setSelectedBorrowingForCompare] = useState(null);
   const [previewProofModal, setPreviewProofModal] = useState(null);
 
-  // Filter Alat
+  // Helper Ikon dan Warna Kategori
+  const getCategoryMeta = (cat) => {
+    if (!cat) return { icon: Layers, color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', label: 'Peralatan Umum' };
+    const lower = cat.toLowerCase();
+    if (lower.includes('kamera')) {
+      return { icon: Camera, color: '#1E3A8A', bg: '#EFF6FF', border: '#BFDBFE', label: 'Kamera' };
+    }
+    if (lower.includes('lensa')) {
+      return { icon: Eye, color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE', label: 'Lensa' };
+    }
+    if (lower.includes('audio') || lower.includes('mic')) {
+      return { icon: Mic, color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', label: 'Audio & Mikrofon' };
+    }
+    if (lower.includes('light')) {
+      return { icon: Sun, color: '#D97706', bg: '#FFFBEB', border: '#FDE68A', label: 'Lighting & Tata Cahaya' };
+    }
+    if (lower.includes('tripod') || lower.includes('aksesori') || lower.includes('rig')) {
+      return { icon: Video, color: '#0284C7', bg: '#F0F9FF', border: '#BAE6FD', label: 'Tripod & Aksesori' };
+    }
+    if (lower.includes('ruang') || lower.includes('studio')) {
+      return { icon: Layers, color: '#DC2626', bg: '#FEF2F2', border: '#FECACA', label: 'Ruang Studio' };
+    }
+    return { icon: Layers, color: '#475569', bg: '#F8FAFC', border: '#E2E8F0', label: cat };
+  };
+
+  // Filter Alat berdasarkan pencarian dan kategori terpilih
   const filteredAssets = equipment.filter((eq) => {
     const q = searchQuery.toLowerCase();
-    return (
+    const matchesSearch = (
       (eq.nama || '').toLowerCase().includes(q) ||
       (eq.kode || '').toLowerCase().includes(q) ||
+      (eq.kategori || '').toLowerCase().includes(q) ||
       (eq.kondisiFisik || '').toLowerCase().includes(q) ||
       (eq.spesifikasi || '').toLowerCase().includes(q)
     );
+    const matchesCategory = activeCategoryFilter === 'Semua' || eq.kategori === activeCategoryFilter;
+    return matchesSearch && matchesCategory;
   });
 
-  const handleOpenAddModal = () => {
+  // Kategori-kategori yang tersedia dalam sistem
+  const allAvailableCategories = Array.from(
+    new Set([
+      ...STANDARD_CATEGORIES,
+      ...equipment.map((e) => e.kategori).filter(Boolean)
+    ])
+  );
+
+  // Pengelompokan alat berdasarkan kategori
+  const groupedByCategoryAssets = filteredAssets.reduce((acc, item) => {
+    const cat = item.kategori || 'Peralatan Umum';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {});
+
+  const handleOpenAddModal = (presetKategori) => {
     setEditingAssetId(null);
     setKode(`EQ-${String(equipment.length + 1).padStart(2, '0')}`);
     setNama('');
+    const targetCat = typeof presetKategori === 'string' && presetKategori !== 'Semua' ? presetKategori : 'Kamera';
+    setKategori(targetCat);
+    setCustomKategori('');
     setKondisiFisik('Sangat Baik');
     setSpesifikasi('');
     setIsAssetModalOpen(true);
@@ -66,6 +132,14 @@ export const InventoryMasterTab = () => {
     setEditingAssetId(item.id);
     setKode(item.kode || item.id);
     setNama(item.nama);
+    const isStandard = STANDARD_CATEGORIES.includes(item.kategori);
+    if (isStandard) {
+      setKategori(item.kategori || 'Kamera');
+      setCustomKategori('');
+    } else {
+      setKategori('Lainnya');
+      setCustomKategori(item.kategori || '');
+    }
     setKondisiFisik(item.kondisiFisik || 'Sangat Baik');
     setSpesifikasi(item.spesifikasi || '');
     setIsAssetModalOpen(true);
@@ -78,11 +152,15 @@ export const InventoryMasterTab = () => {
       return;
     }
 
+    const finalKategori = kategori === 'Lainnya'
+      ? (customKategori.trim() || 'Peralatan Umum')
+      : kategori;
+
     if (editingAssetId) {
       updateEquipment(editingAssetId, {
         kode: kode || `EQ-${String(equipment.length + 1).padStart(2, '0')}`,
         nama: nama.trim(),
-        kategori: 'Peralatan',
+        kategori: finalKategori,
         kondisiFisik: kondisiFisik.trim(),
         spesifikasi: spesifikasi.trim(),
         baterai: null,
@@ -92,7 +170,7 @@ export const InventoryMasterTab = () => {
       addEquipment({
         kode: `EQ-${String(equipment.length + 1).padStart(2, '0')}`,
         nama: nama.trim(),
-        kategori: 'Peralatan',
+        kategori: finalKategori,
         kondisiFisik: kondisiFisik.trim(),
         spesifikasi: spesifikasi.trim(),
         baterai: null,
@@ -238,7 +316,7 @@ export const InventoryMasterTab = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {/* Search Input */}
             <div style={{ position: 'relative' }}>
               <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -252,16 +330,91 @@ export const InventoryMasterTab = () => {
               />
             </div>
 
+            {/* View Mode Toggle: Grouped vs Flat */}
+            <button
+              type="button"
+              className={`btn btn-sm ${groupByCategory ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setGroupByCategory(!groupByCategory)}
+              title={groupByCategory ? "Tampilan Dikelompokkan per Kategori (Aktif)" : "Beralih ke Tampilan Tabel Rata"}
+              style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <FolderTree size={14} />
+              <span>{groupByCategory ? 'Kelompok Kategori: Aktif' : 'Tabel Rata'}</span>
+            </button>
+
             <button
               type="button"
               className="btn btn-primary btn-sm"
-              onClick={handleOpenAddModal}
+              onClick={() => handleOpenAddModal(activeCategoryFilter)}
               id="btn-add-asset-master"
             >
               <Plus size={16} />
               <span>Tambah Alat Baru</span>
             </button>
           </div>
+        </div>
+
+        {/* Filter Tab Kategori Alat */}
+        <div style={{
+          display: 'flex',
+          gap: '0.4rem',
+          padding: '0.65rem 1.25rem',
+          background: '#F8FAFC',
+          borderBottom: '1px solid #E2E8F0',
+          overflowX: 'auto',
+          alignItems: 'center',
+          flexWrap: 'wrap'
+        }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginRight: '0.25rem' }}>
+            Kategori:
+          </span>
+          <button
+            type="button"
+            className={`btn btn-sm ${activeCategoryFilter === 'Semua' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveCategoryFilter('Semua')}
+            style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem' }}
+          >
+            <span>Semua</span>
+            <span style={{
+              marginLeft: '0.35rem',
+              padding: '1px 6px',
+              borderRadius: '9999px',
+              fontSize: '0.7rem',
+              background: activeCategoryFilter === 'Semua' ? 'rgba(255,255,255,0.25)' : '#E2E8F0',
+              color: activeCategoryFilter === 'Semua' ? '#FFFFFF' : '#475569'
+            }}>
+              {equipment.length}
+            </span>
+          </button>
+
+          {allAvailableCategories.map((cat) => {
+            const count = equipment.filter((e) => e.kategori === cat).length;
+            const meta = getCategoryMeta(cat);
+            const Icon = meta.icon;
+            const isActive = activeCategoryFilter === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                className={`btn btn-sm ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setActiveCategoryFilter(cat)}
+                style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              >
+                <Icon size={13} />
+                <span>{cat}</span>
+                <span style={{
+                  marginLeft: '0.15rem',
+                  padding: '1px 6px',
+                  borderRadius: '9999px',
+                  fontSize: '0.7rem',
+                  background: isActive ? 'rgba(255,255,255,0.25)' : '#E2E8F0',
+                  color: isActive ? '#FFFFFF' : '#475569'
+                }}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Master Table atau Empty State */}
@@ -272,71 +425,233 @@ export const InventoryMasterTab = () => {
               Database Alat Studio Masih Kosong
             </h4>
             <p style={{ fontSize: '0.85rem', maxWidth: '520px', margin: '0 auto 1.25rem' }}>
-              Belum ada data alat studio. Silakan klik tombol di bawah untuk menambah data alat.
+              Belum ada data alat studio. Silakan klik tombol di bawah untuk menambah data alat berdasarkan kategori (Kamera, Lensa, Audio, Lighting, Tripod/Aksesori, Ruang Studio).
             </p>
             <button
               type="button"
               className="btn btn-primary"
-              onClick={handleOpenAddModal}
+              onClick={() => handleOpenAddModal('Kamera')}
             >
               <Plus size={16} />
               <span>Tambah Alat Pertama</span>
             </button>
           </div>
+        ) : filteredAssets.length === 0 ? (
+          <div style={{ padding: '3rem 2rem', textAlign: 'center', background: '#F8FAFC', borderRadius: '10px', color: '#64748B' }}>
+            <Search size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.25rem' }}>
+              Tidak Ada Alat Ditemukan
+            </h4>
+            <p style={{ fontSize: '0.825rem', color: '#64748B' }}>
+              Tidak ada data alat yang cocok dengan kata kunci atau kategori yang dipilih.
+            </p>
+          </div>
+        ) : groupByCategory ? (
+          /* TAMPILAN DIKELOMPOKKAN PER KATEGORI */
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.25rem' }}>
+            {Object.keys(groupedByCategoryAssets).map((catName) => {
+              const items = groupedByCategoryAssets[catName];
+              const meta = getCategoryMeta(catName);
+              const CatIcon = meta.icon;
+
+              return (
+                <div key={catName} style={{
+                  background: '#FFFFFF',
+                  border: `1px solid ${meta.border}`,
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+                }}>
+                  {/* Category Header Banner */}
+                  <div style={{
+                    background: meta.bg,
+                    borderBottom: `1px solid ${meta.border}`,
+                    padding: '0.75rem 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '6px',
+                        background: '#FFFFFF',
+                        border: `1px solid ${meta.border}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: meta.color
+                      }}>
+                        <CatIcon size={16} />
+                      </div>
+                      <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                        {catName}
+                      </h4>
+                      <span style={{
+                        fontSize: '0.725rem',
+                        fontWeight: 700,
+                        color: meta.color,
+                        background: '#FFFFFF',
+                        padding: '2px 8px',
+                        borderRadius: '9999px',
+                        border: `1px solid ${meta.border}`
+                      }}>
+                        {items.length} Unit
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleOpenAddModal(catName)}
+                      style={{ fontSize: '0.725rem', padding: '0.25rem 0.6rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                    >
+                      <Plus size={13} />
+                      <span>Tambah di {catName}</span>
+                    </button>
+                  </div>
+
+                  {/* Table per Category */}
+                  <div className="table-container" style={{ margin: 0 }}>
+                    <table className="custom-table">
+                      <thead>
+                        <tr>
+                          <th>Nama Alat</th>
+                          <th>Kondisi Fisik</th>
+                          <th>Keterangan Alat</th>
+                          <th>Status</th>
+                          <th style={{ textAlign: 'right' }}>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map((item) => (
+                          <tr key={item.id}>
+                            <td>
+                              <strong style={{ fontSize: '0.9rem', color: '#0F172A' }}>{item.nama}</strong>
+                              <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+                                {item.kode || item.id}
+                              </div>
+                            </td>
+                            <td>
+                              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>
+                                {item.kondisiFisik || 'Baik'}
+                              </span>
+                            </td>
+                            <td style={{ maxWidth: '340px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.4 }}>
+                              {item.spesifikasi || '-'}
+                            </td>
+                            <td>
+                              <StatusBadge status={item.status} />
+                            </td>
+                            <td style={{ textAlign: 'right' }}>
+                              <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary btn-sm"
+                                  onClick={() => handleOpenEditModal(item)}
+                                  title="Edit Data Alat"
+                                >
+                                  <Edit size={13} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => handleDeleteAsset(item.id)}
+                                  title="Hapus Data Alat"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         ) : (
+          /* TAMPILAN TABEL RATA (FLAT TABLE) */
           <div className="table-container">
             <table className="custom-table">
               <thead>
                 <tr>
                   <th>Nama Alat</th>
+                  <th>Kategori</th>
                   <th>Kondisi Fisik</th>
                   <th>Keterangan Alat</th>
                   <th>Status</th>
-                  <th>Aksi</th>
+                  <th style={{ textAlign: 'right' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredAssets.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <strong style={{ fontSize: '0.9rem' }}>{item.nama}</strong>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
-                        {item.kode || item.id}
-                      </div>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>
-                        {item.kondisiFisik || 'Baik'}
-                      </span>
-                    </td>
-                    <td style={{ maxWidth: '340px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.4 }}>
-                      {item.spesifikasi || '-'}
-                    </td>
-                    <td>
-                      <StatusBadge status={item.status} />
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        <button
-                          type="button"
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleOpenEditModal(item)}
-                          title="Edit Data Alat"
-                        >
-                          <Edit size={13} />
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleDeleteAsset(item.id)}
-                          title="Hapus Data Alat"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {filteredAssets.map((item) => {
+                  const meta = getCategoryMeta(item.kategori);
+                  const CatIcon = meta.icon;
+                  return (
+                    <tr key={item.id}>
+                      <td>
+                        <strong style={{ fontSize: '0.9rem' }}>{item.nama}</strong>
+                        <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+                          {item.kode || item.id}
+                        </div>
+                      </td>
+                      <td>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          color: meta.color,
+                          background: meta.bg,
+                          border: `1px solid ${meta.border}`,
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem'
+                        }}>
+                          <CatIcon size={12} />
+                          <span>{item.kategori || 'Peralatan'}</span>
+                        </span>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>
+                          {item.kondisiFisik || 'Baik'}
+                        </span>
+                      </td>
+                      <td style={{ maxWidth: '320px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.4 }}>
+                        {item.spesifikasi || '-'}
+                      </td>
+                      <td>
+                        <StatusBadge status={item.status} />
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleOpenEditModal(item)}
+                            title="Edit Data Alat"
+                          >
+                            <Edit size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleDeleteAsset(item.id)}
+                            title="Hapus Data Alat"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -438,7 +753,7 @@ export const InventoryMasterTab = () => {
         </Modal>
       )}
 
-      {/* MODAL TAMBAH / EDIT ALAT (HANYA: NAMA ALAT, KONDISI FISIK, KETERANGAN ALAT) */}
+      {/* MODAL TAMBAH / EDIT ALAT (DIKELOMPOKKAN BERDASARKAN KATEGORI) */}
       <Modal
         isOpen={isAssetModalOpen}
         onClose={() => setIsAssetModalOpen(false)}
@@ -455,6 +770,42 @@ export const InventoryMasterTab = () => {
         }
       >
         <form onSubmit={handleSaveAsset}>
+          {/* Pilihan Kategori Alat */}
+          <div className="form-group">
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Kategori Alat *</span>
+              <span style={{ fontSize: '0.725rem', color: '#64748B', fontWeight: 500 }}>Dikelompokkan ke inventaris studio</span>
+            </label>
+            <select
+              className="form-select"
+              value={kategori}
+              onChange={(e) => setKategori(e.target.value)}
+              required
+            >
+              <option value="Kamera">📷 Kamera (Body Only / Mirrorless / DSLR)</option>
+              <option value="Lensa">🔍 Lensa (Prime / Zoom / Tele / Wide)</option>
+              <option value="Audio & Mikrofon">🎙️ Audio & Mikrofon (Wireless / Shotgun / Recorder)</option>
+              <option value="Lighting & Tata Cahaya">💡 Lighting & Tata Cahaya (LED / Softbox / Continuous)</option>
+              <option value="Tripod & Aksesori">🎬 Tripod & Aksesori (Gimbal / Rig / Stand / Memori)</option>
+              <option value="Ruang Studio">🏢 Ruang Studio (Podcast / Green Screen / Audio Suite)</option>
+              <option value="Lainnya">📦 Lainnya (Kategori Kustom...)</option>
+            </select>
+          </div>
+
+          {kategori === 'Lainnya' && (
+            <div className="form-group" style={{ animation: 'fadeIn 0.2s ease-out' }}>
+              <label className="form-label">Nama Kategori Kustom *</label>
+              <input
+                type="text"
+                className="form-input"
+                value={customKategori}
+                onChange={(e) => setCustomKategori(e.target.value)}
+                placeholder="Contoh: Drone / Teleprompter / Properti..."
+                required={kategori === 'Lainnya'}
+              />
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Nama Alat *</label>
             <input
@@ -462,19 +813,36 @@ export const InventoryMasterTab = () => {
               className="form-input"
               value={nama}
               onChange={(e) => setNama(e.target.value)}
-              placeholder="Contoh: Sony Alpha 7 IV, Lensa 24-70mm GM, Tripod E-Image..."
+              placeholder={
+                kategori === 'Kamera' ? 'Contoh: Sony Alpha 7 IV, Canon EOS R6...' :
+                kategori === 'Lensa' ? 'Contoh: Sony FE 24-70mm f/2.8 GM, Sigma 35mm f/1.4...' :
+                kategori === 'Audio & Mikrofon' ? 'Contoh: DJI Mic 2 Wireless, Rode VideoMic Pro...' :
+                kategori === 'Lighting & Tata Cahaya' ? 'Contoh: Godox SL-60W, Amaran 200d, Ring Light...' :
+                kategori === 'Ruang Studio' ? 'Contoh: Studio Podcast Utama, Studio Green Screen...' :
+                'Contoh: Tripod E-Image Heavy Duty, Gimbal DJI RS3...'
+              }
               required
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Kondisi Fisik *</label>
+            <label className="form-label">
+              {kategori === 'Kamera' ? 'Kondisi Fisik Kamera *' :
+               kategori === 'Lensa' ? 'Kondisi Fisik Lensa *' :
+               kategori === 'Audio & Mikrofon' ? 'Kondisi Fisik Audio *' :
+               kategori === 'Ruang Studio' ? 'Kondisi Fisik Ruangan *' : 'Kondisi Fisik *'}
+            </label>
             <input
               type="text"
               className="form-input"
               value={kondisiFisik}
               onChange={(e) => setKondisiFisik(e.target.value)}
-              placeholder="Contoh: Sangat Baik (100%), Mulus, Lecet pemakaian wajar..."
+              placeholder={
+                kategori === 'Kamera' ? 'Contoh: Sangat Baik, Sensor bersih tanpa jamur, Shutter normal...' :
+                kategori === 'Lensa' ? 'Contoh: Optik bening tanpa jamur/goresan, Autofokus responsif...' :
+                kategori === 'Ruang Studio' ? 'Contoh: AC dingin, Kedap suara optimal, Rapi & bersih...' :
+                'Contoh: Sangat Baik (100%), Mulus, Siap pakai...'
+              }
               required
             />
           </div>
@@ -486,7 +854,11 @@ export const InventoryMasterTab = () => {
               rows="3"
               value={spesifikasi}
               onChange={(e) => setSpesifikasi(e.target.value)}
-              placeholder="Contoh: Body only, kelengkapan tas & strap, nomor seri, catatan pemakaian..."
+              placeholder={
+                kategori === 'Kamera' ? 'Contoh: Body only, kelengkapan strap & cap sensor, nomor seri, catatan pemakaian...' :
+                kategori === 'Lensa' ? 'Contoh: Lensa mount E-mount, kelengkapan cap depan-belakang & hood, nomor seri...' :
+                'Contoh: Kelengkapan unit, tas, strap, kabel, nomor seri, catatan pemakaian...'
+              }
               required
             ></textarea>
           </div>
