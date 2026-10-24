@@ -147,19 +147,19 @@ export const StudioProvider = ({ children }) => {
         setSupabaseStatus('connecting');
 
         const { data: pcs } = await supabase.from('pc_clients').select('*');
-        if (pcs && pcs.length > 0) setPcClients(pcs);
+        if (Array.isArray(pcs) && pcs.length > 0) setPcClients(pcs);
 
         const { data: eq } = await supabase.from('equipment').select('*');
-        if (eq && eq.length > 0) setEquipment(eq);
+        if (Array.isArray(eq)) setEquipment(eq);
 
         const { data: evts } = await supabase.from('events').select('*');
-        if (evts && evts.length > 0) setEvents(evts);
+        if (Array.isArray(evts)) setEvents(evts);
 
         const { data: mems } = await supabase.from('members').select('*');
-        if (mems && mems.length > 0) setMembers(mems);
+        if (Array.isArray(mems)) setMembers(mems);
 
         const { data: loans } = await supabase.from('loan_records').select('*');
-        if (loans && loans.length > 0) setBorrowings(loans);
+        if (Array.isArray(loans)) setBorrowings(loans);
 
         setSupabaseStatus('connected');
       } catch (err) {
@@ -842,9 +842,16 @@ export const StudioProvider = ({ children }) => {
     showToast(`Data aset berhasil diperbarui.`, 'success');
   };
 
-  const deleteEquipment = (id) => {
+  const deleteEquipment = async (id) => {
     const item = equipment.find((e) => e.id === id);
     setEquipment((prev) => prev.filter((e) => e.id !== id));
+    if (supabase && isSupabaseConfigured) {
+      try {
+        await supabase.from('equipment').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Gagal menghapus aset dari Supabase:', err);
+      }
+    }
     showToast(`Aset "${item?.nama || id}" telah dihapus.`, 'warning');
   };
 
@@ -866,8 +873,15 @@ export const StudioProvider = ({ children }) => {
     showToast(`Akun ${mem.nama} (${mem.email}) [Divisi: ${memDivisi}] berhasil didaftarkan.`, 'success');
   };
 
-  const deleteMember = (id) => {
+  const deleteMember = async (id) => {
     setMembers((prev) => prev.filter((m) => m.id !== id));
+    if (supabase && isSupabaseConfigured) {
+      try {
+        await supabase.from('members').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Gagal menghapus anggota dari Supabase:', err);
+      }
+    }
     showToast(`Anggota telah dihapus.`, 'warning');
   };
 
