@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { 
+  FileText,
   Camera, 
+  Search,
   Monitor, 
   ShieldCheck, 
   User, 
-  RotateCcw, 
-  Clock, 
   LogIn,
   LogOut,
   KeyRound,
   CheckCircle2,
-  Globe,
-  Sparkles,
-  Users
+  Users,
+  ChevronRight
 } from 'lucide-react';
 import { Modal } from './Modal';
 
@@ -21,85 +20,79 @@ export const TopNavbar = () => {
   const { 
     currentRole, 
     setCurrentRole, 
+    publicTab,
+    setPublicTab,
     currentUser, 
     switchOrLoginUser, 
     logoutUser,
-    clearAllData,
     pcClients,
-    isAdminEmail,
-    ADMIN_KEYWORD
+    isAdminEmail
   } = useStudio();
 
-  // Clock state
-  const [timeStr, setTimeStr] = useState('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginType, setLoginType] = useState('member'); // 'member' | 'admin'
 
-  // Form Login Akun
+  // Form State Login
   const [inputEmail, setInputEmail] = useState('');
   const [inputNama, setInputNama] = useState('');
-  const [inputKelas, setInputKelas] = useState('');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options = {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: 'Asia/Jakarta'
-      };
-      setTimeStr(new Intl.DateTimeFormat('id-ID', options).format(now) + ' WIB');
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const [inputDivisi, setInputDivisi] = useState('Editor');
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    if (!inputEmail.trim()) {
-      alert('Silakan masukkan alamat email.');
+    const email = inputEmail.trim();
+    if (!email) {
+      alert('Silakan masukkan alamat email Anda.');
       return;
     }
 
-    switchOrLoginUser({
-      email: inputEmail.trim(),
-      nama: inputNama.trim() || inputEmail.split('@')[0],
-      kelas: inputKelas.trim() || 'Kelas Anggota'
-    });
+    if (loginType === 'admin') {
+      if (!isAdminEmail(email)) {
+        alert("Akses Admin Ditolak: Email administrator wajib mengandung kata 'creativecorner' (contoh: creativecorner@gmail.com atau admin1.creativecorner@gmail.com).");
+        return;
+      }
+      switchOrLoginUser({
+        email,
+        nama: inputNama.trim() || 'Administrator Studio',
+        kelas: 'Pengelola Studio'
+      });
+      setCurrentRole('admin');
+    } else {
+      switchOrLoginUser({
+        email,
+        nama: inputNama.trim() || email.split('@')[0],
+        kelas: inputDivisi || 'Anggota Tim Studio'
+      });
+      setCurrentRole('member');
+    }
 
     setIsLoginModalOpen(false);
     setInputEmail('');
     setInputNama('');
-    setInputKelas('');
   };
 
-  const handleQuickLogin = (email, nama, kelas) => {
-    switchOrLoginUser({ email, nama, kelas });
-    setIsLoginModalOpen(false);
-    setInputEmail('');
-    setInputNama('');
-    setInputKelas('');
-  };
-
-  const activePCs = pcClients.filter((p) => p.status === 'Aktif').length;
   const isUserAdmin = currentUser && isAdminEmail(currentUser.email);
+  const activePCs = pcClients.filter((p) => p.status === 'Aktif').length;
 
   return (
     <header className="top-navbar">
       {/* Brand & Logo */}
-      <div className="brand-section">
+      <div 
+        className="brand-section" 
+        onClick={() => { setCurrentRole('public'); setPublicTab('form'); }}
+        style={{ cursor: 'pointer' }}
+        title="Kembali ke Beranda Peminjaman"
+      >
         <div style={{
-          width: '42px',
-          height: '42px',
-          background: 'rgba(255, 255, 255, 0.95)',
+          width: '40px',
+          height: '40px',
+          background: '#FFFFFF',
           borderRadius: '10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '3px',
-          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.2)'
+          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+          flexShrink: 0
         }}>
           <img 
             src="/logo-creative-corner.png" 
@@ -109,110 +102,128 @@ export const TopNavbar = () => {
         </div>
         <div>
           <div className="brand-title">Creative Corner</div>
-          <div className="brand-subtitle">Sistem Manajemen Studio Terpadu</div>
+          <div className="brand-subtitle">Studio Multimedia & Produksi Kreatif</div>
         </div>
       </div>
 
-      {/* Role / View Switcher (Dibagi 2 Versi Utama + Kiosk & Admin) */}
-      <nav className="role-switcher-container" aria-label="Pengalih Tampilan Antarmuka">
-        {/* VERSI 1: PUBLIK / BUKAN ANGGOTA (TANPA LOGIN) */}
+      {/* Navigasi Utama */}
+      <nav className="role-switcher-container" aria-label="Navigasi Utama Studio">
+        {/* Link 1: Formulir Peminjaman */}
         <button
-          id="btn-switch-public"
-          className={`role-switcher-btn ${currentRole === 'public' ? 'active' : ''}`}
-          onClick={() => setCurrentRole('public')}
-          title="Beralih ke Versi Publik (Tanpa Email) untuk Bukan Anggota yang meminjam alat/ruang"
-        >
-          <Globe size={15} />
-          <span>Versi Publik (Tanpa Login)</span>
-        </button>
-
-        {/* VERSI 2: ANGGOTA CREATIVE CORNER (PERLU LOGIN) */}
-        <button
-          id="btn-switch-member"
-          className={`role-switcher-btn ${currentRole === 'member' ? 'active' : ''}`}
+          id="nav-peminjaman"
+          className={`role-switcher-btn ${currentRole === 'public' && publicTab === 'form' ? 'active' : ''}`}
           onClick={() => {
-            if (!currentUser) {
-              setIsLoginModalOpen(true);
-            } else {
-              setCurrentRole('member');
-            }
+            setCurrentRole('public');
+            setPublicTab('form');
           }}
-          title="Beralih ke Portal Anggota Creative Corner (Perlu Login Email)"
+          title="Layanan Peminjaman Alat & Ruang Studio (Tanpa Perlu Login)"
         >
-          <Users size={15} />
-          <span>Portal Anggota Tim</span>
+          <FileText size={15} />
+          <span>Formulir Peminjaman</span>
         </button>
 
-        {/* KLIEN PC KIOSK STUDIO */}
+        {/* Link 2: Katalog Fasilitas */}
         <button
-          id="btn-switch-kiosk"
+          id="nav-katalog"
+          className={`role-switcher-btn ${currentRole === 'public' && publicTab === 'katalog' ? 'active' : ''}`}
+          onClick={() => {
+            setCurrentRole('public');
+            setPublicTab('katalog');
+          }}
+          title="Katalog Ketersediaan Kamera, Lighting, Audio & Ruangan"
+        >
+          <Camera size={15} />
+          <span>Katalog Fasilitas</span>
+        </button>
+
+        {/* Link 3: Lacak Status Resi */}
+        <button
+          id="nav-lacak-resi"
+          className={`role-switcher-btn ${currentRole === 'public' && publicTab === 'status' ? 'active' : ''}`}
+          onClick={() => {
+            setCurrentRole('public');
+            setPublicTab('status');
+          }}
+          title="Cek Status Pengajuan & Resi Peminjaman Anda"
+        >
+          <Search size={15} />
+          <span>Lacak Resi</span>
+        </button>
+
+        {/* Link 4: Klien PC Kiosk */}
+        <button
+          id="nav-kiosk"
           className={`role-switcher-btn ${currentRole === 'kiosk' ? 'active' : ''}`}
           onClick={() => setCurrentRole('kiosk')}
-          title="Beralih ke Klien PC Creative Corner (Mode Kiosk)"
+          title="Mode Kiosk PC Workstation Studio"
         >
           <Monitor size={15} />
-          <span>Klien PC Kiosk</span>
+          <span>PC Kiosk</span>
           {activePCs > 0 && (
             <span style={{
               background: '#10B981',
               color: '#FFFFFF',
-              fontSize: '0.7rem',
+              fontSize: '0.675rem',
               padding: '1px 6px',
               borderRadius: '9999px',
-              marginLeft: '4px'
+              fontWeight: 700
             }}>
               {activePCs} Aktif
             </span>
           )}
         </button>
 
-        {/* PORTAL PENGELOLA / ADMIN */}
-        <button
-          id="btn-switch-admin"
-          className={`role-switcher-btn ${currentRole === 'admin' ? 'active' : ''}`}
-          onClick={() => {
-            if (!currentUser || !isUserAdmin) {
-              setIsLoginModalOpen(true);
-            } else {
-              setCurrentRole('admin');
-            }
-          }}
-          title="Beralih ke Portal Pengelola / Admin (Khusus Email mengandung 'creativecorner')"
-        >
-          <ShieldCheck size={15} />
-          <span>Portal Pengelola / Admin</span>
-        </button>
+        {/* Link 5: Portal Anggota (Jika Login sebagai Anggota) */}
+        {currentUser && !isUserAdmin && (
+          <button
+            id="nav-member-portal"
+            className={`role-switcher-btn ${currentRole === 'member' ? 'active' : ''}`}
+            onClick={() => setCurrentRole('member')}
+            title="Papan Tugas & Jadwal Piket Anggota"
+          >
+            <Users size={15} />
+            <span>Portal Anggota</span>
+          </button>
+        )}
+
+        {/* Link 6: Panel Pengelola (Jika Login sebagai Admin) */}
+        {currentUser && isUserAdmin && (
+          <button
+            id="nav-admin-portal"
+            className={`role-switcher-btn ${currentRole === 'admin' ? 'active' : ''}`}
+            onClick={() => setCurrentRole('admin')}
+            title="Pusat Kendali Administrator Studio"
+          >
+            <ShieldCheck size={15} />
+            <span>Panel Pengelola</span>
+          </button>
+        )}
       </nav>
 
-      {/* Top Navbar Right Tools & Login */}
+      {/* Sisi Kanan: Status Akun & Tombol Masuk */}
       <div className="top-navbar-right">
-        {/* Status Akun & Tombol Ganti / Masuk Akun */}
         {currentUser ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <button
-              type="button"
-              onClick={() => setIsLoginModalOpen(true)}
+            <div 
               style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '9999px',
                 padding: '0.35rem 0.85rem',
                 color: '#FFFFFF',
-                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.45rem',
-                fontSize: '0.785rem'
+                gap: '0.5rem',
+                fontSize: '0.8rem'
               }}
-              title="Klik untuk mengganti akun pengguna"
             >
               {isUserAdmin ? (
                 <ShieldCheck size={15} color="#93C5FD" />
               ) : (
                 <User size={15} color="#A7F3D0" />
               )}
-              <span style={{ maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {currentUser.email}
+              <span style={{ maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {currentUser.nama || currentUser.email}
               </span>
               <span style={{
                 fontSize: '0.675rem',
@@ -224,7 +235,7 @@ export const TopNavbar = () => {
               }}>
                 {isUserAdmin ? 'Admin' : 'Anggota'}
               </span>
-            </button>
+            </div>
 
             <button
               type="button"
@@ -236,161 +247,251 @@ export const TopNavbar = () => {
                 color: '#FECACA',
                 padding: '0.35rem 0.65rem'
               }}
-              title="Keluar dari sesi login (Kembali ke Versi Publik)"
+              title="Keluar dari sesi akun"
             >
               <LogOut size={13} />
-              <span style={{ fontSize: '0.725rem' }}>Keluar</span>
+              <span style={{ fontSize: '0.75rem' }}>Keluar</span>
             </button>
           </div>
         ) : (
           <button
             type="button"
-            onClick={() => setIsLoginModalOpen(true)}
-            className="btn btn-primary btn-sm"
+            onClick={() => {
+              setLoginType('member');
+              setIsLoginModalOpen(true);
+            }}
+            className="btn btn-secondary btn-sm"
             style={{
-              background: '#2563EB',
-              borderColor: '#3B82F6',
-              padding: '0.35rem 0.85rem',
-              fontSize: '0.785rem'
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderColor: 'rgba(255, 255, 255, 0.25)',
+              color: '#FFFFFF',
+              padding: '0.4rem 0.95rem',
+              fontSize: '0.8rem',
+              borderRadius: '9999px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem'
             }}
           >
             <LogIn size={14} />
-            <span>Login Akun Anggota / Admin</span>
+            <span>Masuk Tim Studio</span>
           </button>
         )}
-
-        {/* Live Clock */}
-        <div className="live-clock-badge" title="Waktu Nyata Server Creative Corner (WIB)">
-          <Clock size={14} />
-          <span>{timeStr || '10:45:00 WIB'}</span>
-        </div>
-
-        {/* Kosongkan Seluruh Data (Zero Data Reset) */}
-        <button
-          className="btn btn-secondary btn-sm"
-          style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderColor: 'rgba(255, 255, 255, 0.2)',
-            color: '#FFFFFF',
-            padding: '0.35rem 0.75rem'
-          }}
-          onClick={clearAllData}
-          title="Kosongkan seluruh data studio agar admin dapat mengisi dari awal"
-        >
-          <RotateCcw size={14} />
-          <span style={{ fontSize: '0.75rem' }}>Kosongkan Data</span>
-        </button>
       </div>
 
-      {/* MODAL GANTI / MASUK AKUN EMAIL */}
+      {/* MODAL MASUK AKUN ANGGOTA / ADMIN */}
       {isLoginModalOpen && (
         <Modal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
-          title="Masuk Akun Creative Corner (Versi Login)"
+          title="Masuk Akun Studio Creative Corner"
           footer={
             <>
-              <button type="button" className="btn btn-secondary" onClick={() => setIsLoginModalOpen(false)}>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setIsLoginModalOpen(false)}
+              >
                 Batal
               </button>
-              <button type="button" className="btn btn-primary" onClick={handleLoginSubmit}>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={handleLoginSubmit}
+              >
                 <LogIn size={15} />
                 <span>Masuk Sekarang</span>
               </button>
             </>
           }
         >
+          {/* Tab Pilihan Jenis Akun */}
+          <div style={{
+            display: 'flex',
+            background: '#F1F5F9',
+            padding: '4px',
+            borderRadius: '10px',
+            marginBottom: '1.25rem',
+            gap: '4px'
+          }}>
+            <button
+              type="button"
+              onClick={() => setLoginType('member')}
+              style={{
+                flex: 1,
+                padding: '0.55rem',
+                border: 'none',
+                borderRadius: '8px',
+                background: loginType === 'member' ? '#FFFFFF' : 'transparent',
+                color: loginType === 'member' ? '#0F172A' : '#64748B',
+                fontWeight: loginType === 'member' ? 700 : 500,
+                fontSize: '0.825rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                boxShadow: loginType === 'member' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Users size={15} color={loginType === 'member' ? '#059669' : '#64748B'} />
+              <span>Anggota Tim Studio</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLoginType('admin')}
+              style={{
+                flex: 1,
+                padding: '0.55rem',
+                border: 'none',
+                borderRadius: '8px',
+                background: loginType === 'admin' ? '#FFFFFF' : 'transparent',
+                color: loginType === 'admin' ? '#0F172A' : '#64748B',
+                fontWeight: loginType === 'admin' ? 700 : 500,
+                fontSize: '0.825rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                boxShadow: loginType === 'admin' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.2s'
+              }}
+            >
+              <ShieldCheck size={15} color={loginType === 'admin' ? '#1E3A8A' : '#64748B'} />
+              <span>Administrator Studio</span>
+            </button>
+          </div>
+
           <form onSubmit={handleLoginSubmit}>
-            {/* Banner Aturan Email Admin */}
+            {loginType === 'member' ? (
+              <>
+                <div style={{
+                  background: '#F0FDF4',
+                  border: '1px solid #BBF7D0',
+                  borderRadius: '8px',
+                  padding: '0.75rem 1rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.8rem',
+                  color: '#166534',
+                  lineHeight: '1.5'
+                }}>
+                  Untuk anggota tim Creative Corner (Public Relation, Editor, Desain Grafis, Content Creator, Admin) guna melihat papan tugas liputan dan roster piket harian.
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Alamat Email Anggota *</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={inputEmail}
+                    onChange={(e) => setInputEmail(e.target.value)}
+                    placeholder="nama@gmail.com / siswa@sekolah.sch.id"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Nama Lengkap (Opsional)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={inputNama}
+                    onChange={(e) => setInputNama(e.target.value)}
+                    placeholder="Contoh: Muhammad Rizky"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Divisi di Creative Corner</label>
+                  <select
+                    className="form-select"
+                    value={inputDivisi}
+                    onChange={(e) => setInputDivisi(e.target.value)}
+                  >
+                    <option value="Editor">Editor</option>
+                    <option value="Desain Grafis">Desain Grafis</option>
+                    <option value="Content Creator">Content Creator</option>
+                    <option value="Public Relation">Public Relation</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{
+                  background: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
+                  borderRadius: '8px',
+                  padding: '0.75rem 1rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.8rem',
+                  color: '#1E3A8A',
+                  lineHeight: '1.5'
+                }}>
+                  <div style={{ fontWeight: 700, marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <KeyRound size={14} />
+                    <span>Ketentuan Akun Administrator:</span>
+                  </div>
+                  Email admin wajib mengandung kata <strong>creativecorner</strong> (contoh: <code>creativecorner@gmail.com</code> atau <code>admin1.creativecorner@gmail.com</code>).
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Alamat Email Administrator *</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={inputEmail}
+                    onChange={(e) => setInputEmail(e.target.value)}
+                    placeholder="creativecorner@gmail.com"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Nama Penanggung Jawab (Opsional)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={inputNama}
+                    onChange={(e) => setInputNama(e.target.value)}
+                    placeholder="Contoh: Koordinator Pembina Studio"
+                  />
+                </div>
+              </>
+            )}
+
             <div style={{
-              background: '#EFF6FF',
-              border: '1px solid #BFDBFE',
-              borderRadius: '8px',
-              padding: '0.85rem 1rem',
-              marginBottom: '1.25rem',
-              fontSize: '0.825rem',
-              color: '#1E3A8A'
+              marginTop: '1.25rem',
+              paddingTop: '0.85rem',
+              borderTop: '1px solid #E2E8F0',
+              fontSize: '0.775rem',
+              color: '#64748B',
+              textAlign: 'center'
             }}>
-              <div style={{ fontWeight: 800, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <KeyRound size={16} />
-                <span>Aturan Hak Akses Akun:</span>
-              </div>
-              <ul style={{ paddingLeft: '1.2rem', margin: 0, lineHeight: '1.5' }}>
-                <li>
-                  <strong>Akun Pengelola / Admin:</strong> Hanya bisa diakses dengan email yang mengandung kata <code>creativecorner</code> (contoh: <code>admin1.creativecorner@gmail.com</code>).
-                </li>
-                <li>
-                  <strong>Akun Anggota Creative Corner:</strong> Masuk dengan email pribadi / sekolah (contoh: <code>siswa@gmail.com</code> atau <code>member@sch.id</code>).
-                </li>
-                <li>
-                  <strong>Bukan Anggota Studio:</strong> Tidak perlu login! Silakan gunakan <em>Versi Publik (Tanpa Login)</em> untuk meminjam alat.
-                </li>
-              </ul>
-            </div>
-
-            {/* Quick Demo Login Presets */}
-            <div style={{ marginBottom: '1.25rem' }}>
-              <label className="form-label" style={{ fontSize: '0.775rem', color: '#64748B' }}>
-                Tombol Cepat Pengujian:
-              </label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.75rem', justifyContent: 'center', background: '#F8FAFC' }}
-                  onClick={() => handleQuickLogin('admin1.creativecorner@gmail.com', 'Admin Creative Corner', 'Pengelola Studio')}
-                >
-                  <ShieldCheck size={14} color="#1E3A8A" />
-                  <span>Admin (admin1.creativecorner@...)</span>
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.75rem', justifyContent: 'center', background: '#F8FAFC' }}
-                  onClick={() => handleQuickLogin('anggota@creativecorner.sch.id', 'Siswa Anggota', 'XII Multimedia 1')}
-                >
-                  <User size={14} color="#059669" />
-                  <span>Anggota (anggota@...)</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Alamat Email Pengguna *</label>
-              <input
-                type="email"
-                className="form-input"
-                value={inputEmail}
-                onChange={(e) => setInputEmail(e.target.value)}
-                placeholder="Contoh: admin1.creativecorner@gmail.com"
-                required
-              />
-              <div className="form-hint">
-                Jika email mengandung kata <code>creativecorner</code>, Anda otomatis masuk sebagai Admin.
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Nama Lengkap (Opsional)</label>
-              <input
-                type="text"
-                className="form-input"
-                value={inputNama}
-                onChange={(e) => setInputNama(e.target.value)}
-                placeholder="Contoh: Budi Santoso"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Kelas / Jabatan (Opsional)</label>
-              <input
-                type="text"
-                className="form-input"
-                value={inputKelas}
-                onChange={(e) => setInputKelas(e.target.value)}
-                placeholder="Contoh: XII Multimedia 2 / Koordinator Studio"
-              />
+              Bukan anggota tim studio dan hanya ingin meminjam alat?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginModalOpen(false);
+                  setCurrentRole('public');
+                  setPublicTab('form');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#2563EB',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  padding: 0
+                }}
+              >
+                Gunakan Formulir Peminjaman Mandiri (Tanpa Login)
+              </button>
             </div>
           </form>
         </Modal>

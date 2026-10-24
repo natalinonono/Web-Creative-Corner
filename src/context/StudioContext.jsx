@@ -40,13 +40,25 @@ export const StudioProvider = ({ children }) => {
     return email.toLowerCase().trim().includes('creativecorner');
   };
 
-  // Akun Pengguna Aktif yang Sedang Masuk
+  // Akun Pengguna Aktif yang Sedang Masuk (Default null agar tidak ada email dummy aktif)
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-    return saved ? JSON.parse(saved) : DEFAULT_ADMIN_USER;
+    if (!saved) return null;
+    try {
+      const parsed = JSON.parse(saved);
+      // Bersihkan jika tersimpan akun default demo lama
+      if (parsed?.email === 'admin.studio@creativecorner.com' || parsed?.email === 'admin@creativecorner.com') {
+        localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+        return null;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
   });
 
-  // Tampilan Antarmuka Aktif ('admin' | 'member' | 'kiosk' | 'public')
+  // Tampilan Antarmuka Aktif ('public' | 'member' | 'kiosk' | 'admin')
+  // Default pertama kali membuka web adalah 'public' (Formulir Peminjaman Mandiri Tanpa Login)
   const [currentRole, setCurrentRole] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -54,10 +66,19 @@ export const StudioProvider = ({ children }) => {
       if (modeParam === 'kiosk' || params.get('kiosk') || params.get('pc')) {
         return 'kiosk';
       }
+      if (modeParam === 'admin') return 'admin';
+      if (modeParam === 'member') return 'member';
+      if (modeParam === 'public') return 'public';
     }
     const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_ROLE);
-    return saved || 'admin'; // Mulai dari Portal Pengelola agar Admin langsung bisa input data
+    if (!saved || saved === 'admin') {
+      return 'public';
+    }
+    return saved;
   });
+
+  // Tab aktif pada portal publik ('form' | 'katalog' | 'status')
+  const [publicTab, setPublicTab] = useState('form');
 
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.MEMBERS);
@@ -253,7 +274,11 @@ export const StudioProvider = ({ children }) => {
   // SIMPAN STATE KE LOCALSTORAGE
   // -------------------------------------------------------------
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
+    if (currentUser) {
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    }
   }, [currentUser]);
 
   useEffect(() => {
@@ -932,6 +957,8 @@ export const StudioProvider = ({ children }) => {
         currentUser,
         currentRole,
         setCurrentRole,
+        publicTab,
+        setPublicTab,
         switchOrLoginUser,
         logoutUser,
         submitPublicLoan,

@@ -56,22 +56,13 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
         </button>
       </form>
 
-      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem', display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          className="btn btn-secondary btn-sm"
-          onClick={() => {
-            setEmailInput('admin1.creativecorner@gmail.com');
-          }}
-        >
-          Isi: admin1.creativecorner@gmail.com
-        </button>
+      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem', display: 'flex', justifyContent: 'center' }}>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
           onClick={onGoPublic}
         >
-          Beralih ke Versi Publik (Tanpa Login)
+          Kembali ke Formulir Peminjaman (Tanpa Login)
         </button>
       </div>
     </div>
@@ -135,23 +126,13 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
         </button>
       </form>
 
-      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem', display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          className="btn btn-secondary btn-sm"
-          onClick={() => {
-            setEmailInput('anggota@creativecorner.sch.id');
-            setNamaInput('Siswa Anggota Tim');
-          }}
-        >
-          Isi Akun Demo Anggota
-        </button>
+      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem', display: 'flex', justifyContent: 'center' }}>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
           onClick={onGoPublic}
         >
-          Saya Bukan Anggota (Pinjam Tanpa Login)
+          Bukan Anggota? Buka Formulir Peminjaman (Tanpa Login)
         </button>
       </div>
     </div>

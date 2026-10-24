@@ -14,11 +14,12 @@ import {
   Monitor, 
   FileText,
   Users,
-  AlertTriangle
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 
 export const AdminPortal = () => {
-  const { borrowings, pcClients, events, equipment, members, isSupabaseConfigured } = useStudio();
+  const { borrowings, pcClients, events, equipment, members, isSupabaseConfigured, clearAllData } = useStudio();
   const [activeTab, setActiveTab] = useState('inventory'); // default ke inventory agar admin langsung dapat input data
 
   // Hitung notifikasi untuk tab
@@ -145,6 +146,27 @@ export const AdminPortal = () => {
               {activePCCount} / 6
             </div>
           </div>
+
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            style={{
+              borderColor: '#CBD5E1',
+              color: '#64748B',
+              fontSize: '0.75rem',
+              alignSelf: 'center',
+              padding: '0.5rem 0.85rem'
+            }}
+            onClick={() => {
+              if (window.confirm('PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh data studio agar dapat mengisi inventaris dan agenda dari awal? Tindakan ini tidak dapat dibatalkan.')) {
+                clearAllData();
+              }
+            }}
+            title="Kosongkan data studio agar admin dapat mengisi dari awal"
+          >
+            <RotateCcw size={13} />
+            <span>Reset Data</span>
+          </button>
         </div>
       </div>
 
