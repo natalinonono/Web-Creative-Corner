@@ -953,41 +953,187 @@ export const InventoryMasterTab = () => {
             </div>
           )}
 
-          {/* Quick Presets Lensa Resmi */}
-          {kategori === 'Lensa' && (
-            <div style={{ marginBottom: '1rem', background: '#F5F3FF', border: '1px dashed #DDD6FE', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
-              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#6D28D9', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <Eye size={13} color="#7C3AED" />
-                <span>Pilihan Tipe Mount Lensa (Klik untuk Menambahkan ke Keterangan):</span>
+          {/* Quick Presets Lensa Resmi & Pemilih Tipe Mount Interaktif */}
+          {kategori === 'Lensa' && (() => {
+            const lensText = `${(nama || '').toLowerCase()} ${(spesifikasi || '').toLowerCase()}`;
+            const isAdapterMentioned = 
+              lensText.includes('ef-m to ef') || 
+              lensText.includes('ef-m ke ef') || 
+              lensText.includes('adapter ef-m') ||
+              lensText.includes('+ adapter');
+            
+            const isEfmActive = (lensText.includes('ef-m') || lensText.includes('efm')) && !isAdapterMentioned;
+            const isEfActive = !isEfmActive && (
+              lensText.includes('tipe ef') || 
+              lensText.includes('mount: lensa ef') || 
+              lensText.includes('lensa ef') || 
+              lensText.includes('ef-s') || 
+              lensText.includes('dslr') ||
+              (spesifikasi || '').includes('Lensa EF')
+            );
+
+            const handleToggleMount = (targetMount) => {
+              const efSpec = 'Mount: Lensa EF (Cocok untuk 250D, 1500D, & M6 II + Adapter)';
+              const efmSpec = 'Mount: Lensa EF-M (Khusus Canon EOS M6 I)';
+
+              // Bersihkan deklarasi mount sebelumnya agar tidak macet / bertumpuk
+              let clean = (spesifikasi || '')
+                .replace(/•?\s*Mount:\s*Lensa\s*(EF-M|EF)[^•\n]*/gi, '')
+                .replace(/•?\s*Tipe\s*Lensa\s*(EF-M|EF)[^•\n]*/gi, '')
+                .replace(/•?\s*Lensa\s*Canon\s*(EF-M|EF)\s*(\/|Mirrorless)[^•\n]*/gi, '')
+                .trim()
+                .replace(/^•\s*/, '')
+                .replace(/\s*•$/, '');
+
+              const newMount = targetMount === 'EF' ? efSpec : efmSpec;
+              if (!clean) {
+                setSpesifikasi(newMount);
+              } else {
+                setSpesifikasi(`${clean} • ${newMount}`);
+              }
+            };
+
+            return (
+              <div style={{ marginBottom: '1rem', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0.75rem' }}>
+                <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#1E293B', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.3rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Eye size={14} color="#7C3AED" />
+                    <span>Pilihan Tipe Mount Lensa (Klik untuk Menentukan Kompatibilitas):</span>
+                  </div>
+                  {(isEfActive || isEfmActive) && (
+                    <span style={{ fontSize: '0.675rem', fontWeight: 600, color: isEfActive ? '#4338CA' : '#7E22CE', background: isEfActive ? '#EEF2FF' : '#FAF5FF', padding: '0.1rem 0.45rem', borderRadius: '10px', border: `1px solid ${isEfActive ? '#C7D2FE' : '#E9D5FF'}` }}>
+                      ✓ Terpilih: {isEfActive ? 'Tipe EF (DSLR)' : 'Tipe EF-M (Mirrorless)'}
+                    </span>
+                  )}
+                </div>
+
+                {/* 2 Opsi Tombol Mount dengan Indikator Aktif */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                  {/* Tipe EF */}
+                  <button
+                    type="button"
+                    onClick={() => handleToggleMount('EF')}
+                    style={{
+                      textAlign: 'left',
+                      background: isEfActive ? '#EEF2FF' : '#FFFFFF',
+                      border: isEfActive ? '2px solid #6366F1' : '1px solid #CBD5E1',
+                      borderRadius: '6px',
+                      padding: '0.5rem 0.65rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      boxShadow: isEfActive ? '0 0 0 2px rgba(99, 102, 241, 0.15)' : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.15rem' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.775rem', color: isEfActive ? '#4338CA' : '#1E293B' }}>
+                        Tipe Lensa EF (DSLR)
+                      </span>
+                      {isEfActive ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.625rem', background: '#4F46E5', color: '#FFFFFF', padding: '0.1rem 0.35rem', borderRadius: '3px', fontWeight: 700 }}>
+                          <CheckCircle size={10} /> AKTIF
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.625rem', color: '#64748B' }}>Pilih</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.675rem', color: isEfActive ? '#3730A3' : '#64748B', lineHeight: 1.3 }}>
+                      Cocok untuk: <strong>250D, 1500D, & M6 II</strong> (pakai adapter)
+                    </div>
+                  </button>
+
+                  {/* Tipe EF-M */}
+                  <button
+                    type="button"
+                    onClick={() => handleToggleMount('EF-M')}
+                    style={{
+                      textAlign: 'left',
+                      background: isEfmActive ? '#FAF5FF' : '#FFFFFF',
+                      border: isEfmActive ? '2px solid #A855F7' : '1px solid #CBD5E1',
+                      borderRadius: '6px',
+                      padding: '0.5rem 0.65rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      boxShadow: isEfmActive ? '0 0 0 2px rgba(168, 85, 247, 0.15)' : 'none'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.15rem' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.775rem', color: isEfmActive ? '#7E22CE' : '#1E293B' }}>
+                        Tipe Lensa EF-M (Mirrorless)
+                      </span>
+                      {isEfmActive ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.625rem', background: '#9333EA', color: '#FFFFFF', padding: '0.1rem 0.35rem', borderRadius: '3px', fontWeight: 700 }}>
+                          <CheckCircle size={10} /> AKTIF
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.625rem', color: '#64748B' }}>Pilih</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.675rem', color: isEfmActive ? '#6B21A8' : '#64748B', lineHeight: 1.3 }}>
+                      Khusus untuk: <strong>Canon EOS M6 I</strong> (tanpa adapter)
+                    </div>
+                  </button>
+                </div>
+
+                {/* Preset Cepat Lensa Studio Resmi */}
+                <div style={{ borderTop: '1px dashed #E2E8F0', paddingTop: '0.45rem' }}>
+                  <div style={{ fontSize: '0.675rem', fontWeight: 600, color: '#64748B', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Sparkles size={11} color="#7C3AED" />
+                    <span>Preset Lensa Resmi Studio (Klik untuk Auto-Isi):</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                      onClick={() => {
+                        setNama('Lensa Canon EF 50mm f/1.8 STM');
+                        setKondisiFisik('100% Optik Bersih & Normal');
+                        setSpesifikasi('Mount: Lensa EF (Cocok untuk EOS 250D, 1500D, & M6 II + Adapter)');
+                      }}
+                    >
+                      Canon EF 50mm f/1.8 (Tipe EF)
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                      onClick={() => {
+                        setNama('Lensa Canon EF-S 18-55mm f/3.5-5.6 IS II');
+                        setKondisiFisik('100% Optik Bersih & Normal');
+                        setSpesifikasi('Mount: Lensa EF (Cocok untuk EOS 250D, 1500D, & M6 II + Adapter)');
+                      }}
+                    >
+                      Canon EF-S 18-55mm (Tipe EF)
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                      onClick={() => {
+                        setNama('Lensa Canon EF-M 15-45mm f/3.5-6.3 IS STM');
+                        setKondisiFisik('100% Optik Bersih & Normal');
+                        setSpesifikasi('Mount: Lensa EF-M (Khusus Canon EOS M6 I)');
+                      }}
+                    >
+                      Canon EF-M 15-45mm (Tipe EF-M)
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                      onClick={() => {
+                        setNama('Lensa Canon EF-M 22mm f/2 STM');
+                        setKondisiFisik('100% Optik Bersih & Normal');
+                        setSpesifikasi('Mount: Lensa EF-M (Khusus Canon EOS M6 I)');
+                      }}
+                    >
+                      Canon EF-M 22mm (Tipe EF-M)
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
-                  onClick={() => {
-                    if (!spesifikasi.includes('EF')) {
-                      setSpesifikasi(prev => prev ? `${prev} • Mount: Lensa EF (Cocok untuk 250D, 1500D, & M6 II + Adapter)` : 'Mount: Lensa EF (Cocok untuk 250D, 1500D, & M6 II + Adapter)');
-                    }
-                  }}
-                >
-                  + Tipe Lensa EF (250D, 1500D, M6 II)
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
-                  onClick={() => {
-                    if (!spesifikasi.includes('EF-M')) {
-                      setSpesifikasi(prev => prev ? `${prev} • Mount: Lensa EF-M (Khusus Canon EOS M6 I)` : 'Mount: Lensa EF-M (Khusus Canon EOS M6 I)');
-                    }
-                  }}
-                >
-                  + Tipe Lensa EF-M (Khusus M6 I)
-                </button>
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Quick Presets Memory Card Resmi */}
           {kategori === 'Memory Card' && (

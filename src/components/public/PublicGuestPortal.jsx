@@ -32,7 +32,7 @@ import {
   BatteryCharging,
   HardDrive
 } from 'lucide-react';
-import { getCameraRequirements, isEquipmentCompatible } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isEquipmentCompatible, isCameraItem } from '../../utils/cameraCompatibility';
 
 export const PublicGuestPortal = () => {
   const { 
@@ -133,11 +133,28 @@ export const PublicGuestPortal = () => {
     reader.readAsDataURL(file);
   };
 
-  // Toggle pilihan alat
+  // Toggle pilihan alat (dengan pembersihan otomatis jika memilih kamera yang tidak kompatibel dengan alat yang sudah tercentang)
   const handleToggleEquipment = (id) => {
-    setSelectedEquipmentIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setSelectedEquipmentIds((prev) => {
+      const willSelect = !prev.includes(id);
+      if (!willSelect) {
+        return prev.filter((item) => item !== id);
+      }
+
+      const targetItem = equipment.find((e) => e.id === id);
+      // Jika yang dipilih adalah kamera, bersihkan alat (lensa/baterai) yang sudah tercentang sebelumnya jika tidak kompatibel
+      if (targetItem && isCameraItem(targetItem)) {
+        const req = getCameraRequirements(targetItem);
+        const filteredPrev = prev.filter((prevId) => {
+          const prevItem = equipment.find((e) => e.id === prevId);
+          if (!prevItem) return true;
+          return isEquipmentCompatible(prevItem, req);
+        });
+        return [...filteredPrev, id];
+      }
+
+      return [...prev, id];
+    });
   };
 
   // Submit Peminjaman
@@ -189,13 +206,9 @@ export const PublicGuestPortal = () => {
     }
   };
 
-  // Deteksi Kamera yang dipilih saat peminjaman untuk kompatibilitas otomatis
+  // Deteksi Kamera yang dipilih saat peminjaman untuk kompatibilitas otomatis (Aman, tidak akan salah mendeteksi lensa/baterai)
   const selectedCamera = equipment.find(
-    (eq) => selectedEquipmentIds.includes(eq.id) && (
-      (eq.kategori || '').toLowerCase().includes('kamera') || 
-      (eq.nama || '').toLowerCase().includes('canon') ||
-      (eq.nama || '').toLowerCase().includes('eos')
-    )
+    (eq) => selectedEquipmentIds.includes(eq.id) && isCameraItem(eq)
   );
   const cameraReq = selectedCamera ? getCameraRequirements(selectedCamera) : null;
 

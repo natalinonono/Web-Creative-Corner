@@ -17,7 +17,7 @@ import {
   Sparkles,
   BatteryCharging
 } from 'lucide-react';
-import { getCameraRequirements, isEquipmentCompatible } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isEquipmentCompatible, isCameraItem } from '../../utils/cameraCompatibility';
 
 export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledEquipmentIds = [] }) => {
   const { equipment, activeMemberId, members, submitPickupInspection } = useStudio();
@@ -35,11 +35,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
 
   // Deteksi Kamera yang dipilih saat inspeksi pengambilan untuk kompatibilitas otomatis
   const selectedCamera = equipment.find(
-    (eq) => selectedEqIds.includes(eq.id) && (
-      (eq.kategori || '').toLowerCase().includes('kamera') || 
-      (eq.nama || '').toLowerCase().includes('canon') ||
-      (eq.nama || '').toLowerCase().includes('eos')
-    )
+    (eq) => selectedEqIds.includes(eq.id) && isCameraItem(eq)
   );
   const cameraReq = selectedCamera ? getCameraRequirements(selectedCamera) : null;
 
@@ -128,9 +124,26 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
   };
 
   const handleToggleEq = (id) => {
-    setSelectedEqIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelectedEqIds((prev) => {
+      const willSelect = !prev.includes(id);
+      if (!willSelect) {
+        return prev.filter((i) => i !== id);
+      }
+
+      const targetItem = equipment.find((e) => e.id === id);
+      // Jika memilih kamera, bersihkan alat yang tidak kompatibel yang sebelumnya sempat tercentang
+      if (targetItem && isCameraItem(targetItem)) {
+        const req = getCameraRequirements(targetItem);
+        const filteredPrev = prev.filter((prevId) => {
+          const prevItem = equipment.find((e) => e.id === prevId);
+          if (!prevItem) return true;
+          return isEquipmentCompatible(prevItem, req);
+        });
+        return [...filteredPrev, id];
+      }
+
+      return [...prev, id];
+    });
   };
 
   const handleSubmit = (e) => {
