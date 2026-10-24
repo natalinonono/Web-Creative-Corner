@@ -13,8 +13,11 @@ import {
   FileText, 
   FileCheck, 
   Eye, 
-  Trash2 
+  Trash2,
+  Sparkles,
+  BatteryCharging
 } from 'lucide-react';
+import { getCameraRequirements, isEquipmentCompatible } from '../../utils/cameraCompatibility';
 
 export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledEquipmentIds = [] }) => {
   const { equipment, activeMemberId, members, submitPickupInspection } = useStudio();
@@ -29,6 +32,24 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       ? targetEvent.peralatanTerkunciIds
       : []
   );
+
+  // Deteksi Kamera yang dipilih saat inspeksi pengambilan untuk kompatibilitas otomatis
+  const selectedCamera = equipment.find(
+    (eq) => selectedEqIds.includes(eq.id) && (
+      (eq.kategori || '').toLowerCase().includes('kamera') || 
+      (eq.nama || '').toLowerCase().includes('canon') ||
+      (eq.nama || '').toLowerCase().includes('eos')
+    )
+  );
+  const cameraReq = selectedCamera ? getCameraRequirements(selectedCamera) : null;
+
+  // Filter: Lensa & Baterai yang tidak kompatibel TIDAK MUNCUL
+  const displayedEquipment = equipment.filter((item) => {
+    if (cameraReq && !isEquipmentCompatible(item, cameraReq)) {
+      return false;
+    }
+    return true;
+  });
 
   // Form Fields (Hanya: Kondisi Fisik dan Keterangan Alat)
   const [kondisiFisik, setKondisiFisik] = useState('Baik, mulus tanpa lecet');
@@ -287,7 +308,41 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
 
         {/* Pemilihan Alat yang Diambil */}
         <div className="form-group">
-          <label className="form-label">Pilih Unit Peralatan / Ruang yang Diperiksa & Diambil *</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label className="form-label" style={{ margin: 0 }}>
+              Pilih Unit Peralatan / Ruang yang Diperiksa & Diambil *
+            </label>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A' }}>
+              {selectedEqIds.length} Unit Dipilih
+            </span>
+          </div>
+
+          {/* Banner Kompatibilitas Otomatis Jika Kamera Dipilih */}
+          {cameraReq && (
+            <div style={{
+              marginBottom: '0.65rem',
+              padding: '0.55rem 0.75rem',
+              background: '#EFF6FF',
+              border: '1.5px solid #3B82F6',
+              borderRadius: '6px',
+              fontSize: '0.75rem',
+              color: '#1E40AF',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <Sparkles size={16} color="#2563EB" style={{ flexShrink: 0 }} />
+              <div style={{ flex: 1, lineHeight: 1.4 }}>
+                <span style={{ fontWeight: 800, color: '#1E3A8A' }}>Filter Kompatibilitas Otomatis:</span> Kamera <strong>{selectedCamera.nama}</strong> terpilih.{' '}
+                {cameraReq.needsAdapter ? 'Wajib pakai Adapter EF-M to EF & Lensa EF (DSLR).' : `Menggunakan ${cameraReq.lensLabel}.`}{' '}
+                Baterai: <strong>{cameraReq.batteryLabel}</strong>.
+                <span style={{ color: '#2563EB', display: 'block', fontSize: '0.685rem', marginTop: '1px', fontStyle: 'italic' }}>
+                  * Lensa dan baterai yang tidak kompatibel dengan kamera ini otomatis disembunyikan.
+                </span>
+              </div>
+            </div>
+          )}
+
           {equipment.length === 0 ? (
             <div style={{ padding: '1rem', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '8px', fontSize: '0.825rem', color: '#64748B' }}>
               Belum ada inventaris alat/ruang yang terdaftar. Administrator dapat menambahkan unit terlebih dahulu di Portal Pengelola.
@@ -297,25 +352,29 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
               gap: '0.65rem',
-              maxHeight: '170px',
+              maxHeight: '180px',
               overflowY: 'auto',
               border: '1px solid #E2E8F0',
               borderRadius: '8px',
               padding: '0.75rem',
               background: '#FAFAFA'
             }}>
-              {equipment.map((item) => {
+              {displayedEquipment.map((item) => {
                 const isSelected = selectedEqIds.includes(item.id);
+                const itemCat = (item.kategori || '').toLowerCase();
+                const itemReq = itemCat.includes('kamera') || item.nama.toLowerCase().includes('canon') ? getCameraRequirements(item) : null;
+                const isBattery = itemCat.includes('baterai') || item.nama.toLowerCase().includes('baterai') || item.nama.toLowerCase().includes('battery');
+
                 return (
                   <label 
                     key={item.id} 
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       gap: '0.5rem',
-                      padding: '0.45rem 0.65rem',
+                      padding: '0.5rem 0.65rem',
                       background: isSelected ? '#EFF6FF' : '#FFFFFF',
-                      border: isSelected ? '1px solid #3B82F6' : '1px solid #E2E8F0',
+                      border: isSelected ? '1.5px solid #3B82F6' : '1px solid #E2E8F0',
                       borderRadius: '6px',
                       cursor: 'pointer',
                       fontSize: '0.825rem'
@@ -325,11 +384,57 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleEq(item.id)}
-                      style={{ accentColor: '#1E3A8A' }}
+                      style={{ marginTop: '3px', accentColor: '#1E3A8A' }}
                     />
-                    <div>
-                      <strong style={{ color: '#0F172A' }}>{item.nama}</strong>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.nama}
+                      </strong>
                       <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori} • {item.lokasiRak}</div>
+
+                      {/* Badge Panduan Kompatibilitas Kamera */}
+                      {itemReq && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '3px' }}>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
+                            color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
+                            fontWeight: 700,
+                            width: 'fit-content'
+                          }}>
+                            🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
+                          </span>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            background: itemReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
+                            color: itemReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
+                            fontWeight: 700,
+                            width: 'fit-content'
+                          }}>
+                            🔋 {itemReq.batteryLabel}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Badge Kategori Baterai */}
+                      {isBattery && (
+                        <div style={{ marginTop: '3px' }}>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            background: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                            color: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                            fontWeight: 700
+                          }}>
+                            🔋 {(item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </label>
                 );

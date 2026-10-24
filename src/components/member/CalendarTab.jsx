@@ -29,7 +29,7 @@ export const CalendarTab = () => {
   const [selectedEventForPickup, setSelectedEventForPickup] = useState(null);
 
   // Filter kategori
-  const categories = ['Semua', 'Event Sekolah', 'Kamera', 'Lensa', 'Aksesori', 'Ruang Studio', 'Piket Studio'];
+  const categories = ['Semua', 'Event Sekolah', 'Kamera', 'Lensa', 'Baterai', 'Aksesori', 'Ruang Studio', 'Piket Studio'];
 
   // Penugasan dokumentasi pribadi siswa aktif
   const myPersonalAssignments = [];
@@ -283,7 +283,7 @@ export const CalendarTab = () => {
         )}
 
         {/* Tabel Ketersediaan Unit */}
-        {(activeCategoryFilter === 'Semua' || activeCategoryFilter === 'Kamera' || activeCategoryFilter === 'Lensa' || activeCategoryFilter === 'Aksesori' || activeCategoryFilter === 'Ruang Studio') && (
+        {(activeCategoryFilter === 'Semua' || activeCategoryFilter === 'Kamera' || activeCategoryFilter === 'Lensa' || activeCategoryFilter === 'Baterai' || activeCategoryFilter === 'Aksesori' || activeCategoryFilter === 'Ruang Studio') && (
           <div>
             <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1E3A8A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Sparkles size={16} /> Status Ketersediaan Unit Studio

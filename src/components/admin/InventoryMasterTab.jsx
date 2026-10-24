@@ -22,12 +22,17 @@ import {
   Video,
   Sliders,
   FolderTree,
-  Tag
+  Tag,
+  BatteryCharging,
+  Battery,
+  Sparkles
 } from 'lucide-react';
+import { getCameraRequirements, CAMERA_RULES } from '../../utils/cameraCompatibility';
 
 export const STANDARD_CATEGORIES = [
   'Kamera',
   'Lensa',
+  'Baterai',
   'Audio & Mikrofon',
   'Lighting & Tata Cahaya',
   'Tripod & Aksesori',
@@ -70,6 +75,9 @@ export const InventoryMasterTab = () => {
     }
     if (lower.includes('lensa')) {
       return { icon: Eye, color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE', label: 'Lensa' };
+    }
+    if (lower.includes('baterai') || lower.includes('battery')) {
+      return { icon: BatteryCharging, color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', label: 'Baterai' };
     }
     if (lower.includes('audio') || lower.includes('mic')) {
       return { icon: Mic, color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', label: 'Audio & Mikrofon' };
@@ -527,13 +535,42 @@ export const InventoryMasterTab = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {items.map((item) => (
+                        {items.map((item) => {
+                          const isCam = (item.kategori || '').toLowerCase().includes('kamera') || (item.nama || '').toLowerCase().includes('canon');
+                          const camReq = isCam ? getCameraRequirements(item) : null;
+                          return (
                           <tr key={item.id}>
                             <td>
                               <strong style={{ fontSize: '0.9rem', color: '#0F172A' }}>{item.nama}</strong>
                               <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
                                 {item.kode || item.id}
                               </div>
+                              {camReq && (
+                                <div style={{ marginTop: '0.35rem', display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                                  <span style={{
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    color: camReq.lensType === 'EF-M' ? '#6D28D9' : '#1E40AF',
+                                    background: camReq.lensType === 'EF-M' ? '#F5F3FF' : '#EFF6FF',
+                                    border: `1px solid ${camReq.lensType === 'EF-M' ? '#DDD6FE' : '#BFDBFE'}`,
+                                    padding: '1px 6px',
+                                    borderRadius: '4px'
+                                  }}>
+                                    🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
+                                  </span>
+                                  <span style={{
+                                    fontSize: '0.7rem',
+                                    fontWeight: 700,
+                                    color: camReq.batteryType === 'LP-E10' ? '#92400E' : '#065F46',
+                                    background: camReq.batteryType === 'LP-E10' ? '#FEF3C7' : '#ECFDF5',
+                                    border: `1px solid ${camReq.batteryType === 'LP-E10' ? '#FDE68A' : '#A7F3D0'}`,
+                                    padding: '1px 6px',
+                                    borderRadius: '4px'
+                                  }}>
+                                    🔋 {camReq.batteryLabel}
+                                  </span>
+                                </div>
+                              )}
                             </td>
                             <td>
                               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>
@@ -567,7 +604,8 @@ export const InventoryMasterTab = () => {
                               </div>
                             </td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -593,6 +631,8 @@ export const InventoryMasterTab = () => {
                 {filteredAssets.map((item) => {
                   const meta = getCategoryMeta(item.kategori);
                   const CatIcon = meta.icon;
+                  const isCam = (item.kategori || '').toLowerCase().includes('kamera') || (item.nama || '').toLowerCase().includes('canon');
+                  const camReq = isCam ? getCameraRequirements(item) : null;
                   return (
                     <tr key={item.id}>
                       <td>
@@ -600,6 +640,32 @@ export const InventoryMasterTab = () => {
                         <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
                           {item.kode || item.id}
                         </div>
+                        {camReq && (
+                          <div style={{ marginTop: '0.35rem', display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                            <span style={{
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              color: camReq.lensType === 'EF-M' ? '#6D28D9' : '#1E40AF',
+                              background: camReq.lensType === 'EF-M' ? '#F5F3FF' : '#EFF6FF',
+                              border: `1px solid ${camReq.lensType === 'EF-M' ? '#DDD6FE' : '#BFDBFE'}`,
+                              padding: '1px 6px',
+                              borderRadius: '4px'
+                            }}>
+                              🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
+                            </span>
+                            <span style={{
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              color: camReq.batteryType === 'LP-E10' ? '#92400E' : '#065F46',
+                              background: camReq.batteryType === 'LP-E10' ? '#FEF3C7' : '#ECFDF5',
+                              border: `1px solid ${camReq.batteryType === 'LP-E10' ? '#FDE68A' : '#A7F3D0'}`,
+                              padding: '1px 6px',
+                              borderRadius: '4px'
+                            }}>
+                              🔋 {camReq.batteryLabel}
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td>
                         <span style={{
@@ -784,6 +850,7 @@ export const InventoryMasterTab = () => {
             >
               <option value="Kamera">📷 Kamera (Body Only / Mirrorless / DSLR)</option>
               <option value="Lensa">🔍 Lensa (Prime / Zoom / Tele / Wide)</option>
+              <option value="Baterai">🔋 Baterai (LP-E17, LP-E10, dll.)</option>
               <option value="Audio & Mikrofon">🎙️ Audio & Mikrofon (Wireless / Shotgun / Recorder)</option>
               <option value="Lighting & Tata Cahaya">💡 Lighting & Tata Cahaya (LED / Softbox / Continuous)</option>
               <option value="Tripod & Aksesori">🎬 Tripod & Aksesori (Gimbal / Rig / Stand / Memori)</option>
@@ -806,6 +873,138 @@ export const InventoryMasterTab = () => {
             </div>
           )}
 
+          {/* Quick Presets Kamera Resmi */}
+          {kategori === 'Kamera' && (
+            <div style={{ marginBottom: '1rem', background: '#EFF6FF', border: '1px dashed #93C5FD', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#1E40AF', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <Sparkles size={13} color="#2563EB" />
+                <span>Preset Kamera Resmi Creative Corner (Klik untuk Auto-Isi):</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('CANON EOS M6 II');
+                    setKondisiFisik('Sangat Baik');
+                    setSpesifikasi('WAJIB PAKAI ADAPTER EOS EF-M TO EOS EF DAN CUMA BISA PAKAI LENSA DSLR (EF). Baterai: LP-E17.');
+                  }}
+                >
+                  Canon EOS M6 II (Adapter + EF)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('CANON EOS M6 I');
+                    setKondisiFisik('Sangat Baik');
+                    setSpesifikasi('PAKAI LENSA EOS EF-M (Mirrorless Murni). Baterai: LP-E17.');
+                  }}
+                >
+                  Canon EOS M6 I (EF-M)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('CANON EOS 250D');
+                    setKondisiFisik('Sangat Baik');
+                    setSpesifikasi('PAKAI LENSA EOS EF. Baterai: LP-E17.');
+                  }}
+                >
+                  Canon EOS 250D (EF)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('CANON EOS 1500D');
+                    setKondisiFisik('Sangat Baik');
+                    setSpesifikasi('PAKAI LENSA EOS EF. Khusus Baterai LP-E10.');
+                  }}
+                >
+                  Canon EOS 1500D (EF & LP-E10)
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Quick Presets Baterai Resmi */}
+          {kategori === 'Baterai' && (
+            <div style={{ marginBottom: '1rem', background: '#ECFDF5', border: '1px dashed #A7F3D0', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#065F46', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <BatteryCharging size={13} color="#059669" />
+                <span>Preset Baterai Resmi (Klik untuk Auto-Isi):</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('Baterai Canon LP-E17');
+                    setKondisiFisik('100% Sehat & Normal');
+                    setSpesifikasi('Baterai Original Canon LP-E17 untuk Kamera EOS M6 II, EOS M6 I, dan EOS 250D.');
+                  }}
+                >
+                  Baterai LP-E17 (M6 II, M6 I, 250D)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('Baterai Canon LP-E10');
+                    setKondisiFisik('100% Sehat & Normal');
+                    setSpesifikasi('Baterai Original Canon LP-E10 khusus untuk Kamera Canon EOS 1500D.');
+                  }}
+                >
+                  Baterai LP-E10 (Khusus 1500D)
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Quick Presets Lensa Resmi */}
+          {kategori === 'Lensa' && (
+            <div style={{ marginBottom: '1rem', background: '#F5F3FF', border: '1px dashed #DDD6FE', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#6D28D9', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <Eye size={13} color="#7C3AED" />
+                <span>Pilihan Tipe Mount Lensa (Klik untuk Menambahkan ke Keterangan):</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    if (!spesifikasi.includes('EF')) {
+                      setSpesifikasi(prev => prev ? `${prev} • Mount: Lensa EF (Cocok untuk 250D, 1500D, & M6 II + Adapter)` : 'Mount: Lensa EF (Cocok untuk 250D, 1500D, & M6 II + Adapter)');
+                    }
+                  }}
+                >
+                  + Tipe Lensa EF (250D, 1500D, M6 II)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    if (!spesifikasi.includes('EF-M')) {
+                      setSpesifikasi(prev => prev ? `${prev} • Mount: Lensa EF-M (Khusus Canon EOS M6 I)` : 'Mount: Lensa EF-M (Khusus Canon EOS M6 I)');
+                    }
+                  }}
+                >
+                  + Tipe Lensa EF-M (Khusus M6 I)
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Nama Alat *</label>
             <input
@@ -814,8 +1013,9 @@ export const InventoryMasterTab = () => {
               value={nama}
               onChange={(e) => setNama(e.target.value)}
               placeholder={
-                kategori === 'Kamera' ? 'Contoh: Sony Alpha 7 IV, Canon EOS R6...' :
-                kategori === 'Lensa' ? 'Contoh: Sony FE 24-70mm f/2.8 GM, Sigma 35mm f/1.4...' :
+                kategori === 'Kamera' ? 'Contoh: CANON EOS M6 II, CANON EOS 250D...' :
+                kategori === 'Lensa' ? 'Contoh: Canon EF 50mm f/1.8 STM, Canon EF-M 15-45mm...' :
+                kategori === 'Baterai' ? 'Contoh: Baterai Canon LP-E17, Baterai Canon LP-E10...' :
                 kategori === 'Audio & Mikrofon' ? 'Contoh: DJI Mic 2 Wireless, Rode VideoMic Pro...' :
                 kategori === 'Lighting & Tata Cahaya' ? 'Contoh: Godox SL-60W, Amaran 200d, Ring Light...' :
                 kategori === 'Ruang Studio' ? 'Contoh: Studio Podcast Utama, Studio Green Screen...' :
@@ -829,6 +1029,7 @@ export const InventoryMasterTab = () => {
             <label className="form-label">
               {kategori === 'Kamera' ? 'Kondisi Fisik Kamera *' :
                kategori === 'Lensa' ? 'Kondisi Fisik Lensa *' :
+               kategori === 'Baterai' ? 'Kondisi Baterai *' :
                kategori === 'Audio & Mikrofon' ? 'Kondisi Fisik Audio *' :
                kategori === 'Ruang Studio' ? 'Kondisi Fisik Ruangan *' : 'Kondisi Fisik *'}
             </label>
@@ -840,6 +1041,7 @@ export const InventoryMasterTab = () => {
               placeholder={
                 kategori === 'Kamera' ? 'Contoh: Sangat Baik, Sensor bersih tanpa jamur, Shutter normal...' :
                 kategori === 'Lensa' ? 'Contoh: Optik bening tanpa jamur/goresan, Autofokus responsif...' :
+                kategori === 'Baterai' ? 'Contoh: 100% Sehat, Tahan lama, Tidak kembung, Normal...' :
                 kategori === 'Ruang Studio' ? 'Contoh: AC dingin, Kedap suara optimal, Rapi & bersih...' :
                 'Contoh: Sangat Baik (100%), Mulus, Siap pakai...'
               }
@@ -856,7 +1058,8 @@ export const InventoryMasterTab = () => {
               onChange={(e) => setSpesifikasi(e.target.value)}
               placeholder={
                 kategori === 'Kamera' ? 'Contoh: Body only, kelengkapan strap & cap sensor, nomor seri, catatan pemakaian...' :
-                kategori === 'Lensa' ? 'Contoh: Lensa mount E-mount, kelengkapan cap depan-belakang & hood, nomor seri...' :
+                kategori === 'Lensa' ? 'Contoh: Lensa mount EF / EF-M, kelengkapan cap depan-belakang & hood, nomor seri...' :
+                kategori === 'Baterai' ? 'Contoh: Original Canon LP-E17 untuk M6 II / 250D, atau LP-E10 untuk 1500D...' :
                 'Contoh: Kelengkapan unit, tas, strap, kabel, nomor seri, catatan pemakaian...'
               }
               required

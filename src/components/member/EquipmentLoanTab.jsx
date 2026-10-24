@@ -11,10 +11,13 @@ import {
   ClipboardCheck, 
   ShieldAlert,
   Search,
-  Plus
+  Plus,
+  BatteryCharging,
+  Sparkles
 } from 'lucide-react';
 import { PickupInspectionModal } from './PickupInspectionModal';
 import { ReturnInspectionModal } from './ReturnInspectionModal';
+import { getCameraRequirements } from '../../utils/cameraCompatibility';
 
 export const EquipmentLoanTab = () => {
   const { equipment, borrowings, activeMemberId, members } = useStudio();
@@ -176,7 +179,7 @@ export const EquipmentLoanTab = () => {
 
         {/* Tab Filter Kategori */}
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', overflowX: 'auto', flexWrap: 'wrap' }}>
-          {['Semua', 'Kamera', 'Lensa', 'Audio & Mikrofon', 'Lighting & Tata Cahaya', 'Tripod & Aksesori', 'Ruang Studio'].map((cat) => (
+          {['Semua', 'Kamera', 'Lensa', 'Baterai', 'Audio & Mikrofon', 'Lighting & Tata Cahaya', 'Tripod & Aksesori', 'Ruang Studio'].map((cat) => (
             <button
               key={cat}
               type="button"
@@ -194,7 +197,7 @@ export const EquipmentLoanTab = () => {
             <Camera size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
             <div style={{ fontWeight: 600, color: '#334155' }}>Katalog Inventaris Masih Kosong</div>
             <p style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
-              Belum ada kamera, lensa, aksesori, atau ruang studio terdaftar. Administrator dapat menambahkan unit melalui Portal Pengelola.
+              Belum ada kamera, lensa, baterai, aksesori, atau ruang studio terdaftar. Administrator dapat menambahkan unit melalui Portal Pengelola.
             </p>
           </div>
         ) : (
@@ -203,6 +206,10 @@ export const EquipmentLoanTab = () => {
             const isLockedByEvent = tool.status === 'Terkunci Event';
             const isBorrowed = tool.status === 'Dipinjam';
             const isAvailable = tool.status === 'Tersedia';
+
+            const itemCat = (tool.kategori || '').toLowerCase();
+            const toolReq = itemCat.includes('kamera') || tool.nama.toLowerCase().includes('canon') ? getCameraRequirements(tool) : null;
+            const isBattery = itemCat.includes('baterai') || tool.nama.toLowerCase().includes('baterai') || tool.nama.toLowerCase().includes('battery');
 
             return (
               <div 
@@ -226,9 +233,54 @@ export const EquipmentLoanTab = () => {
                     <StatusBadge status={tool.status} />
                   </div>
 
-                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.5rem' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
                     {tool.nama}
                   </h4>
+
+                  {/* Badge Panduan Kompatibilitas Kamera */}
+                  {toolReq && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.65rem' }}>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        background: toolReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
+                        color: toolReq.needsAdapter ? '#92400E' : '#1E40AF',
+                        fontWeight: 700,
+                        width: 'fit-content'
+                      }}>
+                        🔍 {toolReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : toolReq.lensLabel}
+                      </span>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        background: toolReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
+                        color: toolReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
+                        fontWeight: 700,
+                        width: 'fit-content'
+                      }}>
+                        🔋 {toolReq.batteryLabel}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Badge Kategori Baterai */}
+                  {isBattery && (
+                    <div style={{ marginBottom: '0.65rem' }}>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        background: (tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                        color: (tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                        fontWeight: 700,
+                        width: 'fit-content'
+                      }}>
+                        🔋 {(tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                      </span>
+                    </div>
+                  )}
 
                   <div style={{ fontSize: '0.825rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1rem' }}>
                     <div>🔧 <strong>Kondisi Fisik:</strong> {tool.kondisiFisik || 'Baik'}</div>

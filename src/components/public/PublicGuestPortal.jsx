@@ -28,8 +28,10 @@ import {
   Phone,
   Layers,
   ArrowRight,
-  X
+  X,
+  BatteryCharging
 } from 'lucide-react';
+import { getCameraRequirements, isEquipmentCompatible } from '../../utils/cameraCompatibility';
 
 export const PublicGuestPortal = () => {
   const { 
@@ -186,27 +188,49 @@ export const PublicGuestPortal = () => {
     }
   };
 
-  // Filter kategori unik
-  const categories = ['Semua', 'Kamera & Lensa', 'Audio & Mic', 'Lighting & Rig', 'Ruangan'];
+  // Deteksi Kamera yang dipilih saat peminjaman untuk kompatibilitas otomatis
+  const selectedCamera = equipment.find(
+    (eq) => selectedEquipmentIds.includes(eq.id) && (
+      (eq.kategori || '').toLowerCase().includes('kamera') || 
+      (eq.nama || '').toLowerCase().includes('canon') ||
+      (eq.nama || '').toLowerCase().includes('eos')
+    )
+  );
+  const cameraReq = selectedCamera ? getCameraRequirements(selectedCamera) : null;
+
+  // Filter kategori unik (Termasuk Baterai)
+  const categories = ['Semua', 'Kamera', 'Lensa', 'Baterai', 'Audio & Mic', 'Lighting & Rig', 'Ruangan'];
 
   const filteredEquipment = equipment.filter((eq) => {
+    // 1. FILTER KOMPATIBILITAS OTOMATIS: Jika kamera terpilih, sembunyikan lensa dan baterai yang tidak kompatibel!
+    if (cameraReq && !isEquipmentCompatible(eq, cameraReq)) {
+      return false;
+    }
+
     const matchesSearch = 
       eq.nama.toLowerCase().includes(catalogSearch.toLowerCase()) ||
       (eq.kategori && eq.kategori.toLowerCase().includes(catalogSearch.toLowerCase())) ||
-      (eq.lokasiRak && eq.lokasiRak.toLowerCase().includes(catalogSearch.toLowerCase()));
+      (eq.lokasiRak && eq.lokasiRak.toLowerCase().includes(catalogSearch.toLowerCase())) ||
+      (eq.spesifikasi && eq.spesifikasi.toLowerCase().includes(catalogSearch.toLowerCase()));
     
     if (selectedCategory === 'Semua') return matchesSearch;
-    if (selectedCategory === 'Kamera & Lensa') {
-      return matchesSearch && (eq.kategori?.includes('Kamera') || eq.kategori?.includes('Lensa'));
+    if (selectedCategory === 'Kamera') {
+      return matchesSearch && (eq.kategori || '').toLowerCase().includes('kamera');
+    }
+    if (selectedCategory === 'Lensa') {
+      return matchesSearch && (eq.kategori || '').toLowerCase().includes('lensa');
+    }
+    if (selectedCategory === 'Baterai') {
+      return matchesSearch && ((eq.kategori || '').toLowerCase().includes('baterai') || (eq.kategori || '').toLowerCase().includes('battery'));
     }
     if (selectedCategory === 'Audio & Mic') {
-      return matchesSearch && (eq.kategori?.includes('Audio') || eq.kategori?.includes('Mic'));
+      return matchesSearch && ((eq.kategori || '').toLowerCase().includes('audio') || (eq.kategori || '').toLowerCase().includes('mic'));
     }
     if (selectedCategory === 'Lighting & Rig') {
-      return matchesSearch && (eq.kategori?.includes('Light') || eq.kategori?.includes('Aksesori') || eq.kategori?.includes('Tripod'));
+      return matchesSearch && ((eq.kategori || '').toLowerCase().includes('light') || (eq.kategori || '').toLowerCase().includes('aksesori') || (eq.kategori || '').toLowerCase().includes('tripod'));
     }
     if (selectedCategory === 'Ruangan') {
-      return matchesSearch && (eq.kategori?.includes('Ruang') || eq.kategori?.includes('Studio'));
+      return matchesSearch && ((eq.kategori || '').toLowerCase().includes('ruang') || (eq.kategori || '').toLowerCase().includes('studio'));
     }
     return matchesSearch;
   });
@@ -525,6 +549,40 @@ export const PublicGuestPortal = () => {
                   </div>
                 </div>
 
+                {/* Banner Kompatibilitas Otomatis Jika Kamera Dipilih */}
+                {cameraReq && (
+                  <div style={{
+                    marginBottom: '0.75rem',
+                    padding: '0.65rem 0.85rem',
+                    background: '#EFF6FF',
+                    border: '1.5px solid #3B82F6',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                    color: '#1E40AF',
+                    fontSize: '0.775rem'
+                  }}>
+                    <Sparkles size={16} color="#2563EB" style={{ flexShrink: 0 }} />
+                    <div style={{ flex: 1, lineHeight: 1.45 }}>
+                      <div style={{ fontWeight: 800, color: '#1E3A8A' }}>
+                        Filter Kompatibilitas Otomatis Aktif ({selectedCamera.nama}):
+                      </div>
+                      <div style={{ marginTop: '2px', color: '#1E40AF' }}>
+                        {cameraReq.needsAdapter ? (
+                          <>🔍 Wajib pakai <strong>Adapter EF-M to EF</strong> dan hanya bisa pakai <strong>Lensa EF (DSLR)</strong>.</>
+                        ) : (
+                          <>🔍 Menggunakan <strong>{cameraReq.lensLabel}</strong>.</>
+                        )}
+                        {' '}🔋 Baterai: <strong>{cameraReq.batteryLabel}</strong>.
+                      </div>
+                      <div style={{ color: '#2563EB', fontSize: '0.7rem', marginTop: '2px', fontStyle: 'italic' }}>
+                        * Lensa dan baterai yang tidak kompatibel dengan kamera ini otomatis disembunyikan.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Grid Peralatan */}
                 {equipment.length === 0 ? (
                   <div style={{ padding: '2rem', background: '#F8FAFC', border: '1px dashed #CBD5E1', borderRadius: '10px', textAlign: 'center', color: '#64748B', fontSize: '0.85rem' }}>
@@ -546,6 +604,11 @@ export const PublicGuestPortal = () => {
                     {filteredEquipment.map((item) => {
                       const isAvailable = item.status === 'Tersedia';
                       const isSelected = selectedEquipmentIds.includes(item.id);
+
+                      // Info Kompatibilitas Item
+                      const itemCat = (item.kategori || '').toLowerCase();
+                      const itemReq = itemCat.includes('kamera') || item.nama.toLowerCase().includes('canon') ? getCameraRequirements(item) : null;
+                      const isBattery = itemCat.includes('baterai') || item.nama.toLowerCase().includes('baterai') || item.nama.toLowerCase().includes('battery');
 
                       return (
                         <div
@@ -587,6 +650,67 @@ export const PublicGuestPortal = () => {
                             <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '2px' }}>
                               {item.kategori} • {item.lokasiRak || 'Studio'}
                             </div>
+
+                            {/* Badge Panduan Kompatibilitas Kamera */}
+                            {itemReq && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px' }}>
+                                <span style={{
+                                  fontSize: '0.685rem',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
+                                  color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px',
+                                  width: 'fit-content'
+                                }}>
+                                  🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
+                                </span>
+                                <span style={{
+                                  fontSize: '0.685rem',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: itemReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
+                                  color: itemReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px',
+                                  width: 'fit-content'
+                                }}>
+                                  🔋 {itemReq.batteryLabel}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Badge Kategori Baterai */}
+                            {isBattery && (
+                              <div style={{ marginTop: '4px' }}>
+                                <span style={{
+                                  fontSize: '0.685rem',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                                  color: (item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
+                                }}>
+                                  🔋 {(item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Spesifikasi / Keterangan Alat jika ada */}
+                            {!itemReq && !isBattery && item.spesifikasi && (
+                              <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '2px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {item.spesifikasi}
+                              </div>
+                            )}
+
                             <div style={{ marginTop: '0.35rem' }}>
                               <StatusBadge status={item.status} />
                             </div>
@@ -993,16 +1117,39 @@ export const PublicGuestPortal = () => {
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <input
                 type="text"
                 className="form-input"
                 placeholder="Cari nama alat / ruangan..."
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
-                style={{ width: '240px', fontSize: '0.825rem' }}
+                style={{ width: '220px', fontSize: '0.825rem' }}
               />
             </div>
+          </div>
+
+          {/* Filter Kategori untuk Katalog */}
+          <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+            {categories.map((cat) => (
+              <button
+                key={`katalog-cat-${cat}`}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: '6px',
+                  border: selectedCategory === cat ? '1px solid #1E3A8A' : '1px solid #CBD5E1',
+                  background: selectedCategory === cat ? '#EFF6FF' : '#FFFFFF',
+                  color: selectedCategory === cat ? '#1E3A8A' : '#475569',
+                  fontSize: '0.785rem',
+                  fontWeight: selectedCategory === cat ? 700 : 500,
+                  cursor: 'pointer'
+                }}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
 
           <div style={{
@@ -1012,6 +1159,10 @@ export const PublicGuestPortal = () => {
           }}>
             {filteredEquipment.map((eq) => {
               const isAvailable = eq.status === 'Tersedia';
+              const itemCat = (eq.kategori || '').toLowerCase();
+              const itemReq = itemCat.includes('kamera') || eq.nama.toLowerCase().includes('canon') ? getCameraRequirements(eq) : null;
+              const isBattery = itemCat.includes('baterai') || eq.nama.toLowerCase().includes('baterai') || eq.nama.toLowerCase().includes('battery');
+
               return (
                 <div
                   key={eq.id}
@@ -1041,9 +1192,55 @@ export const PublicGuestPortal = () => {
                       Kode Aset: <strong>{eq.id}</strong> • Lokasi: {eq.lokasiRak || 'Studio'}
                     </div>
 
+                    {/* Badge Kompatibilitas Khusus Kamera */}
+                    {itemReq && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.65rem' }}>
+                        <span style={{
+                          fontSize: '0.7rem',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
+                          color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
+                          fontWeight: 700,
+                          width: 'fit-content'
+                        }}>
+                          🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : itemReq.lensLabel}
+                        </span>
+                        <span style={{
+                          fontSize: '0.7rem',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          background: itemReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
+                          color: itemReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
+                          fontWeight: 700,
+                          width: 'fit-content'
+                        }}>
+                          🔋 {itemReq.batteryLabel}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Badge Kategori Baterai */}
+                    {isBattery && (
+                      <div style={{ marginBottom: '0.65rem' }}>
+                        <span style={{
+                          fontSize: '0.7rem',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          background: (eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                          color: (eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                          fontWeight: 700,
+                          width: 'fit-content'
+                        }}>
+                          🔋 {(eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                        </span>
+                      </div>
+                    )}
+
                     <div style={{ fontSize: '0.775rem', color: '#334155', background: '#F8FAFC', padding: '0.5rem 0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>
                       <div><strong>Kondisi Fisik:</strong> {eq.kondisiFisik || 'Baik & Normal'}</div>
-                      <div><strong>Status Operasional:</strong> {isAvailable ? 'Siap Dipinjam' : 'Sedang Digunakan'}</div>
+                      <div><strong>Keterangan:</strong> {eq.spesifikasi || '-'}</div>
+                      <div><strong>Status:</strong> {isAvailable ? 'Siap Dipinjam' : 'Sedang Digunakan'}</div>
                     </div>
                   </div>
 
