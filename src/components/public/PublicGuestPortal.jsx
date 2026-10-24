@@ -853,17 +853,31 @@ export const PublicGuestPortal = () => {
                     <p style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.75rem' }}>
                       Format Foto (JPG, PNG, WebP) atau Berkas (PDF, DOCX) maksimal 10MB
                     </p>
-                    <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <Upload size={13} />
-                      <span>Pilih Foto / Dokumen</span>
-                      <input
-                        type="file"
-                        accept="image/*,.pdf,.doc,.docx"
-                        onChange={handleFileUpload}
-                        style={{ display: 'none' }}
-                        id="input-file-surat"
-                      />
-                    </label>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                      <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#1E3A8A' }}>
+                        <Camera size={14} />
+                        <span>Buka Kamera HP</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          onChange={handleFileUpload}
+                          style={{ display: 'none' }}
+                          id="input-camera-guest"
+                        />
+                      </label>
+                      <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <Upload size={13} />
+                        <span>Pilih Foto / Dokumen</span>
+                        <input
+                          type="file"
+                          accept="image/*,.pdf,.doc,.docx"
+                          onChange={handleFileUpload}
+                          style={{ display: 'none' }}
+                          id="input-file-surat"
+                        />
+                      </label>
+                    </div>
                   </div>
                 ) : (
                   <div style={{

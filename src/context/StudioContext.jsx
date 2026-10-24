@@ -665,7 +665,8 @@ export const StudioProvider = ({ children }) => {
     keperluan,
     batasWaktuKembali,
     inspeksiData,
-    buktiSurat
+    buktiSurat,
+    fotoBefore
   }) => {
     // 1. Ubah status peralatan jadi "Dipinjam"
     setEquipment((prev) =>
@@ -712,6 +713,8 @@ export const StudioProvider = ({ children }) => {
       .map((e) => e.nama)
       .join(', ') || 'Unit Peralatan Terpilih';
 
+    const actualFotoBefore = fotoBefore || buktiSurat || null;
+
     // 3. Catat peminjaman aktif
     const borrowingId = `BORR-${String(borrowings.length + 1).padStart(2, '0')}`;
     const newBorrowing = {
@@ -728,9 +731,11 @@ export const StudioProvider = ({ children }) => {
       batasWaktuKembali: batasWaktuKembali || '17:00',
       keperluan: keperluan || 'Penugasan Liputan Studio',
       status: 'Dipinjam',
-      buktiSurat: buktiSurat || null,
+      buktiSurat: actualFotoBefore,
+      fotoBefore: actualFotoBefore,
       inspeksiPengambilan: {
         ...inspeksiData,
+        fotoBefore: actualFotoBefore,
         tanggalInspeksi: new Date().toLocaleString('id-ID')
       },
       inspeksiPengembalian: null
@@ -946,7 +951,7 @@ export const StudioProvider = ({ children }) => {
   };
 
   // TRIGGER 4: Penyelesaian Tugas Otomatis dari Inspeksi Pengembalian (Akhir)
-  const submitReturnInspection = ({ borrowingId, returnInspectionData }) => {
+  const submitReturnInspection = ({ borrowingId, returnInspectionData, fotoAfter }) => {
     const borrowing = borrowings.find((b) => b.id === borrowingId);
     if (!borrowing) return;
 
@@ -977,12 +982,16 @@ export const StudioProvider = ({ children }) => {
       !returnInspectionData.catatanKendala.toLowerCase().includes('tidak ada')
     );
 
+    const actualFotoAfter = fotoAfter || returnInspectionData.fotoAfter || null;
+
     // 2. Set status peminjaman ke "Selesai"
     const updatedBorrowing = {
       ...borrowing,
       status: 'Selesai',
+      fotoAfter: actualFotoAfter,
       inspeksiPengembalian: {
         ...returnInspectionData,
+        fotoAfter: actualFotoAfter,
         tanggalInspeksi: new Date().toLocaleString('id-ID'),
         anomaliTerdeteksi
       }

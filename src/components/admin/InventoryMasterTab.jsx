@@ -210,10 +210,10 @@ export const InventoryMasterTab = () => {
           <div>
             <h3 className="card-title">
               <ClipboardCheck size={20} color="#1E3A8A" />
-              <span>Validasi Laporan Fisik & Surat Peminjaman (Side-by-Side)</span>
+              <span>Validasi Laporan Fisik & Komparasi Foto Before / After (Side-by-Side)</span>
             </h3>
             <div className="card-subtitle">
-              Bandingkan catatan kondisi fisik saat alat diambil vs dikembalikan, serta verifikasi kelengkapan berkas bukti surat peminjaman resmi.
+              Bandingkan catatan kondisi fisik serta foto visual alat/gear saat diambil (BEFORE) vs saat dikembalikan (AFTER) menggunakan kamera HP / galeri.
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export const InventoryMasterTab = () => {
             <ClipboardCheck size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
             <div style={{ fontWeight: 600, color: '#334155' }}>Belum Ada Laporan Fisik Peminjaman</div>
             <p style={{ fontSize: '0.8rem' }}>
-              Saat siswa mengisi Formulir Peminjaman dan Inspeksi, data komparasi fisik & bukti surat resmi akan muncul di sini untuk divalidasi.
+              Saat siswa mengisi Formulir Peminjaman dan Inspeksi, data komparasi fisik & foto Before / After akan muncul di sini untuk divalidasi.
             </p>
           </div>
         ) : (
@@ -234,7 +234,7 @@ export const InventoryMasterTab = () => {
                   <th>No. Peminjaman</th>
                   <th>Peminjam & Siswa</th>
                   <th>Peralatan</th>
-                  <th>Bukti Surat</th>
+                  <th>Foto Fisik (Before / After)</th>
                   <th>Status Pengembalian</th>
                   <th>Catatan Temuan / Anomali</th>
                   <th>Aksi Verifikasi</th>
@@ -244,6 +244,8 @@ export const InventoryMasterTab = () => {
                 {inspectableBorrowings.map((b) => {
                   const hasReturnInspection = Boolean(b.inspeksiPengembalian);
                   const hasAnomaly = b.inspeksiPengembalian?.anomaliTerdeteksi;
+                  const beforePhoto = b.fotoBefore || b.inspeksiPengambilan?.fotoBefore || b.buktiSurat;
+                  const afterPhoto = b.fotoAfter || b.inspeksiPengembalian?.fotoAfter;
 
                   return (
                     <tr key={b.id} style={{ background: hasAnomaly ? '#FFF1F2' : 'transparent' }}>
@@ -255,20 +257,50 @@ export const InventoryMasterTab = () => {
                       <td style={{ maxWidth: '240px' }}>
                         <strong>{b.peralatanNama}</strong>
                       </td>
-                      <td>
-                        {b.buktiSurat ? (
-                          <button
-                            type="button"
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => setPreviewProofModal(b.buktiSurat)}
-                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                          >
-                            <Eye size={12} />
-                            <span>Lihat Surat</span>
-                          </button>
-                        ) : (
-                          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Tanpa Berkas</span>
-                        )}
+                      <td style={{ minWidth: '150px' }}>
+                        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                          {beforePhoto ? (
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => setPreviewProofModal({
+                                name: `Foto BEFORE (Kondisi Awal): ${b.peralatanNama}`,
+                                isImage: true,
+                                dataUrl: beforePhoto.dataUrl || beforePhoto,
+                                size: beforePhoto.size || '',
+                                uploadedAt: beforePhoto.uploadedAt || b.inspeksiPengambilan?.tanggalInspeksi || b.tanggalPinjam
+                              })}
+                              style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}
+                              title="Lihat Foto Fisik Awal (BEFORE)"
+                            >
+                              <Camera size={12} />
+                              <span>Before</span>
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: '0.675rem', color: '#94A3B8' }}>-</span>
+                          )}
+
+                          {afterPhoto ? (
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => setPreviewProofModal({
+                                name: `Foto AFTER (Kondisi Kembali): ${b.peralatanNama}`,
+                                isImage: true,
+                                dataUrl: afterPhoto.dataUrl || afterPhoto,
+                                size: afterPhoto.size || '',
+                                uploadedAt: afterPhoto.uploadedAt || b.inspeksiPengembalian?.tanggalInspeksi || ''
+                              })}
+                              style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#166534', background: '#F0FDF4', borderColor: '#BBF7D0' }}
+                              title="Lihat Foto Fisik Akhir (AFTER)"
+                            >
+                              <CheckCircle size={12} />
+                              <span>After</span>
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: '0.675rem', color: '#94A3B8' }}>-</span>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <StatusBadge status={b.status} />
@@ -768,8 +800,30 @@ export const InventoryMasterTab = () => {
             <div className="inspection-column pickup">
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E3A8A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <ClipboardCheck size={18} />
-                <span>1. Kondisi Saat Diambil (Awal)</span>
+                <span>1. Kondisi Saat Diambil (BEFORE)</span>
               </div>
+
+              {/* FOTO BEFORE */}
+              {(() => {
+                const beforePhoto = selectedBorrowingForCompare.fotoBefore || selectedBorrowingForCompare.inspeksiPengambilan?.fotoBefore || selectedBorrowingForCompare.buktiSurat;
+                if (!beforePhoto) return null;
+                const src = beforePhoto.dataUrl || beforePhoto;
+                return (
+                  <div style={{ marginBottom: '0.85rem' }}>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#1E40AF', background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '2px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+                      <Camera size={11} />
+                      <span>FOTO FISIK AWAL (BEFORE)</span>
+                    </div>
+                    <div
+                      style={{ height: '150px', borderRadius: '8px', overflow: 'hidden', background: '#0F172A', cursor: 'pointer', border: '1.5px solid #CBD5E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      onClick={() => setPreviewProofModal({ name: `Foto BEFORE (Awal): ${selectedBorrowingForCompare.peralatanNama}`, isImage: true, dataUrl: src })}
+                      title="Klik untuk memperbesar foto awal (BEFORE)"
+                    >
+                      <img src={src} alt="Foto Before" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                    </div>
+                  </div>
+                );
+              })()}
 
               {selectedBorrowingForCompare.inspeksiPengambilan ? (
                 <>
@@ -793,8 +847,36 @@ export const InventoryMasterTab = () => {
             <div className="inspection-column return">
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#059669', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <CheckCircle size={18} />
-                <span>2. Kondisi Saat Dikembalikan (Akhir)</span>
+                <span>2. Kondisi Saat Dikembalikan (AFTER)</span>
               </div>
+
+              {/* FOTO AFTER */}
+              {(() => {
+                const afterPhoto = selectedBorrowingForCompare.fotoAfter || selectedBorrowingForCompare.inspeksiPengembalian?.fotoAfter;
+                if (afterPhoto) {
+                  const src = afterPhoto.dataUrl || afterPhoto;
+                  return (
+                    <div style={{ marginBottom: '0.85rem' }}>
+                      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+                        <CheckCircle size={11} />
+                        <span>FOTO FISIK PENGEMBALIAN (AFTER)</span>
+                      </div>
+                      <div
+                        style={{ height: '150px', borderRadius: '8px', overflow: 'hidden', background: '#0F172A', cursor: 'pointer', border: '1.5px solid #86EFAC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        onClick={() => setPreviewProofModal({ name: `Foto AFTER (Kembali): ${selectedBorrowingForCompare.peralatanNama}`, isImage: true, dataUrl: src })}
+                        title="Klik untuk memperbesar foto akhir (AFTER)"
+                      >
+                        <img src={src} alt="Foto After" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div style={{ padding: '0.75rem', background: '#FFFBEB', border: '1px dashed #FDE68A', borderRadius: '6px', fontSize: '0.75rem', color: '#B45309', textAlign: 'center', marginBottom: '0.75rem' }}>
+                    Belum ada foto fisik pengembalian (AFTER)
+                  </div>
+                );
+              })()}
 
               {selectedBorrowingForCompare.inspeksiPengembalian ? (
                 <>

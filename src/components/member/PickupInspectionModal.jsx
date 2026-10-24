@@ -50,26 +50,27 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
   const [keteranganAlat, setKeteranganAlat] = useState('Lengkap dan normal siap pakai');
   const [batasWaktuKembali, setBatasWaktuKembali] = useState(targetEvent?.waktuSelesai || '16:00');
 
-  // Bukti Surat Peminjaman (Foto / Dokumen)
-  const [buktiSuratFile, setBuktiSuratFile] = useState(null);
+  // Foto Kondisi Fisik Alat / Gear Sebelum Dipakai (BEFORE)
+  const [fotoBeforeFile, setFotoBeforeFile] = useState(null);
+  const [previewZoomModal, setPreviewZoomModal] = useState(null);
 
-  // Upload handler
-  const handleFileUpload = (e) => {
+  // Upload & Kamera HP Handler
+  const handlePhotoCapture = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Ukuran file maksimal 10MB.');
+    if (file.size > 15 * 1024 * 1024) {
+      alert('Ukuran foto maksimal 15MB.');
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      setBuktiSuratFile({
-        name: file.name,
+      setFotoBeforeFile({
+        name: file.name || `foto-before-${Date.now()}.jpg`,
         size: `${(file.size / 1024).toFixed(1)} KB`,
-        type: file.type || 'document',
-        isImage: file.type.startsWith('image/'),
+        type: file.type || 'image/jpeg',
+        isImage: true,
         dataUrl: event.target.result,
         uploadedAt: new Date().toLocaleString('id-ID')
       });
@@ -108,9 +109,10 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       return;
     }
 
-    if (!buktiSuratFile && !targetEvent) {
-      alert('Wajib melampirkan foto lembar surat peminjaman atau berkas dokumen perizinan resmi!');
-      return;
+    if (!fotoBeforeFile) {
+      if (!window.confirm('PERHATIAN: Anda belum melampirkan foto fisik alat sebelum diambil (BEFORE). Apakah Anda ingin melanjutkan tanpa foto bukti fisik awal?')) {
+        return;
+      }
     }
 
     submitPickupInspection({
@@ -122,7 +124,8 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       peralatanIds: selectedEqIds,
       keperluan: targetEvent ? `Liputan: ${targetEvent.judul}` : 'Peminjaman Mandiri',
       batasWaktuKembali,
-      buktiSurat: buktiSuratFile,
+      buktiSurat: fotoBeforeFile,
+      fotoBefore: fotoBeforeFile,
       inspeksiData: {
         kondisiFisik,
         keteranganAlat,
@@ -131,6 +134,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
         bateraiPersen: 100,
         kelengkapanAksesori: keteranganAlat,
         kebersihanRuang: 'Bersih',
+        fotoBefore: fotoBeforeFile,
         petugasPemeriksa: `${currentMember.nama} (Inspeksi Mandiri Siswa)`
       }
     });
@@ -391,74 +395,177 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
           />
         </div>
 
-        {/* WAJIB: BUKTI SURAT PEMINJAMAN RESMI (FOTO / DOKUMEN) */}
+        {/* DOKUMENTASI FOTO FISIK ALAT / GEAR SEBELUM DIPAKAI (BEFORE) */}
         <div className="form-group" style={{ marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <label className="form-label" style={{ margin: 0, fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <FileCheck size={18} color="#1E3A8A" />
-              <span>Bukti Surat Peminjaman / Penugasan Resmi (Foto / Dokumen) {!targetEvent && '*'}</span>
+              <Camera size={18} color="#1E3A8A" />
+              <span>Foto Fisik Alat / Gear Sebelum Dipakai (BEFORE) *</span>
             </label>
-            <span className="badge badge-rose" style={{ fontSize: '0.7rem', padding: '2px 8px' }}>
-              {targetEvent ? 'OPSIONAL (SUDAH ADA EVENT)' : 'WAJIB DILAMPIRKAN'}
+            <span className="badge badge-primary" style={{ fontSize: '0.7rem', padding: '2px 8px' }}>
+              KAMERA HP / GALERI
             </span>
           </div>
 
+          <p style={{ fontSize: '0.775rem', color: '#64748B', margin: '0 0 0.65rem 0' }}>
+            Ambil foto kondisi fisik unit alat/gear saat ini sebelum dibawa keluar studio sebagai bukti rekaman awal (BEFORE).
+          </p>
 
-          {/* Upload Input */}
-          {!buktiSuratFile ? (
+          {!fotoBeforeFile ? (
             <div style={{
               border: '2px dashed #CBD5E1',
-              borderRadius: '8px',
-              padding: '1rem',
+              borderRadius: '10px',
+              padding: '1.25rem 1rem',
               textAlign: 'center',
               background: '#FAFAFA'
             }}>
-              <Upload size={24} color="#64748B" style={{ margin: '0 auto 0.4rem' }} />
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.2rem' }}>
-                Unggah Foto Lembar Surat atau File Dokumen
+              <Camera size={30} color="#1E3A8A" style={{ margin: '0 auto 0.5rem' }} />
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.2rem' }}>
+                Ambil Foto Kondisi Alat Sebelum Digunakan (BEFORE)
               </div>
-              <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.4rem' }}>
-                <Upload size={13} />
-                <span>Pilih Foto / Dokumen</span>
-                <input
-                  type="file"
-                  accept="image/*,.pdf,.doc,.docx,.txt"
-                  onChange={handleFileUpload}
-                  style={{ display: 'none' }}
-                />
-              </label>
+              <p style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.85rem' }}>
+                Bisa langsung jepret dengan Kamera HP atau pilih foto yang sudah diambil dari galeri perangkat.
+              </p>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                {/* 1. Tombol Buka Kamera HP Langsung */}
+                <label
+                  className="btn btn-primary btn-sm"
+                  style={{
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    background: '#1E3A8A'
+                  }}
+                  id="btn-pickup-camera"
+                >
+                  <Camera size={15} />
+                  <span>Buka Kamera HP</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handlePhotoCapture}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+
+                {/* 2. Tombol Pilih dari Galeri */}
+                <label
+                  className="btn btn-secondary btn-sm"
+                  style={{
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem'
+                  }}
+                  id="btn-pickup-gallery"
+                >
+                  <Upload size={14} />
+                  <span>Pilih dari Galeri Foto</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoCapture}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
             </div>
           ) : (
             <div style={{
-              background: '#F0FDF4',
-              border: '1.5px solid #86EFAC',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
+              background: '#F0F9FF',
+              border: '1.5px solid #7DD3FC',
+              borderRadius: '10px',
+              padding: '0.85rem 1rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: '0.5rem'
+              gap: '0.75rem',
+              flexWrap: 'wrap'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <CheckCircle2 size={18} color="#16A34A" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    background: '#0F172A',
+                    flexShrink: 0,
+                    border: '1.5px solid #0284C7',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setPreviewZoomModal(fotoBeforeFile.dataUrl)}
+                  title="Klik untuk melihat foto lebih besar"
+                >
+                  <img
+                    src={fotoBeforeFile.dataUrl}
+                    alt="Foto Fisik Alat (Before)"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
                 <div>
-                  <strong style={{ fontSize: '0.8rem', color: '#166534' }}>{buktiSuratFile.name}</strong>
-                  <div style={{ fontSize: '0.7rem', color: '#15803D' }}>{buktiSuratFile.size} • Siap Dilampirkan</div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#0284C7', color: '#FFFFFF', padding: '1px 7px', borderRadius: '4px', fontSize: '0.675rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+                    <Camera size={11} />
+                    <span>Foto BEFORE (Kondisi Awal)</span>
+                  </div>
+                  <strong style={{ fontSize: '0.825rem', color: '#0369A1', display: 'block' }}>
+                    {fotoBeforeFile.name}
+                  </strong>
+                  <div style={{ fontSize: '0.725rem', color: '#0284C7' }}>
+                    {fotoBeforeFile.size} • Siap Diverifikasi Sistem
+                  </div>
                 </div>
               </div>
-              <button
-                type="button"
-                className="btn btn-danger btn-sm"
-                onClick={() => setBuktiSuratFile(null)}
-                style={{ fontSize: '0.725rem' }}
-              >
-                <Trash2 size={12} />
-                <span>Hapus</span>
-              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setPreviewZoomModal(fotoBeforeFile.dataUrl)}
+                  style={{ fontSize: '0.725rem', padding: '0.3rem 0.6rem' }}
+                >
+                  <Eye size={13} />
+                  <span>Lihat Foto</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm"
+                  onClick={() => setFotoBeforeFile(null)}
+                  style={{ fontSize: '0.725rem', padding: '0.3rem 0.6rem' }}
+                >
+                  <Trash2 size={13} />
+                  <span>Foto Ulang</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
       </form>
+
+      {/* Modal Pratinjau Zoom Foto BEFORE */}
+      {previewZoomModal && (
+        <Modal
+          isOpen={Boolean(previewZoomModal)}
+          onClose={() => setPreviewZoomModal(null)}
+          title="Pratinjau Foto Kondisi Fisik Alat (BEFORE)"
+          footer={
+            <button type="button" className="btn btn-secondary" onClick={() => setPreviewZoomModal(null)}>
+              Tutup
+            </button>
+          }
+        >
+          <div style={{ textAlign: 'center', background: '#0F172A', borderRadius: '8px', padding: '0.75rem', maxHeight: '520px', overflowY: 'auto' }}>
+            <img
+              src={previewZoomModal}
+              alt="Foto Fisik Alat (Before)"
+              style={{ maxWidth: '100%', maxHeight: '460px', objectFit: 'contain', borderRadius: '4px' }}
+            />
+          </div>
+        </Modal>
+      )}
     </Modal>
   );
 };
