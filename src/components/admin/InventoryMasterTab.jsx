@@ -28,113 +28,75 @@ export const InventoryMasterTab = () => {
     borrowings 
   } = useStudio();
 
-  const [activeKategori, setActiveKategori] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Modal State untuk Tambah / Edit Aset Master
+  // Modal State untuk Tambah / Edit Alat Master (Hanya 3 data: Nama, Kondisi Fisik, Keterangan)
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [editingAssetId, setEditingAssetId] = useState(null);
   const [kode, setKode] = useState('');
   const [nama, setNama] = useState('');
-  const [kategori, setKategori] = useState('Kamera');
+  const [kondisiFisik, setKondisiFisik] = useState('Sangat Baik');
   const [spesifikasi, setSpesifikasi] = useState('');
-  const [kondisiFisik, setKondisiFisik] = useState('Sangat Baik (100%)');
-  const [baterai, setBaterai] = useState(100);
-  const [lokasiRak, setLokasiRak] = useState('');
 
   // Modal State untuk Validasi Laporan Fisik (Side-by-Side)
   const [selectedBorrowingForCompare, setSelectedBorrowingForCompare] = useState(null);
   const [previewProofModal, setPreviewProofModal] = useState(null);
 
-  // Filter Aset
+  // Filter Alat
   const filteredAssets = equipment.filter((eq) => {
-    const matchCat = activeKategori === 'Semua' || eq.kategori === activeKategori;
-    const matchSearch = eq.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        eq.kode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        eq.spesifikasi.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchSearch;
+    const q = searchQuery.toLowerCase();
+    return (
+      (eq.nama || '').toLowerCase().includes(q) ||
+      (eq.kode || '').toLowerCase().includes(q) ||
+      (eq.kondisiFisik || '').toLowerCase().includes(q) ||
+      (eq.spesifikasi || '').toLowerCase().includes(q)
+    );
   });
 
   const handleOpenAddModal = () => {
     setEditingAssetId(null);
     setKode(`EQ-${String(equipment.length + 1).padStart(2, '0')}`);
     setNama('');
-    setKategori('Kamera');
+    setKondisiFisik('Sangat Baik');
     setSpesifikasi('');
-    setKondisiFisik('Sangat Baik (100%)');
-    setBaterai(100);
-    setLokasiRak('Lemari Kering Studio A-1');
     setIsAssetModalOpen(true);
   };
 
   const handleOpenEditModal = (item) => {
     setEditingAssetId(item.id);
-    setKode(item.kode);
+    setKode(item.kode || item.id);
     setNama(item.nama);
-    setKategori(item.kategori);
-    setSpesifikasi(item.spesifikasi);
-    setKondisiFisik(item.kondisiFisik);
-    setBaterai(item.baterai !== null ? item.baterai : 100);
-    setLokasiRak(item.lokasiRak);
+    setKondisiFisik(item.kondisiFisik || 'Sangat Baik');
+    setSpesifikasi(item.spesifikasi || '');
     setIsAssetModalOpen(true);
-  };
-
-  const getKondisiFieldInfo = (cat) => {
-    switch (cat) {
-      case 'Kamera':
-        return {
-          label: 'Kondisi Kamera & Sensor *',
-          placeholder: 'Contoh: Sensor bersih bebas debu, fungsi shutter normal, bodi mulus tanpa lecet, tombol & dial berfungsi optimal...'
-        };
-      case 'Lensa':
-        return {
-          label: 'Kondisi Lensa & Optik *',
-          placeholder: 'Contoh: Elemen kaca optik jernih bebas jamur/scratch, ring fokus & zoom mulus, autofokus presisi, mount kokoh...'
-        };
-      case 'Aksesori':
-        return {
-          label: 'Kondisi Aksesori / Perlengkapan *',
-          placeholder: 'Contoh: Baut & engsel kencang, pengunci kokoh, kabel utuh tanpa terkelupas, tas pembungkus lengkap...'
-        };
-      case 'Ruang Studio':
-        return {
-          label: 'Kondisi & Kelayakan Ruang Studio *',
-          placeholder: 'Contoh: AC dingin, peredam suara rapi, sistem kelistrikan & lighting gantung normal, kebersihan ruangan terjaga...'
-        };
-      default:
-        return {
-          label: `Kondisi Barang / ${cat || 'Peralatan'} *`,
-          placeholder: `Kondisi fisik ${cat || 'barang'}, kelayakan fungsi operasional, kelengkapan pendukung...`
-        };
-    }
   };
 
   const handleSaveAsset = (e) => {
     e.preventDefault();
-    if (!nama.trim() || !spesifikasi.trim()) {
-      alert('Nama unit dan spesifikasi wajib diisi.');
+    if (!nama.trim() || !kondisiFisik.trim() || !spesifikasi.trim()) {
+      alert('Nama alat, kondisi fisik, dan keterangan alat wajib diisi.');
       return;
     }
 
     if (editingAssetId) {
       updateEquipment(editingAssetId, {
-        kode,
-        nama,
-        kategori,
-        spesifikasi,
-        kondisiFisik,
-        baterai: (kategori === 'Ruang Studio' || kategori === 'Lensa' || kategori === 'Kamera') ? null : Number(baterai),
-        lokasiRak: lokasiRak || 'Ruang Studio Creative Corner'
+        kode: kode || `EQ-${String(equipment.length + 1).padStart(2, '0')}`,
+        nama: nama.trim(),
+        kategori: 'Peralatan',
+        kondisiFisik: kondisiFisik.trim(),
+        spesifikasi: spesifikasi.trim(),
+        baterai: null,
+        lokasiRak: 'Creative Corner Studio'
       });
     } else {
       addEquipment({
-        kode,
-        nama,
-        kategori,
-        spesifikasi,
-        kondisiFisik,
-        baterai: (kategori === 'Ruang Studio' || kategori === 'Lensa' || kategori === 'Kamera') ? null : Number(baterai),
-        lokasiRak: lokasiRak || 'Ruang Studio Creative Corner'
+        kode: `EQ-${String(equipment.length + 1).padStart(2, '0')}`,
+        nama: nama.trim(),
+        kategori: 'Peralatan',
+        kondisiFisik: kondisiFisik.trim(),
+        spesifikasi: spesifikasi.trim(),
+        baterai: null,
+        lokasiRak: 'Creative Corner Studio'
       });
     }
 
@@ -269,10 +231,10 @@ export const InventoryMasterTab = () => {
           <div>
             <h3 className="card-title">
               <Camera size={20} color="#1E3A8A" />
-              <span>Master Data Inventaris & Ruang Studio Creative Corner</span>
+              <span>Daftar Data Alat Studio Creative Corner</span>
             </h3>
             <div className="card-subtitle">
-              Admin dapat menambah, memperbarui spesifikasi teknis, atau menghapus inventaris studio (Kamera, Lensa, Aksesori, dan Ruang Studio).
+              Kelola daftar nama alat, kondisi fisik, dan keterangan alat studio.
             </div>
           </div>
 
@@ -283,10 +245,10 @@ export const InventoryMasterTab = () => {
               <input
                 type="text"
                 className="form-input"
-                placeholder="Cari aset..."
+                placeholder="Cari nama alat / keterangan..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ paddingLeft: '2rem', fontSize: '0.825rem', width: '180px' }}
+                style={{ paddingLeft: '2rem', fontSize: '0.825rem', width: '220px' }}
               />
             </div>
 
@@ -297,24 +259,9 @@ export const InventoryMasterTab = () => {
               id="btn-add-asset-master"
             >
               <Plus size={16} />
-              <span>Tambah Aset Baru</span>
+              <span>Tambah Alat Baru</span>
             </button>
           </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.25rem', overflowX: 'auto' }}>
-          {['Semua', 'Kamera', 'Lensa', 'Aksesori', 'Ruang Studio'].map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              className={`btn btn-sm ${activeKategori === cat ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => setActiveKategori(cat)}
-              style={{ fontSize: '0.775rem' }}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
 
         {/* Master Table atau Empty State */}
@@ -322,10 +269,10 @@ export const InventoryMasterTab = () => {
           <div style={{ padding: '3rem 2rem', textAlign: 'center', background: '#F8FAFC', borderRadius: '10px', color: '#64748B' }}>
             <Inbox size={42} color="#94A3B8" style={{ margin: '0 auto 0.75rem' }} />
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
-              Database Inventaris Studio Masih Kosong
+              Database Alat Studio Masih Kosong
             </h4>
             <p style={{ fontSize: '0.85rem', maxWidth: '520px', margin: '0 auto 1.25rem' }}>
-              Belum ada data kamera, lensa, aksesori, atau ruangan. Silakan klik tombol di bawah untuk mulai menginput unit perlengkapan studio yang sebenarnya.
+              Belum ada data alat studio. Silakan klik tombol di bawah untuk menambah data alat.
             </p>
             <button
               type="button"
@@ -333,7 +280,7 @@ export const InventoryMasterTab = () => {
               onClick={handleOpenAddModal}
             >
               <Plus size={16} />
-              <span>Tambah Unit Inventaris Pertama</span>
+              <span>Tambah Alat Pertama</span>
             </button>
           </div>
         ) : (
@@ -341,38 +288,29 @@ export const InventoryMasterTab = () => {
             <table className="custom-table">
               <thead>
                 <tr>
-                  <th>Kode & Nama Unit</th>
-                  <th>Kategori</th>
-                  <th>Kondisi & Spesifikasi</th>
-                  <th>Lokasi Rak / Studio</th>
-                  <th>Kondisi & Baterai</th>
-                  <th>Status Kuota</th>
-                  <th>Aksi Kelola</th>
+                  <th>Nama Alat</th>
+                  <th>Kondisi Fisik</th>
+                  <th>Keterangan Alat</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredAssets.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <strong>{item.nama}</strong>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>{item.kode}</div>
+                      <strong style={{ fontSize: '0.9rem' }}>{item.nama}</strong>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>
+                        {item.kode || item.id}
+                      </div>
                     </td>
                     <td>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{item.kategori}</span>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>
+                        {item.kondisiFisik || 'Baik'}
+                      </span>
                     </td>
-                    <td style={{ maxWidth: '280px', fontSize: '0.8rem', color: '#334155' }}>
-                      {item.spesifikasi}
-                    </td>
-                    <td>{item.lokasiRak}</td>
-                    <td>
-                      <div style={{ fontSize: '0.8rem' }}>{item.kondisiFisik}</div>
-                      {item.baterai !== null && item.kategori !== 'Kamera' && item.kategori !== 'Lensa' && item.kategori !== 'Ruang Studio' ? (
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: item.baterai <= 20 ? '#E11D48' : '#059669', fontWeight: 700 }}>
-                          ⚡ {item.baterai}%
-                        </span>
-                      ) : item.kategori === 'Kamera' ? (
-                        <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Body Only</span>
-                      ) : null}
+                    <td style={{ maxWidth: '340px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.4 }}>
+                      {item.spesifikasi || '-'}
                     </td>
                     <td>
                       <StatusBadge status={item.status} />
@@ -383,7 +321,7 @@ export const InventoryMasterTab = () => {
                           type="button"
                           className="btn btn-secondary btn-sm"
                           onClick={() => handleOpenEditModal(item)}
-                          title="Edit data aset"
+                          title="Edit Data Alat"
                         >
                           <Edit size={13} />
                         </button>
@@ -391,7 +329,7 @@ export const InventoryMasterTab = () => {
                           type="button"
                           className="btn btn-danger btn-sm"
                           onClick={() => handleDeleteAsset(item.id)}
-                          title="Hapus aset"
+                          title="Hapus Data Alat"
                         >
                           <Trash2 size={13} />
                         </button>
@@ -438,30 +376,12 @@ export const InventoryMasterTab = () => {
               {selectedBorrowingForCompare.inspeksiPengambilan ? (
                 <>
                   <div className="inspection-item">
-                    <span>Fisik Bodi:</span>
+                    <span>Kondisi Fisik:</span>
                     <strong>{selectedBorrowingForCompare.inspeksiPengambilan.kondisiFisik}</strong>
                   </div>
                   <div className="inspection-item">
-                    <span>Fungsi Tombol:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengambilan.fungsiTombol}</strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kebersihan Lensa:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengambilan.kebersihanLensa}</strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kapasitas Baterai:</span>
-                    <strong style={{ color: '#1E3A8A' }}>
-                      ⚡ {selectedBorrowingForCompare.inspeksiPengambilan.bateraiPersen}%
-                    </strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kelengkapan Aksesori:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengambilan.kelengkapanAksesori}</strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kebersihan Ruang:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengambilan.kebersihanRuang}</strong>
+                    <span>Keterangan Alat:</span>
+                    <strong>{selectedBorrowingForCompare.inspeksiPengambilan.keteranganAlat || selectedBorrowingForCompare.inspeksiPengambilan.kelengkapanAksesori || '-'}</strong>
                   </div>
                   <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.5rem' }}>
                     Diperiksa pada: {selectedBorrowingForCompare.inspeksiPengambilan.tanggalInspeksi}
@@ -481,30 +401,12 @@ export const InventoryMasterTab = () => {
               {selectedBorrowingForCompare.inspeksiPengembalian ? (
                 <>
                   <div className={`inspection-item ${selectedBorrowingForCompare.inspeksiPengembalian.anomaliTerdeteksi ? 'discrepancy' : ''}`}>
-                    <span>Fisik Akhir:</span>
+                    <span>Kondisi Fisik Akhir:</span>
                     <strong>{selectedBorrowingForCompare.inspeksiPengembalian.kondisiFisikAkhir}</strong>
                   </div>
                   <div className="inspection-item">
-                    <span>Fungsi Tombol:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengembalian.fungsiTombol}</strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kebersihan Lensa:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengembalian.kebersihanLensa}</strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Sisa Baterai:</span>
-                    <strong style={{ color: selectedBorrowingForCompare.inspeksiPengembalian.sisaBateraiPersen <= 25 ? '#E11D48' : '#059669' }}>
-                      ⚡ {selectedBorrowingForCompare.inspeksiPengembalian.sisaBateraiPersen}%
-                    </strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kelengkapan:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengembalian.kelengkapanAksesori}</strong>
-                  </div>
-                  <div className="inspection-item">
-                    <span>Kebersihan Ruang:</span>
-                    <strong>{selectedBorrowingForCompare.inspeksiPengembalian.kebersihanRuang}</strong>
+                    <span>Keterangan Alat:</span>
+                    <strong>{selectedBorrowingForCompare.inspeksiPengembalian.keteranganAlat || selectedBorrowingForCompare.inspeksiPengembalian.catatanKendala || '-'}</strong>
                   </div>
 
                   {selectedBorrowingForCompare.inspeksiPengembalian.catatanKendala && (
@@ -536,134 +438,58 @@ export const InventoryMasterTab = () => {
         </Modal>
       )}
 
-      {/* MODAL TAMBAH / EDIT ASET MASTER */}
+      {/* MODAL TAMBAH / EDIT ALAT (HANYA: NAMA ALAT, KONDISI FISIK, KETERANGAN ALAT) */}
       <Modal
         isOpen={isAssetModalOpen}
         onClose={() => setIsAssetModalOpen(false)}
-        title={editingAssetId ? 'Edit Data Aset Master Studio' : 'Tambah Unit Aset Master Baru'}
+        title={editingAssetId ? 'Edit Data Alat' : 'Tambah Data Alat Baru'}
         footer={
           <>
             <button type="button" className="btn btn-secondary" onClick={() => setIsAssetModalOpen(false)}>
               Batal
             </button>
             <button type="button" className="btn btn-primary" onClick={handleSaveAsset}>
-              Simpan Data Aset
+              Simpan Data Alat
             </button>
           </>
         }
       >
         <form onSubmit={handleSaveAsset}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label">Kode Unit *</label>
-              <input
-                type="text"
-                className="form-input"
-                value={kode}
-                onChange={(e) => setKode(e.target.value)}
-                placeholder="CAM-01 / LENS-01"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Kategori *</label>
-              <select
-                className="form-select"
-                value={['Kamera', 'Lensa', 'Aksesori', 'Ruang Studio'].includes(kategori) ? kategori : 'MANUAL'}
-                onChange={(e) => {
-                  if (e.target.value === 'MANUAL') {
-                    setKategori('');
-                  } else {
-                    setKategori(e.target.value);
-                  }
-                }}
-              >
-                <option value="Kamera">Kamera</option>
-                <option value="Lensa">Lensa</option>
-                <option value="Aksesori">Aksesori</option>
-                <option value="Ruang Studio">Ruang Studio</option>
-                <option value="MANUAL">+ Kategori Lainnya (Tulis Manual)...</option>
-              </select>
-              {(!['Kamera', 'Lensa', 'Aksesori', 'Ruang Studio'].includes(kategori)) && (
-                <input
-                  type="text"
-                  className="form-input"
-                  style={{ marginTop: '0.4rem' }}
-                  value={kategori}
-                  onChange={(e) => setKategori(e.target.value)}
-                  placeholder="Ketik nama kategori (misal: Drone, Audio Mic, Lighting)..."
-                  required
-                />
-              )}
-            </div>
-          </div>
-
           <div className="form-group">
-            <label className="form-label">Nama Peralatan / Ruang *</label>
+            <label className="form-label">Nama Alat *</label>
             <input
               type="text"
               className="form-input"
               value={nama}
               onChange={(e) => setNama(e.target.value)}
-              placeholder="Contoh: Sony Alpha 7 IV, Lensa 24-70mm f/2.8, Ruang Studio Utama"
+              placeholder="Contoh: Sony Alpha 7 IV, Lensa 24-70mm GM, Tripod E-Image..."
               required
             />
           </div>
 
-          {(() => {
-            const fieldInfo = getKondisiFieldInfo(kategori);
-            return (
-              <div className="form-group">
-                <label className="form-label">{fieldInfo.label}</label>
-                <textarea
-                  className="form-textarea"
-                  rows="2"
-                  value={spesifikasi}
-                  onChange={(e) => setSpesifikasi(e.target.value)}
-                  placeholder={fieldInfo.placeholder}
-                  required
-                ></textarea>
-              </div>
-            );
-          })()}
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label">Kondisi Fisik Standar</label>
-              <input
-                type="text"
-                className="form-input"
-                value={kondisiFisik}
-                onChange={(e) => setKondisiFisik(e.target.value)}
-                placeholder="Contoh: Sangat Baik (100%)"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Lokasi Rak / Penyimpanan</label>
-              <input
-                type="text"
-                className="form-input"
-                value={lokasiRak}
-                onChange={(e) => setLokasiRak(e.target.value)}
-                placeholder="Contoh: Lemari Kering A-1 / Studio Lt. 2"
-              />
-            </div>
+          <div className="form-group">
+            <label className="form-label">Kondisi Fisik *</label>
+            <input
+              type="text"
+              className="form-input"
+              value={kondisiFisik}
+              onChange={(e) => setKondisiFisik(e.target.value)}
+              placeholder="Contoh: Sangat Baik (100%), Mulus, Lecet pemakaian wajar..."
+              required
+            />
           </div>
 
-          {kategori !== 'Ruang Studio' && kategori !== 'Lensa' && kategori !== 'Kamera' && (
-            <div className="form-group">
-              <label className="form-label">Daya Baterai Saat Ini (%)</label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                className="form-input"
-                value={baterai}
-                onChange={(e) => setBaterai(e.target.value)}
-              />
-            </div>
-          )}
+          <div className="form-group">
+            <label className="form-label">Keterangan Alat *</label>
+            <textarea
+              className="form-textarea"
+              rows="3"
+              value={spesifikasi}
+              onChange={(e) => setSpesifikasi(e.target.value)}
+              placeholder="Contoh: Body only, kelengkapan tas & strap, nomor seri, catatan pemakaian..."
+              required
+            ></textarea>
+          </div>
         </form>
       </Modal>
 

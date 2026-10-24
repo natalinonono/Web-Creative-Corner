@@ -30,13 +30,9 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       : []
   );
 
-  // Form Fields
-  const [kondisiFisik, setKondisiFisik] = useState('Mulus, tidak ada lecet atau retak pada bodi');
-  const [fungsiTombol, setFungsiTombol] = useState('Semua tombol shutter, tombol menu, dan dial bekerja responsif');
-  const [kebersihanLensa, setKebersihanLensa] = useState('Optik depan dan belakang bersih, bebas jamur dan debu tebal');
-  const [bateraiPersen, setBateraiPersen] = useState(95);
-  const [kelengkapanAksesori, setKelengkapanAksesori] = useState('Lengkap: Lens cap depan/belakang, strap, baterai terpasang, dan tas');
-  const [kebersihanRuang, setKebersihanRuang] = useState('Ruang studio bersih dan tertata rapi');
+  // Form Fields (Hanya: Kondisi Fisik dan Keterangan Alat)
+  const [kondisiFisik, setKondisiFisik] = useState('Baik, mulus tanpa lecet');
+  const [keteranganAlat, setKeteranganAlat] = useState('Lengkap dan normal siap pakai');
   const [batasWaktuKembali, setBatasWaktuKembali] = useState(targetEvent?.waktuSelesai || '16:00');
 
   // Bukti Surat Peminjaman (Foto / Dokumen)
@@ -141,11 +137,12 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       buktiSurat: buktiSuratFile,
       inspeksiData: {
         kondisiFisik,
-        fungsiTombol,
-        kebersihanLensa,
-        bateraiPersen: Number(bateraiPersen),
-        kelengkapanAksesori,
-        kebersihanRuang,
+        keteranganAlat,
+        fungsiTombol: 'Normal',
+        kebersihanLensa: 'Bersih',
+        bateraiPersen: 100,
+        kelengkapanAksesori: keteranganAlat,
+        kebersihanRuang: 'Bersih',
         petugasPemeriksa: `${currentMember.nama} (Inspeksi Mandiri Siswa)`
       }
     });
@@ -341,89 +338,28 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
           )}
         </div>
 
-        {/* Cek Fisik Berkelanjutan */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        {/* Cek Fisik dan Keterangan Alat */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
           <div className="form-group">
-            <label className="form-label">1. Catatan Kondisi Fisik Bodi *</label>
+            <label className="form-label">Kondisi Fisik Alat *</label>
             <input
               type="text"
               className="form-input"
               value={kondisiFisik}
               onChange={(e) => setKondisiFisik(e.target.value)}
-              placeholder="Contoh: Mulus tanpa lecet, baut kencang"
+              placeholder="Contoh: Baik, mulus tanpa lecet, normal"
               required
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">2. Fungsi Tombol & Shutter *</label>
+            <label className="form-label">Keterangan Alat *</label>
             <input
               type="text"
               className="form-input"
-              value={fungsiTombol}
-              onChange={(e) => setFungsiTombol(e.target.value)}
-              placeholder="Contoh: Shutter responsif, dial berputar lancar"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">3. Kebersihan Lensa & Sensor *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={kebersihanLensa}
-              onChange={(e) => setKebersihanLensa(e.target.value)}
-              placeholder="Contoh: Optik jernih, filter bersih bebas debu"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">4. Kapasitas Baterai Awal (%) *</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <input
-                type="range"
-                min="10"
-                max="100"
-                step="5"
-                value={bateraiPersen}
-                onChange={(e) => setBateraiPersen(e.target.value)}
-                style={{ flex: 1, accentColor: '#1E3A8A' }}
-              />
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                minWidth: '45px',
-                textAlign: 'right',
-                color: '#1E3A8A'
-              }}>
-                {bateraiPersen}%
-              </span>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">5. Kelengkapan Aksesori & Tas *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={kelengkapanAksesori}
-              onChange={(e) => setKelengkapanAksesori(e.target.value)}
-              placeholder="Contoh: Lens cap depan/belakang, strap, tas, charger"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">6. Kebersihan Ruang / Studio *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={kebersihanRuang}
-              onChange={(e) => setKebersihanRuang(e.target.value)}
-              placeholder="Contoh: Studio bersih / N/A jika hanya alat"
+              value={keteranganAlat}
+              onChange={(e) => setKeteranganAlat(e.target.value)}
+              placeholder="Contoh: Lengkap cap/strap/tas, fungsi siap pakai"
               required
             />
           </div>

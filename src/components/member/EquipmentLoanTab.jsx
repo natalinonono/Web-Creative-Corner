@@ -226,23 +226,15 @@ export const EquipmentLoanTab = () => {
                     <StatusBadge status={tool.status} />
                   </div>
 
-                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.5rem' }}>
                     {tool.nama}
                   </h4>
 
-                  <p style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '0.75rem', minHeight: '38px' }}>
-                    {tool.spesifikasi}
-                  </p>
-
-                  <div style={{ fontSize: '0.785rem', color: '#64748B', display: 'flex', flexDirection: 'column', gap: '0.2rem', marginBottom: '1rem' }}>
-                    <div>📍 <strong>Lokasi:</strong> {tool.lokasiRak}</div>
-                    <div>🔧 <strong>Kondisi:</strong> {tool.kondisiFisik}</div>
-                    {tool.baterai !== null && tool.kategori !== 'Kamera' && tool.kategori !== 'Lensa' && tool.kategori !== 'Ruang Studio' && (
-                      <div>⚡ <strong>Baterai:</strong> {tool.baterai}%</div>
-                    )}
-                    {tool.kategori === 'Kamera' && (
-                      <div>📷 <strong>Tipe:</strong> Body Only (Baterai Terpisah)</div>
-                    )}
+                  <div style={{ fontSize: '0.825rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1rem' }}>
+                    <div>🔧 <strong>Kondisi Fisik:</strong> {tool.kondisiFisik || 'Baik'}</div>
+                    <div style={{ color: '#475569', fontSize: '0.8rem', lineHeight: 1.4 }}>
+                      📝 <strong>Keterangan:</strong> {tool.spesifikasi || '-'}
+                    </div>
                   </div>
                 </div>
 

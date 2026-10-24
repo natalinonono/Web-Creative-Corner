@@ -8,14 +8,9 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
 
   if (!targetBorrowing) return null;
 
-  // Form Fields
-  const [kondisiFisikAkhir, setKondisiFisikAkhir] = useState('Bodi mulus, tidak ada goresan atau benturan selama kegiatan');
-  const [fungsiTombol, setFungsiTombol] = useState('Semua tombol dan dial berfungsi dengan baik 100%');
-  const [kebersihanLensa, setKebersihanLensa] = useState('Optik bersih, tidak ada bercak minyak atau sidik jari');
-  const [sisaBateraiPersen, setSisaBateraiPersen] = useState(45);
-  const [kelengkapanAksesori, setKelengkapanAksesori] = useState('Semua aksesori, cap, kabel, strap, dan tas lengkap');
-  const [kebersihanRuang, setKebersihanRuang] = useState('Ruang telah dirapikan, sampah dibuang, lampu & AC studio dimatikan');
-  const [catatanKendala, setCatatanKendala] = useState('');
+  // Form Fields (Hanya: Kondisi Fisik dan Keterangan Alat)
+  const [kondisiFisikAkhir, setKondisiFisikAkhir] = useState('Baik, normal tanpa kendala');
+  const [keteranganAlat, setKeteranganAlat] = useState('Lengkap dan aman');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,12 +19,13 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
       borrowingId: targetBorrowing.id,
       returnInspectionData: {
         kondisiFisikAkhir,
-        fungsiTombol,
-        kebersihanLensa,
-        sisaBateraiPersen: Number(sisaBateraiPersen),
-        kelengkapanAksesori,
-        kebersihanRuang,
-        catatanKendala: catatanKendala.trim() || 'Tidak ada kendala. Alat dan ruang dikembalikan dalam kondisi normal.',
+        keteranganAlat,
+        fungsiTombol: 'Normal',
+        kebersihanLensa: 'Bersih',
+        sisaBateraiPersen: 100,
+        kelengkapanAksesori: keteranganAlat,
+        kebersihanRuang: 'Bersih',
+        catatanKendala: keteranganAlat || 'Tidak ada kendala. Alat dikembalikan dalam kondisi normal.',
         petugasPemeriksa: `${targetBorrowing.peminjamNama} (Inspeksi Pengembalian Mandiri)`
       }
     });
@@ -108,106 +104,29 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
         </div>
 
         {/* Form Verifikasi Kondisi Akhir */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
           <div className="form-group">
-            <label className="form-label">1. Kondisi Fisik Akhir Alat *</label>
+            <label className="form-label">Kondisi Fisik Alat Saat Kembali *</label>
             <input
               type="text"
               className="form-input"
               value={kondisiFisikAkhir}
               onChange={(e) => setKondisiFisikAkhir(e.target.value)}
-              placeholder="Contoh: Bodi mulus, tidak ada retak/lecet"
+              placeholder="Contoh: Baik, mulus, tidak ada kerusakan"
               required
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">2. Fungsi Tombol & Mekanikal Akhir *</label>
+            <label className="form-label">Keterangan Alat / Catatan Pengembalian *</label>
             <input
               type="text"
               className="form-input"
-              value={fungsiTombol}
-              onChange={(e) => setFungsiTombol(e.target.value)}
-              placeholder="Contoh: Semua tombol dan layar normal 100%"
+              value={keteranganAlat}
+              onChange={(e) => setKeteranganAlat(e.target.value)}
+              placeholder="Contoh: Lengkap cap/strap/tas, tidak ada kendala"
               required
             />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">3. Kebersihan Lensa & Optik Akhir *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={kebersihanLensa}
-              onChange={(e) => setKebersihanLensa(e.target.value)}
-              placeholder="Contoh: Optik bersih bening"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">4. Sisa Daya Baterai Saat Ini (%) *</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="5"
-                value={sisaBateraiPersen}
-                onChange={(e) => setSisaBateraiPersen(e.target.value)}
-                style={{ flex: 1, accentColor: '#10B981' }}
-              />
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                minWidth: '45px',
-                textAlign: 'right',
-                color: sisaBateraiPersen <= 20 ? '#E11D48' : '#059669'
-              }}>
-                {sisaBateraiPersen}%
-              </span>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">5. Kelengkapan Aksesori & Kabel *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={kelengkapanAksesori}
-              onChange={(e) => setKelengkapanAksesori(e.target.value)}
-              placeholder="Contoh: Lengkap cap depan/belakang, tali, tas"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">6. Kebersihan Ruangan Studio *</label>
-            <input
-              type="text"
-              className="form-input"
-              value={kebersihanRuang}
-              onChange={(e) => setKebersihanRuang(e.target.value)}
-              placeholder="Contoh: Bersih dan rapi kembali / N/A"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Catatan Kendala / Penurunan Kondisi (Opsional / Jika Ada Temuan)
-          </label>
-          <textarea
-            className="form-textarea"
-            rows="3"
-            value={catatanKendala}
-            onChange={(e) => setCatatanKendala(e.target.value)}
-            placeholder="Tuliskan jika ada kendala baterai habis, lensa terkena debu tebal, atau kelengkapan yang perlu diperiksa oleh Admin..."
-          ></textarea>
-          <div className="form-hint">
-            Catatan ini akan otomatis muncul pada panel validasi perbandingan inspeksi berdampingan di Portal Pengelola.
           </div>
         </div>
       </form>

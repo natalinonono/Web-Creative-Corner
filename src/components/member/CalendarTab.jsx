@@ -298,11 +298,9 @@ export const CalendarTab = () => {
                 <table className="custom-table">
                   <thead>
                     <tr>
-                      <th>Kode & Nama Aset</th>
-                      <th>Kategori</th>
-                      <th>Spesifikasi Ringkas</th>
-                      <th>Lokasi Rak / Studio</th>
-                      <th>Baterai / Kondisi</th>
+                      <th>Nama Alat</th>
+                      <th>Kondisi Fisik</th>
+                      <th>Keterangan Alat</th>
                       <th>Status Kuota</th>
                     </tr>
                   </thead>
@@ -311,23 +309,13 @@ export const CalendarTab = () => {
                       <tr key={item.id}>
                         <td>
                           <strong>{item.nama}</strong>
-                          <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>{item.kode}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>{item.kode || item.id}</div>
                         </td>
-                        <td>{item.kategori}</td>
-                        <td style={{ maxWidth: '280px', fontSize: '0.8rem', color: '#334155' }}>
-                          {item.spesifikasi}
-                        </td>
-                        <td>{item.lokasiRak}</td>
                         <td>
-                          {item.baterai !== null && item.kategori !== 'Kamera' && item.kategori !== 'Lensa' && item.kategori !== 'Ruang Studio' ? (
-                            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: item.baterai <= 20 ? '#E11D48' : '#059669' }}>
-                              ⚡ {item.baterai}%
-                            </span>
-                          ) : (
-                            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-                              {item.kategori === 'Kamera' ? 'Body Only' : item.kategori === 'Lensa' ? 'Manual/Optik' : item.kategori === 'Ruang Studio' ? 'Fasilitas Ruang' : 'AC Power / Manual'}
-                            </span>
-                          )}
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>{item.kondisiFisik || 'Baik'}</span>
+                        </td>
+                        <td style={{ maxWidth: '320px', fontSize: '0.8rem', color: '#334155', lineHeight: 1.4 }}>
+                          {item.spesifikasi || '-'}
                         </td>
                         <td>
                           <StatusBadge status={item.status} />
