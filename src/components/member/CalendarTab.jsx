@@ -13,7 +13,8 @@ import {
   CalendarDays,
   ShieldCheck,
   Sparkles,
-  Inbox
+  Inbox,
+  Smartphone
 } from 'lucide-react';
 import { PickupInspectionModal } from './PickupInspectionModal';
 
@@ -88,7 +89,13 @@ export const CalendarTab = () => {
                       fontSize: '0.75rem',
                       fontWeight: 700
                     }}>
-                      {personnel.peran === 'Videografer' ? <Video size={14} /> : <Camera size={14} />}
+                      {personnel.peran === 'Video' || personnel.peran === 'Videografer' ? (
+                        <Video size={14} />
+                      ) : personnel.peran?.includes('Live Report') ? (
+                        <Smartphone size={14} />
+                      ) : (
+                        <Camera size={14} />
+                      )}
                       Peran: {personnel.peran}
                     </div>
                     <StatusBadge status={personnel.statusTugas} />
