@@ -11,17 +11,107 @@ import {
   CheckCircle, 
   User, 
   Camera,
-  Layers
+  Layers,
+  Video,
+  Smartphone,
+  MapPin,
+  Users
 } from 'lucide-react';
 
 export const WhatsAppRemindersTab = () => {
-  const { borrowings, creativeTasks, dutyRoster, members } = useStudio();
+  const { borrowings, creativeTasks, dutyRoster, members, events, equipment } = useStudio();
 
   // Modal State untuk Pratinjau WhatsApp
   const [waModalData, setWaModalData] = useState(null);
 
   // Filter peminjam aktif
   const activeBorrowers = borrowings.filter((b) => b.status === 'Dipinjam');
+
+  // Trigger One-Click WA Penugasan Dokumentasi Lapangan (Liputan Event)
+  const handleSendEventCoverageReminder = (event, personil) => {
+    // Cari kontak WA personil di daftar members
+    const foundMember = members.find(
+      (m) => m.id === personil.anggotaId || m.nama?.toLowerCase().trim() === personil.nama?.toLowerCase().trim()
+    );
+    const phone = foundMember?.nomorWa || '6281234567890';
+
+    // Daftar nama peralatan yang dikunci untuk event ini
+    const lockedNames = equipment
+      .filter((eq) => event.peralatanTerkunciIds?.includes(eq.id))
+      .map((eq) => eq.nama)
+      .join(', ');
+
+    const actionText = personil.statusTugas === 'Belum Mengambil Alat'
+      ? '⚠️ *MOHON SEGERA*: Hadir di Studio Creative Corner sebelum acara dimulai untuk mengambil perlengkapan alat dan mengisi *Formulir Inspeksi Pengambilan* di sistem.'
+      : personil.statusTugas === 'Sedang Melaksanakan Tugas'
+        ? 'Pastikan seluruh momen penting acara terdokumentasikan dengan baik. Setelah agenda selesai, segera kembalikan unit alat ke studio dan mengisi *Formulir Inspeksi Pengembalian*.'
+        : 'Terima kasih telah menyelesaikan seluruh rangkaian dokumentasi lapangan dan inspeksi pengembalian alat dengan baik.';
+
+    const rawMessage = `Halo *${personil.nama}*, pengingat penugasan liputan lapangan dari *Creative Corner*.
+
+Anda ditugaskan sebagai *${personil.peran}* pada agenda kegiatan berikut:
+📌 *Acara*: ${event.judul}
+📍 *Lokasi*: ${event.lokasi || 'Area Sekolah'}
+🗓️ *Tanggal*: ${event.tanggal}
+⏰ *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
+🔒 *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
+
+Status Tugas Anda: *${personil.statusTugas}*.
+${actionText}
+
+Semangat bertugas & terima kasih!
+_Tim Pengelola Studio Creative Corner_`;
+
+    setWaModalData({
+      recipientName: `${personil.nama} (${personil.peran})`,
+      phoneNumber: phone,
+      messageText: rawMessage,
+      title: `Pengingat Dokumentasi: ${personil.nama} (${personil.peran})`
+    });
+  };
+
+  // Trigger WA Broadcast Tim Dokumentasi Lapangan
+  const handleSendEventTeamBroadcast = (event) => {
+    const lockedNames = equipment
+      .filter((eq) => event.peralatanTerkunciIds?.includes(eq.id))
+      .map((eq) => eq.nama)
+      .join(', ');
+
+    const personilListText = event.personil && event.personil.length > 0
+      ? event.personil.map((p, idx) => `${idx + 1}. *${p.nama}* (${p.peran}) - [${p.statusTugas}]`).join('\n')
+      : 'Belum ada personil yang ditugaskan';
+
+    const firstPersonil = event.personil?.[0];
+    const firstMember = members.find(
+      (m) => m.id === firstPersonil?.anggotaId || m.nama?.toLowerCase().trim() === firstPersonil?.nama?.toLowerCase().trim()
+    );
+    const phone = firstMember?.nomorWa || '6281234567890';
+
+    const rawMessage = `📢 *PENGINGAT PENUGASAN TIM DOKUMENTASI LAPANGAN*
+*Creative Corner Studio*
+
+Kepada seluruh rekan tim dokumentasi pada agenda:
+📌 *Acara*: ${event.judul}
+📍 *Lokasi*: ${event.lokasi || 'Area Sekolah'}
+🗓️ *Tanggal*: ${event.tanggal}
+⏰ *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
+🔒 *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
+
+👥 *Susunan Petugas Dokumentasi Lapangan*:
+${personilListText}
+
+Mohon seluruh personil hadir tepat waktu di Studio Creative Corner sebelum jadwal pelaksanaan untuk mengambil unit alat dan mengisi *Formulir Inspeksi Pengambilan*.
+
+Semangat bertugas rekan-rekan!
+_Tim Pengelola Studio Creative Corner_`;
+
+    setWaModalData({
+      recipientName: `Tim Liputan: ${event.judul}`,
+      phoneNumber: phone,
+      messageText: rawMessage,
+      title: `Broadcast Tim Liputan: ${event.judul}`
+    });
+  };
 
   // Trigger One-Click WA Pengembalian Alat
   const handleSendReturnReminder = (b) => {
@@ -73,7 +163,7 @@ export const WhatsAppRemindersTab = () => {
             <span>Pengingat WhatsApp Instan (One-Click WA Reminder)</span>
           </h2>
           <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0 }}>
-            Kirim notifikasi otomatis terformat resmi ke WhatsApp anggota untuk pengembalian alat, tenggat draf proyek, atau giliran jaga piket studio.
+            Kirim notifikasi otomatis terformat resmi ke WhatsApp anggota untuk penugasan dokumentasi lapangan, pengembalian alat, tenggat draf proyek, atau giliran jaga piket studio.
           </p>
         </div>
         <button
@@ -93,7 +183,183 @@ export const WhatsAppRemindersTab = () => {
         </button>
       </div>
 
-      {/* 1. TABEL PENGINGAT PENGEMBALIAN ALAT (FORMAT RESMI WAJIB) */}
+      {/* 1. TABEL PENGINGAT PENUGASAN DOKUMENTASI LAPANGAN (LIPUTAN EVENT) */}
+      <div className="card" style={{ marginBottom: '2.5rem' }}>
+        <div className="card-header">
+          <div>
+            <h3 className="card-title">
+              <Camera size={20} color="#1E3A8A" />
+              <span>Pengingat Penugasan Dokumentasi Lapangan (Liputan Event)</span>
+            </h3>
+            <div className="card-subtitle">
+              Format otomatis siap kirim ke 4 petugas liputan (Kamera Foto 1, Foto 2, Video, Live Report HP) untuk konfirmasi jadwal, alokasi kamera, dan instruksi inspeksi pengambilan.
+            </div>
+          </div>
+          <span className="badge badge-primary">
+            {events.length} Agenda Liputan Terdata
+          </span>
+        </div>
+
+        {events.length === 0 ? (
+          <div style={{ padding: '2rem', textAlign: 'center', color: '#64748B', background: '#F8FAFC' }}>
+            <Calendar size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
+            <div style={{ fontWeight: 600 }}>Belum Ada Agenda Liputan Lapangan Terjadwal</div>
+            <p style={{ fontSize: '0.8rem' }}>Jadwalkan liputan baru pada menu "Penjadwalan & Live Tracker Lapangan" untuk mulai mengalokasikan personil & alat.</p>
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th>Agenda Liputan & Lokasi</th>
+                  <th>Jadwal Pelaksanaan</th>
+                  <th>Alat yang Dialokasikan</th>
+                  <th>Petugas Lapangan & Status Tugas</th>
+                  <th>Aksi Satu-Klik</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((ev) => {
+                  const lockedList = equipment.filter((eq) => ev.peralatanTerkunciIds?.includes(eq.id));
+                  return (
+                    <tr key={ev.id}>
+                      <td style={{ maxWidth: '240px' }}>
+                        <strong style={{ color: '#0F172A', display: 'block', fontSize: '0.9rem' }}>{ev.judul}</strong>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.775rem', color: '#64748B', marginTop: '0.2rem' }}>
+                          <MapPin size={12} color="#94A3B8" />
+                          <span>{ev.lokasi || 'Area Sekolah'}</span>
+                        </div>
+                        {ev.deskripsi && (
+                          <div style={{ fontSize: '0.725rem', color: '#94A3B8', marginTop: '0.25rem' }}>{ev.deskripsi}</div>
+                        )}
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#1E293B' }}>{ev.tanggal}</div>
+                        <span style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          color: '#1E3A8A',
+                          background: '#EFF6FF',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          display: 'inline-block',
+                          marginTop: '0.2rem'
+                        }}>
+                          {ev.waktuMulai} - {ev.waktuSelesai} WIB
+                        </span>
+                        <div style={{ marginTop: '0.35rem' }}>
+                          <StatusBadge status={ev.status} />
+                        </div>
+                      </td>
+                      <td style={{ maxWidth: '220px' }}>
+                        {lockedList.length > 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            {lockedList.map((tool) => (
+                              <span key={tool.id} style={{
+                                fontSize: '0.75rem',
+                                color: '#1E3A8A',
+                                fontWeight: 600,
+                                background: '#F0F9FF',
+                                border: '1px solid #BAE6FD',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                display: 'inline-block'
+                              }}>
+                                🔒 {tool.nama}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Tanpa alokasi alat khusus</span>
+                        )}
+                      </td>
+                      <td style={{ minWidth: '320px' }}>
+                        {(!ev.personil || ev.personil.length === 0) ? (
+                          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Belum ada personil ditugaskan</span>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                            {ev.personil.map((p, idx) => {
+                              const getRoleBadge = (role) => {
+                                if (role === 'Kamera Foto 1') return { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE', Icon: Camera };
+                                if (role === 'Foto 2') return { bg: '#F0F9FF', text: '#0369A1', border: '#BAE6FD', Icon: Camera };
+                                if (role === 'Video') return { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A', Icon: Video };
+                                if (role?.includes('Live Report')) return { bg: '#F0FDF4', text: '#166534', border: '#BBF7D0', Icon: Smartphone };
+                                return { bg: '#F8FAFC', text: '#475569', border: '#E2E8F0', Icon: Camera };
+                              };
+                              const roleMeta = getRoleBadge(p.peran);
+                              const RoleIcon = roleMeta.Icon;
+
+                              return (
+                                <div
+                                  key={idx}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: '0.5rem',
+                                    background: roleMeta.bg,
+                                    border: `1px solid ${roleMeta.border}`,
+                                    padding: '0.35rem 0.6rem',
+                                    borderRadius: '6px'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    <RoleIcon size={14} color={roleMeta.text} />
+                                    <div>
+                                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: roleMeta.text }}>
+                                        {p.nama}
+                                      </span>
+                                      <span style={{ fontSize: '0.72rem', color: '#64748B', marginLeft: '0.3rem' }}>
+                                        ({p.peran})
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <StatusBadge status={p.statusTugas} />
+                                    <button
+                                      type="button"
+                                      className="btn btn-whatsapp btn-sm"
+                                      style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}
+                                      onClick={() => handleSendEventCoverageReminder(ev, p)}
+                                      title={`Kirim pengingat WhatsApp ke ${p.nama}`}
+                                      id={`btn-wa-personil-${ev.id}-${idx}`}
+                                    >
+                                      <Send size={11} />
+                                      <span>Kirim WA</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                          <button
+                            type="button"
+                            className="btn btn-whatsapp btn-sm"
+                            onClick={() => handleSendEventTeamBroadcast(ev)}
+                            id={`btn-wa-event-broadcast-${ev.id}`}
+                            title="Kirim pesan ringkasan seluruh tim ke WhatsApp grup / koordinator"
+                          >
+                            <Send size={13} />
+                            <span>Broadcast Tim Liputan</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* 2. TABEL PENGINGAT PENGEMBALIAN ALAT (FORMAT RESMI WAJIB) */}
       <div className="card" style={{ marginBottom: '2.5rem' }}>
         <div className="card-header">
           <div>
@@ -177,7 +443,7 @@ export const WhatsAppRemindersTab = () => {
         )}
       </div>
 
-      {/* 2. TABEL PENGINGAT TENGGAT WAKTU TUGAS KREATIF */}
+      {/* 3. TABEL PENGINGAT TENGGAT WAKTU TUGAS KREATIF */}
       <div className="card" style={{ marginBottom: '2.5rem' }}>
         <div className="card-header">
           <div>
@@ -248,7 +514,7 @@ export const WhatsAppRemindersTab = () => {
         </div>
       </div>
 
-      {/* 3. TABEL PENGINGAT GILIRAN PIKET STUDIO */}
+      {/* 4. TABEL PENGINGAT GILIRAN PIKET STUDIO */}
       <div className="card">
         <div className="card-header">
           <div>

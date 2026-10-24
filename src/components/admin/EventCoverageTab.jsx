@@ -14,9 +14,12 @@ import {
   Layers,
   MapPin,
   Sparkles,
-  Smartphone
+  Smartphone,
+  Send,
+  MessageSquare
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
+import { WhatsAppModal } from '../common/WhatsAppModal';
 
 export const EventCoverageTab = () => {
   const { 
@@ -50,6 +53,50 @@ export const EventCoverageTab = () => {
   const [manualVideoName, setManualVideoName] = useState('');
   const [assignedLiveReportId, setAssignedLiveReportId] = useState('');
   const [manualLiveReportName, setManualLiveReportName] = useState('');
+
+  // Modal State untuk Pratinjau WhatsApp Pengingat Lapangan
+  const [waModalData, setWaModalData] = useState(null);
+
+  // Trigger One-Click WA Penugasan Dokumentasi Lapangan
+  const handleSendCoverageReminder = (event, personil) => {
+    const foundMember = members.find(
+      (m) => m.id === personil.anggotaId || m.nama?.toLowerCase().trim() === personil.nama?.toLowerCase().trim()
+    );
+    const phone = foundMember?.nomorWa || '6281234567890';
+
+    const lockedNames = equipment
+      .filter((eq) => event.peralatanTerkunciIds?.includes(eq.id))
+      .map((eq) => eq.nama)
+      .join(', ');
+
+    const actionText = personil.statusTugas === 'Belum Mengambil Alat'
+      ? '⚠️ *MOHON SEGERA*: Hadir di Studio Creative Corner sebelum acara dimulai untuk mengambil perlengkapan alat dan mengisi *Formulir Inspeksi Pengambilan* di sistem.'
+      : personil.statusTugas === 'Sedang Melaksanakan Tugas'
+        ? 'Pastikan seluruh momen penting acara terdokumentasikan dengan baik. Setelah agenda selesai, segera kembalikan unit alat ke studio dan mengisi *Formulir Inspeksi Pengembalian*.'
+        : 'Terima kasih telah menyelesaikan seluruh rangkaian dokumentasi lapangan dan inspeksi pengembalian alat dengan baik.';
+
+    const rawMessage = `Halo *${personil.nama}*, pengingat penugasan liputan lapangan dari *Creative Corner*.
+
+Anda ditugaskan sebagai *${personil.peran}* pada agenda kegiatan berikut:
+📌 *Acara*: ${event.judul}
+📍 *Lokasi*: ${event.lokasi || 'Area Sekolah'}
+🗓️ *Tanggal*: ${event.tanggal}
+⏰ *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
+🔒 *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
+
+Status Tugas Anda: *${personil.statusTugas}*.
+${actionText}
+
+Semangat bertugas & terima kasih!
+_Tim Pengelola Studio Creative Corner_`;
+
+    setWaModalData({
+      recipientName: `${personil.nama} (${personil.peran})`,
+      phoneNumber: phone,
+      messageText: rawMessage,
+      title: `Pengingat Dokumentasi: ${personil.nama} (${personil.peran})`
+    });
+  };
 
   // Modal State untuk Tambah / Edit Roster Piket
   const [isAddDutyModalOpen, setIsAddDutyModalOpen] = useState(false);
@@ -402,7 +449,20 @@ export const EventCoverageTab = () => {
                                     </span>
                                     <span style={{ fontSize: '0.7rem', color: '#64748B' }}>({p.peran})</span>
                                   </div>
-                                  <StatusBadge status={p.statusTugas} />
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <StatusBadge status={p.statusTugas} />
+                                    <button
+                                      type="button"
+                                      className="btn btn-whatsapp btn-sm"
+                                      style={{ padding: '0.2rem 0.45rem', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+                                      onClick={() => handleSendCoverageReminder(ev, p)}
+                                      title={`Kirim pengingat WhatsApp ke ${p.nama}`}
+                                      id={`btn-live-wa-${ev.id}-${idx}`}
+                                    >
+                                      <Send size={11} />
+                                      <span>WA</span>
+                                    </button>
+                                  </div>
                                 </div>
                               );
                             })}
@@ -1070,6 +1130,18 @@ export const EventCoverageTab = () => {
             />
           </div>
         </Modal>
+      )}
+
+      {/* Modal Pratinjau WhatsApp Pengingat Dokumentasi Lapangan */}
+      {waModalData && (
+        <WhatsAppModal
+          isOpen={Boolean(waModalData)}
+          onClose={() => setWaModalData(null)}
+          recipientName={waModalData.recipientName}
+          phoneNumber={waModalData.phoneNumber}
+          messageText={waModalData.messageText}
+          title={waModalData.title}
+        />
       )}
     </div>
   );
