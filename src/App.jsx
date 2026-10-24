@@ -212,16 +212,13 @@ const AppContent = () => {
         color: '#64748B',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         flexWrap: 'wrap',
         gap: '0.5rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           <img src="/logo-creative-corner.png" alt="Creative Corner Logo" style={{ height: '22px', objectFit: 'contain' }} />
-          <strong style={{ color: '#0F172A' }}>Creative Corner</strong> — Sistem Manajemen Studio Terpadu
-        </div>
-        <div>
-          SMK / SMA Negeri Unggulan • Komunitas Kreatif & Multimedia © {new Date().getFullYear()}
+          <strong style={{ color: '#0F172A' }}>Creative Corner</strong> — Be Creative, Be Brave, Be Smart.
         </div>
       </footer>
     </div>

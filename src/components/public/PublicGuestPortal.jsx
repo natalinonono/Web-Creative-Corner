@@ -341,7 +341,7 @@ export const PublicGuestPortal = () => {
           id="tab-public-status"
         >
           <Search size={16} />
-          <span>Lacak Status Resi Tiket</span>
+          <span>Status Peminjaman</span>
         </button>
       </div>
 
@@ -1079,15 +1079,15 @@ export const PublicGuestPortal = () => {
         </div>
       )}
 
-      {/* 6. TAB KONTEN 3: LACAK STATUS RESI */}
+      {/* 6. TAB KONTEN 3: STATUS PEMINJAMAN */}
       {publicTab === 'status' && (
         <div className="card" style={{ padding: '1.75rem' }}>
           <div style={{ marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              Lacak Status Resi Tiket Peminjaman
+              Status Peminjaman Alat & Fasilitas
             </h2>
             <p style={{ fontSize: '0.825rem', color: '#64748B', marginTop: '4px', margin: 0 }}>
-              Masukkan nomor resi tiket atau nama Anda untuk mengecek status verifikasi dan pengembalian.
+              Masukkan kode peminjaman atau nama Anda untuk mengecek status verifikasi dan pengembalian.
             </p>
           </div>
 

@@ -102,7 +102,7 @@ export const TopNavbar = () => {
         </div>
         <div>
           <div className="brand-title">Creative Corner</div>
-          <div className="brand-subtitle">Studio Multimedia & Produksi Kreatif</div>
+          <div className="brand-subtitle">Be Creative, Be Brave, Be Smart.</div>
         </div>
       </div>
 
@@ -136,7 +136,7 @@ export const TopNavbar = () => {
           <span>Katalog Fasilitas</span>
         </button>
 
-        {/* Link 3: Lacak Status Resi */}
+        {/* Link 3: Status Peminjaman */}
         <button
           id="nav-lacak-resi"
           className={`role-switcher-btn ${currentRole === 'public' && publicTab === 'status' ? 'active' : ''}`}
@@ -144,10 +144,10 @@ export const TopNavbar = () => {
             setCurrentRole('public');
             setPublicTab('status');
           }}
-          title="Cek Status Pengajuan & Resi Peminjaman Anda"
+          title="Cek Status Pengajuan Peminjaman Anda"
         >
           <Search size={15} />
-          <span>Lacak Resi</span>
+          <span>Status Peminjaman</span>
         </button>
 
         {/* Link 4: Klien PC Kiosk */}
