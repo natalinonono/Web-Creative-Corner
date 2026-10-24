@@ -179,7 +179,7 @@ export const EquipmentLoanTab = () => {
 
         {/* Tab Filter Kategori */}
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', overflowX: 'auto', flexWrap: 'wrap' }}>
-          {['Semua', 'Kamera', 'Lensa', 'Baterai', 'Audio & Mikrofon', 'Lighting & Tata Cahaya', 'Tripod & Aksesori', 'Ruang Studio'].map((cat) => (
+          {['Semua', 'Kamera', 'Lensa', 'Baterai', 'Memory Card', 'Audio & Mikrofon', 'Lighting & Tata Cahaya', 'Tripod & Aksesori', 'Ruang Studio'].map((cat) => (
             <button
               key={cat}
               type="button"
@@ -197,7 +197,7 @@ export const EquipmentLoanTab = () => {
             <Camera size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
             <div style={{ fontWeight: 600, color: '#334155' }}>Katalog Inventaris Masih Kosong</div>
             <p style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
-              Belum ada kamera, lensa, baterai, aksesori, atau ruang studio terdaftar. Administrator dapat menambahkan unit melalui Portal Pengelola.
+              Belum ada kamera, lensa, baterai, memory card, aksesori, atau ruang studio terdaftar. Administrator dapat menambahkan unit melalui Portal Pengelola.
             </p>
           </div>
         ) : (
@@ -210,6 +210,7 @@ export const EquipmentLoanTab = () => {
             const itemCat = (tool.kategori || '').toLowerCase();
             const toolReq = itemCat.includes('kamera') || tool.nama.toLowerCase().includes('canon') ? getCameraRequirements(tool) : null;
             const isBattery = itemCat.includes('baterai') || tool.nama.toLowerCase().includes('baterai') || tool.nama.toLowerCase().includes('battery');
+            const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || tool.nama.toLowerCase().includes('sd card') || tool.nama.toLowerCase().includes('memory');
 
             return (
               <div 
@@ -237,7 +238,7 @@ export const EquipmentLoanTab = () => {
                     {tool.nama}
                   </h4>
 
-                  {/* Badge Panduan Kompatibilitas Kamera */}
+                  {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
                   {toolReq && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.65rem' }}>
                       <span style={{
@@ -250,17 +251,6 @@ export const EquipmentLoanTab = () => {
                         width: 'fit-content'
                       }}>
                         🔍 {toolReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : toolReq.lensLabel}
-                      </span>
-                      <span style={{
-                        fontSize: '0.7rem',
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        background: toolReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
-                        color: toolReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
-                        fontWeight: 700,
-                        width: 'fit-content'
-                      }}>
-                        🔋 {toolReq.batteryLabel}
                       </span>
                     </div>
                   )}
@@ -278,6 +268,24 @@ export const EquipmentLoanTab = () => {
                         width: 'fit-content'
                       }}>
                         🔋 {(tool.nama + tool.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Badge Kategori Memory Card */}
+                  {isMemoryCard && (
+                    <div style={{ marginBottom: '0.65rem' }}>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        background: '#F0F9FF',
+                        color: '#0369A1',
+                        border: '1px solid #BAE6FD',
+                        fontWeight: 700,
+                        width: 'fit-content'
+                      }}>
+                        💾 Memory Card
                       </span>
                     </div>
                   )}

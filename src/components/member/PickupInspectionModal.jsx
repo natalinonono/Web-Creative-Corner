@@ -364,6 +364,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                 const itemCat = (item.kategori || '').toLowerCase();
                 const itemReq = itemCat.includes('kamera') || item.nama.toLowerCase().includes('canon') ? getCameraRequirements(item) : null;
                 const isBattery = itemCat.includes('baterai') || item.nama.toLowerCase().includes('baterai') || item.nama.toLowerCase().includes('battery');
+                const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || item.nama.toLowerCase().includes('sd card') || item.nama.toLowerCase().includes('memory');
 
                 return (
                   <label 
@@ -392,7 +393,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       </strong>
                       <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori} • {item.lokasiRak}</div>
 
-                      {/* Badge Panduan Kompatibilitas Kamera */}
+                      {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
                       {itemReq && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '3px' }}>
                           <span style={{
@@ -405,17 +406,6 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             width: 'fit-content'
                           }}>
                             🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
-                          </span>
-                          <span style={{
-                            fontSize: '0.675rem',
-                            padding: '1px 5px',
-                            borderRadius: '3px',
-                            background: itemReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
-                            color: itemReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
-                            fontWeight: 700,
-                            width: 'fit-content'
-                          }}>
-                            🔋 {itemReq.batteryLabel}
                           </span>
                         </div>
                       )}
@@ -432,6 +422,23 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             fontWeight: 700
                           }}>
                             🔋 {(item.nama + item.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Badge Kategori Memory Card */}
+                      {isMemoryCard && (
+                        <div style={{ marginTop: '3px' }}>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '1px 5px',
+                            borderRadius: '3px',
+                            background: '#F0F9FF',
+                            color: '#0369A1',
+                            border: '1px solid #BAE6FD',
+                            fontWeight: 700
+                          }}>
+                            💾 Memory Card
                           </span>
                         </div>
                       )}

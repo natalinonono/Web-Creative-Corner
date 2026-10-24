@@ -113,7 +113,7 @@ export const StudioProvider = ({ children }) => {
           spesifikasi: item.spesifikasi || '',
           status: item.status || 'Tersedia',
           kondisiFisik: item.kondisi_fisik || 'Baik & Terawat',
-          baterai: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera')
+          baterai: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera' || item.kategori === 'Memory Card')
             ? null
             : (item.baterai !== undefined && item.baterai !== null ? item.baterai : item.baterai_persen),
           terkunciOlehEventId: null
@@ -332,7 +332,7 @@ export const StudioProvider = ({ children }) => {
       spesifikasi: item.spesifikasi || null,
       status: item.status,
       kondisi_fisik: item.kondisiFisik || 'Baik & Terawat',
-      baterai_persen: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera')
+      baterai_persen: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera' || item.kategori === 'Memory Card')
         ? null
         : (item.baterai !== undefined && item.baterai !== null ? item.baterai : null)
     }]).then(() => {}).catch((err) => console.warn('Supabase equipment sync error:', err));

@@ -25,7 +25,8 @@ import {
   Tag,
   BatteryCharging,
   Battery,
-  Sparkles
+  Sparkles,
+  HardDrive
 } from 'lucide-react';
 import { getCameraRequirements, CAMERA_RULES } from '../../utils/cameraCompatibility';
 
@@ -33,6 +34,7 @@ export const STANDARD_CATEGORIES = [
   'Kamera',
   'Lensa',
   'Baterai',
+  'Memory Card',
   'Audio & Mikrofon',
   'Lighting & Tata Cahaya',
   'Tripod & Aksesori',
@@ -78,6 +80,9 @@ export const InventoryMasterTab = () => {
     }
     if (lower.includes('baterai') || lower.includes('battery')) {
       return { icon: BatteryCharging, color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', label: 'Baterai' };
+    }
+    if (lower.includes('memory') || lower.includes('sd card')) {
+      return { icon: HardDrive, color: '#0284C7', bg: '#F0F9FF', border: '#BAE6FD', label: 'Memory Card' };
     }
     if (lower.includes('audio') || lower.includes('mic')) {
       return { icon: Mic, color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', label: 'Audio & Mikrofon' };
@@ -558,17 +563,6 @@ export const InventoryMasterTab = () => {
                                   }}>
                                     🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
                                   </span>
-                                  <span style={{
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700,
-                                    color: camReq.batteryType === 'LP-E10' ? '#92400E' : '#065F46',
-                                    background: camReq.batteryType === 'LP-E10' ? '#FEF3C7' : '#ECFDF5',
-                                    border: `1px solid ${camReq.batteryType === 'LP-E10' ? '#FDE68A' : '#A7F3D0'}`,
-                                    padding: '1px 6px',
-                                    borderRadius: '4px'
-                                  }}>
-                                    🔋 {camReq.batteryLabel}
-                                  </span>
                                 </div>
                               )}
                             </td>
@@ -652,17 +646,6 @@ export const InventoryMasterTab = () => {
                               borderRadius: '4px'
                             }}>
                               🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
-                            </span>
-                            <span style={{
-                              fontSize: '0.7rem',
-                              fontWeight: 700,
-                              color: camReq.batteryType === 'LP-E10' ? '#92400E' : '#065F46',
-                              background: camReq.batteryType === 'LP-E10' ? '#FEF3C7' : '#ECFDF5',
-                              border: `1px solid ${camReq.batteryType === 'LP-E10' ? '#FDE68A' : '#A7F3D0'}`,
-                              padding: '1px 6px',
-                              borderRadius: '4px'
-                            }}>
-                              🔋 {camReq.batteryLabel}
                             </span>
                           </div>
                         )}
@@ -851,9 +834,10 @@ export const InventoryMasterTab = () => {
               <option value="Kamera">📷 Kamera (Body Only / Mirrorless / DSLR)</option>
               <option value="Lensa">🔍 Lensa (Prime / Zoom / Tele / Wide)</option>
               <option value="Baterai">🔋 Baterai (LP-E17, LP-E10, dll.)</option>
+              <option value="Memory Card">💾 Memory Card (SD Card / Micro SD / CF)</option>
               <option value="Audio & Mikrofon">🎙️ Audio & Mikrofon (Wireless / Shotgun / Recorder)</option>
               <option value="Lighting & Tata Cahaya">💡 Lighting & Tata Cahaya (LED / Softbox / Continuous)</option>
-              <option value="Tripod & Aksesori">🎬 Tripod & Aksesori (Gimbal / Rig / Stand / Memori)</option>
+              <option value="Tripod & Aksesori">🎬 Tripod & Aksesori (Gimbal / Rig / Stand)</option>
               <option value="Ruang Studio">🏢 Ruang Studio (Podcast / Green Screen / Audio Suite)</option>
               <option value="Lainnya">📦 Lainnya (Kategori Kustom...)</option>
             </select>
@@ -1005,6 +989,54 @@ export const InventoryMasterTab = () => {
             </div>
           )}
 
+          {/* Quick Presets Memory Card Resmi */}
+          {kategori === 'Memory Card' && (
+            <div style={{ marginBottom: '1rem', background: '#F0F9FF', border: '1px dashed #BAE6FD', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#0369A1', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <HardDrive size={13} color="#0284C7" />
+                <span>Preset Memory Card Resmi (Klik untuk Auto-Isi):</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('SD Card SanDisk Extreme Pro 64GB');
+                    setKondisiFisik('Sangat Baik & Kosong');
+                    setSpesifikasi('SDXC UHS-I 64GB Kecepatan hingga 170MB/s (V30 U3 C10 4K UHD).');
+                  }}
+                >
+                  SD Card 64GB (SanDisk Extreme Pro)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('SD Card SanDisk Extreme Pro 128GB');
+                    setKondisiFisik('Sangat Baik & Kosong');
+                    setSpesifikasi('SDXC UHS-I 128GB Kecepatan hingga 200MB/s (V30 U3 C10 4K UHD).');
+                  }}
+                >
+                  SD Card 128GB (SanDisk Extreme Pro)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('MicroSD SanDisk Extreme 64GB + Adapter');
+                    setKondisiFisik('Sangat Baik & Kosong');
+                    setSpesifikasi('MicroSDXC 64GB + SD Adapter untuk Action Cam / Drone / Kamera Mirrorless.');
+                  }}
+                >
+                  MicroSD 64GB + Adapter
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Nama Alat *</label>
             <input
@@ -1016,6 +1048,7 @@ export const InventoryMasterTab = () => {
                 kategori === 'Kamera' ? 'Contoh: CANON EOS M6 II, CANON EOS 250D...' :
                 kategori === 'Lensa' ? 'Contoh: Canon EF 50mm f/1.8 STM, Canon EF-M 15-45mm...' :
                 kategori === 'Baterai' ? 'Contoh: Baterai Canon LP-E17, Baterai Canon LP-E10...' :
+                kategori === 'Memory Card' ? 'Contoh: SD Card SanDisk Extreme Pro 64GB / 128GB...' :
                 kategori === 'Audio & Mikrofon' ? 'Contoh: DJI Mic 2 Wireless, Rode VideoMic Pro...' :
                 kategori === 'Lighting & Tata Cahaya' ? 'Contoh: Godox SL-60W, Amaran 200d, Ring Light...' :
                 kategori === 'Ruang Studio' ? 'Contoh: Studio Podcast Utama, Studio Green Screen...' :

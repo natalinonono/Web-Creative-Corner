@@ -29,7 +29,8 @@ import {
   Layers,
   ArrowRight,
   X,
-  BatteryCharging
+  BatteryCharging,
+  HardDrive
 } from 'lucide-react';
 import { getCameraRequirements, isEquipmentCompatible } from '../../utils/cameraCompatibility';
 
@@ -198,8 +199,8 @@ export const PublicGuestPortal = () => {
   );
   const cameraReq = selectedCamera ? getCameraRequirements(selectedCamera) : null;
 
-  // Filter kategori unik (Termasuk Baterai)
-  const categories = ['Semua', 'Kamera', 'Lensa', 'Baterai', 'Audio & Mic', 'Lighting & Rig', 'Ruangan'];
+  // Filter kategori unik (Termasuk Baterai & Memory Card)
+  const categories = ['Semua', 'Kamera', 'Lensa', 'Baterai', 'Memory Card', 'Audio & Mic', 'Lighting & Rig', 'Ruangan'];
 
   const filteredEquipment = equipment.filter((eq) => {
     // 1. FILTER KOMPATIBILITAS OTOMATIS: Jika kamera terpilih, sembunyikan lensa dan baterai yang tidak kompatibel!
@@ -222,6 +223,9 @@ export const PublicGuestPortal = () => {
     }
     if (selectedCategory === 'Baterai') {
       return matchesSearch && ((eq.kategori || '').toLowerCase().includes('baterai') || (eq.kategori || '').toLowerCase().includes('battery'));
+    }
+    if (selectedCategory === 'Memory Card') {
+      return matchesSearch && ((eq.kategori || '').toLowerCase().includes('memory') || (eq.kategori || '').toLowerCase().includes('sd card') || (eq.nama || '').toLowerCase().includes('sd card') || (eq.nama || '').toLowerCase().includes('memory'));
     }
     if (selectedCategory === 'Audio & Mic') {
       return matchesSearch && ((eq.kategori || '').toLowerCase().includes('audio') || (eq.kategori || '').toLowerCase().includes('mic'));
@@ -574,7 +578,9 @@ export const PublicGuestPortal = () => {
                         ) : (
                           <>🔍 Menggunakan <strong>{cameraReq.lensLabel}</strong>.</>
                         )}
-                        {' '}🔋 Baterai: <strong>{cameraReq.batteryLabel}</strong>.
+                        <span style={{ display: 'block', fontSize: '0.725rem', marginTop: '3px', color: '#B45309', fontWeight: 600 }}>
+                          ⚠️ Kamera berstatus Body Only (belum termasuk baterai & lensa). Jika perlu baterai, pilih {cameraReq.batteryLabel} di kategori Baterai.
+                        </span>
                       </div>
                       <div style={{ color: '#2563EB', fontSize: '0.7rem', marginTop: '2px', fontStyle: 'italic' }}>
                         * Lensa dan baterai yang tidak kompatibel dengan kamera ini otomatis disembunyikan.
@@ -609,6 +615,7 @@ export const PublicGuestPortal = () => {
                       const itemCat = (item.kategori || '').toLowerCase();
                       const itemReq = itemCat.includes('kamera') || item.nama.toLowerCase().includes('canon') ? getCameraRequirements(item) : null;
                       const isBattery = itemCat.includes('baterai') || item.nama.toLowerCase().includes('baterai') || item.nama.toLowerCase().includes('battery');
+                      const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || item.nama.toLowerCase().includes('sd card') || item.nama.toLowerCase().includes('memory');
 
                       return (
                         <div
@@ -651,7 +658,7 @@ export const PublicGuestPortal = () => {
                               {item.kategori} • {item.lokasiRak || 'Studio'}
                             </div>
 
-                            {/* Badge Panduan Kompatibilitas Kamera */}
+                            {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
                             {itemReq && (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '4px' }}>
                                 <span style={{
@@ -667,20 +674,6 @@ export const PublicGuestPortal = () => {
                                   width: 'fit-content'
                                 }}>
                                   🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
-                                </span>
-                                <span style={{
-                                  fontSize: '0.685rem',
-                                  padding: '1px 6px',
-                                  borderRadius: '4px',
-                                  background: itemReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
-                                  color: itemReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
-                                  fontWeight: 700,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '3px',
-                                  width: 'fit-content'
-                                }}>
-                                  🔋 {itemReq.batteryLabel}
                                 </span>
                               </div>
                             )}
@@ -704,8 +697,28 @@ export const PublicGuestPortal = () => {
                               </div>
                             )}
 
+                            {/* Badge Kategori Memory Card */}
+                            {isMemoryCard && (
+                              <div style={{ marginTop: '4px' }}>
+                                <span style={{
+                                  fontSize: '0.685rem',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: '#F0F9FF',
+                                  color: '#0369A1',
+                                  border: '1px solid #BAE6FD',
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
+                                }}>
+                                  💾 Memory Card
+                                </span>
+                              </div>
+                            )}
+
                             {/* Spesifikasi / Keterangan Alat jika ada */}
-                            {!itemReq && !isBattery && item.spesifikasi && (
+                            {!itemReq && !isBattery && !isMemoryCard && item.spesifikasi && (
                               <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '2px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {item.spesifikasi}
                               </div>
@@ -1162,6 +1175,7 @@ export const PublicGuestPortal = () => {
               const itemCat = (eq.kategori || '').toLowerCase();
               const itemReq = itemCat.includes('kamera') || eq.nama.toLowerCase().includes('canon') ? getCameraRequirements(eq) : null;
               const isBattery = itemCat.includes('baterai') || eq.nama.toLowerCase().includes('baterai') || eq.nama.toLowerCase().includes('battery');
+              const isMemoryCard = itemCat.includes('memory') || itemCat.includes('sd card') || eq.nama.toLowerCase().includes('sd card') || eq.nama.toLowerCase().includes('memory');
 
               return (
                 <div
@@ -1192,7 +1206,7 @@ export const PublicGuestPortal = () => {
                       Kode Aset: <strong>{eq.id}</strong> • Lokasi: {eq.lokasiRak || 'Studio'}
                     </div>
 
-                    {/* Badge Kompatibilitas Khusus Kamera */}
+                    {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
                     {itemReq && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.65rem' }}>
                         <span style={{
@@ -1205,17 +1219,6 @@ export const PublicGuestPortal = () => {
                           width: 'fit-content'
                         }}>
                           🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : itemReq.lensLabel}
-                        </span>
-                        <span style={{
-                          fontSize: '0.7rem',
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          background: itemReq.batteryType === 'LP-E10' ? '#FEE2E2' : '#F0FDF4',
-                          color: itemReq.batteryType === 'LP-E10' ? '#991B1B' : '#166534',
-                          fontWeight: 700,
-                          width: 'fit-content'
-                        }}>
-                          🔋 {itemReq.batteryLabel}
                         </span>
                       </div>
                     )}
@@ -1233,6 +1236,24 @@ export const PublicGuestPortal = () => {
                           width: 'fit-content'
                         }}>
                           🔋 {(eq.nama + eq.spesifikasi).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Badge Kategori Memory Card */}
+                    {isMemoryCard && (
+                      <div style={{ marginBottom: '0.65rem' }}>
+                        <span style={{
+                          fontSize: '0.7rem',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          background: '#F0F9FF',
+                          color: '#0369A1',
+                          border: '1px solid #BAE6FD',
+                          fontWeight: 700,
+                          width: 'fit-content'
+                        }}>
+                          💾 Memory Card
                         </span>
                       </div>
                     )}
