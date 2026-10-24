@@ -237,8 +237,11 @@ export const EquipmentLoanTab = () => {
                   <div style={{ fontSize: '0.785rem', color: '#64748B', display: 'flex', flexDirection: 'column', gap: '0.2rem', marginBottom: '1rem' }}>
                     <div>📍 <strong>Lokasi:</strong> {tool.lokasiRak}</div>
                     <div>🔧 <strong>Kondisi:</strong> {tool.kondisiFisik}</div>
-                    {tool.baterai !== null && (
+                    {tool.baterai !== null && tool.kategori !== 'Kamera' && tool.kategori !== 'Lensa' && tool.kategori !== 'Ruang Studio' && (
                       <div>⚡ <strong>Baterai:</strong> {tool.baterai}%</div>
+                    )}
+                    {tool.kategori === 'Kamera' && (
+                      <div>📷 <strong>Tipe:</strong> Body Only (Baterai Terpisah)</div>
                     )}
                   </div>
                 </div>

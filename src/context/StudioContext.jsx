@@ -150,7 +150,19 @@ export const StudioProvider = ({ children }) => {
         if (Array.isArray(pcs) && pcs.length > 0) setPcClients(pcs);
 
         const { data: eq } = await supabase.from('equipment').select('*');
-        if (Array.isArray(eq)) setEquipment(eq);
+        if (Array.isArray(eq)) {
+          const mappedEq = eq.map((item) => ({
+            ...item,
+            lokasiRak: item.lokasiRak || item.lokasi_rak || 'Ruang Studio Creative Corner',
+            kondisiFisik: item.kondisiFisik || item.kondisi_fisik || 'Sangat Baik (100%)',
+            baterai: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera')
+              ? null
+              : (item.baterai !== undefined && item.baterai !== null ? item.baterai : (item.baterai_persen !== undefined ? item.baterai_persen : null)),
+            kode: item.kode || item.nomor_seri || item.id,
+            spesifikasi: item.spesifikasi || ''
+          }));
+          setEquipment(mappedEq);
+        }
 
         const { data: evts } = await supabase.from('events').select('*');
         if (Array.isArray(evts)) setEvents(evts);
@@ -203,7 +215,9 @@ export const StudioProvider = ({ children }) => {
       spesifikasi: item.spesifikasi || null,
       status: item.status,
       kondisi_fisik: item.kondisiFisik || 'Baik & Terawat',
-      baterai_persen: item.baterai || 100
+      baterai_persen: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera')
+        ? null
+        : (item.baterai !== undefined && item.baterai !== null ? item.baterai : null)
     }]).then(() => {}).catch((err) => console.warn('Supabase equipment sync error:', err));
   };
 
@@ -836,9 +850,12 @@ export const StudioProvider = ({ children }) => {
   };
 
   const updateEquipment = (id, updatedFields) => {
-    setEquipment((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updatedFields } : item))
-    );
+    setEquipment((prev) => {
+      const updated = prev.map((item) => (item.id === id ? { ...item, ...updatedFields } : item));
+      const target = updated.find((item) => item.id === id);
+      if (target) syncEquipmentToSupabase(target);
+      return updated;
+    });
     showToast(`Data aset berhasil diperbarui.`, 'success');
   };
 

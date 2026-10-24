@@ -319,12 +319,14 @@ export const CalendarTab = () => {
                         </td>
                         <td>{item.lokasiRak}</td>
                         <td>
-                          {item.baterai !== null ? (
+                          {item.baterai !== null && item.kategori !== 'Kamera' && item.kategori !== 'Lensa' && item.kategori !== 'Ruang Studio' ? (
                             <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: item.baterai <= 20 ? '#E11D48' : '#059669' }}>
                               ⚡ {item.baterai}%
                             </span>
                           ) : (
-                            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>AC Power / Manual</span>
+                            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                              {item.kategori === 'Kamera' ? 'Body Only' : item.kategori === 'Lensa' ? 'Manual/Optik' : item.kategori === 'Ruang Studio' ? 'Fasilitas Ruang' : 'AC Power / Manual'}
+                            </span>
                           )}
                         </td>
                         <td>

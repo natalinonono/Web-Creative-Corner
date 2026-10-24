@@ -123,7 +123,7 @@ export const InventoryMasterTab = () => {
         kategori,
         spesifikasi,
         kondisiFisik,
-        baterai: kategori === 'Ruang Studio' || kategori === 'Lensa' ? null : Number(baterai),
+        baterai: (kategori === 'Ruang Studio' || kategori === 'Lensa' || kategori === 'Kamera') ? null : Number(baterai),
         lokasiRak: lokasiRak || 'Ruang Studio Creative Corner'
       });
     } else {
@@ -133,7 +133,7 @@ export const InventoryMasterTab = () => {
         kategori,
         spesifikasi,
         kondisiFisik,
-        baterai: kategori === 'Ruang Studio' || kategori === 'Lensa' ? null : Number(baterai),
+        baterai: (kategori === 'Ruang Studio' || kategori === 'Lensa' || kategori === 'Kamera') ? null : Number(baterai),
         lokasiRak: lokasiRak || 'Ruang Studio Creative Corner'
       });
     }
@@ -366,11 +366,13 @@ export const InventoryMasterTab = () => {
                     <td>{item.lokasiRak}</td>
                     <td>
                       <div style={{ fontSize: '0.8rem' }}>{item.kondisiFisik}</div>
-                      {item.baterai !== null && (
+                      {item.baterai !== null && item.kategori !== 'Kamera' && item.kategori !== 'Lensa' && item.kategori !== 'Ruang Studio' ? (
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: item.baterai <= 20 ? '#E11D48' : '#059669', fontWeight: 700 }}>
                           ⚡ {item.baterai}%
                         </span>
-                      )}
+                      ) : item.kategori === 'Kamera' ? (
+                        <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Body Only</span>
+                      ) : null}
                     </td>
                     <td>
                       <StatusBadge status={item.status} />
@@ -649,7 +651,7 @@ export const InventoryMasterTab = () => {
             </div>
           </div>
 
-          {kategori !== 'Ruang Studio' && kategori !== 'Lensa' && (
+          {kategori !== 'Ruang Studio' && kategori !== 'Lensa' && kategori !== 'Kamera' && (
             <div className="form-group">
               <label className="form-label">Daya Baterai Saat Ini (%)</label>
               <input
