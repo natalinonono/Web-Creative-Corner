@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { useStudio } from '../../context/StudioContext';
-import { FORMAT_SURAT_PEMINJAMAN_TEXT } from '../../data/seedData';
-import { downloadLoanLetterDocx, downloadLoanLetterPdf } from '../../utils/documentGenerator';
 import { 
   ClipboardCheck, 
   Camera, 
@@ -54,50 +52,6 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
 
   // Bukti Surat Peminjaman (Foto / Dokumen)
   const [buktiSuratFile, setBuktiSuratFile] = useState(null);
-  const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
-
-  // Unduh Dokumen Format Surat Peminjaman (.DOCX & .PDF)
-  const handleDownloadDocx = () => {
-    downloadLoanLetterDocx({
-      namaPeminjam: currentMember?.nama,
-      kelas: currentMember?.kelas || currentMember?.divisi,
-      kontak: currentMember?.kontak || '0812-3456-7890',
-      keperluan: targetEvent ? `Liputan Event: ${targetEvent.judul}` : 'Peminjaman Alat Studio Creative Corner',
-      tanggalPinjam: targetEvent?.tanggal || new Date().toISOString().split('T')[0],
-      targetKembali: `${batasWaktuKembali || '16:00'} WIB`,
-      daftarAlat: equipment
-        .filter((eq) => selectedEqIds.includes(eq.id))
-        .map((eq, i) => ({
-          no: i + 1,
-          nama: eq.nama,
-          kode: eq.id,
-          jumlah: '1 Unit',
-          kondisi: eq.kondisiFisik || 'Baik'
-        }))
-    });
-  };
-
-  const handleDownloadPdf = () => {
-    downloadLoanLetterPdf({
-      namaPeminjam: currentMember?.nama,
-      kelas: currentMember?.kelas || currentMember?.divisi,
-      kontak: currentMember?.kontak || '0812-3456-7890',
-      keperluan: targetEvent ? `Liputan Event: ${targetEvent.judul}` : 'Peminjaman Alat Studio Creative Corner',
-      tanggalPinjam: targetEvent?.tanggal || new Date().toISOString().split('T')[0],
-      targetKembali: `${batasWaktuKembali || '16:00'} WIB`,
-      daftarAlat: equipment
-        .filter((eq) => selectedEqIds.includes(eq.id))
-        .map((eq, i) => ({
-          no: i + 1,
-          nama: eq.nama,
-          kode: eq.id,
-          jumlah: '1 Unit',
-          kondisi: eq.kondisiFisik || 'Baik'
-        }))
-    });
-  };
-
-  const handleDownloadFormatSurat = handleDownloadDocx;
 
   // Upload handler
   const handleFileUpload = (e) => {
@@ -155,7 +109,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
     }
 
     if (!buktiSuratFile && !targetEvent) {
-      alert('Wajib melampirkan foto lembar surat peminjaman atau berkas dokumen perizinan resmi! Jika Anda belum memiliki format suratnya, silakan klik tombol "Unduh Format Resmi (.TXT)" yang telah disediakan.');
+      alert('Wajib melampirkan foto lembar surat peminjaman atau berkas dokumen perizinan resmi!');
       return;
     }
 
@@ -208,92 +162,6 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       }
     >
       <form onSubmit={handleSubmit}>
-        {/* Dokumen Format Surat Peminjaman Resmi (.DOCX & .PDF) */}
-        <div style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #BFDBFE',
-          borderRadius: '10px',
-          padding: '1rem 1.15rem',
-          marginBottom: '1.25rem',
-          boxShadow: '0 2px 8px rgba(30, 58, 138, 0.05)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{
-                background: '#EFF6FF',
-                color: '#1E3A8A',
-                padding: '0.6rem',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: '2px',
-                flexShrink: 0
-              }}>
-                <FileText size={22} color="#1E3A8A" />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: 800, fontSize: '0.925rem', color: '#0F172A' }}>
-                    Dokumen Format Surat Peminjaman Resmi Studio
-                  </span>
-                  <span className="badge badge-blue" style={{ fontSize: '0.685rem' }}>CC-FORM-01/RESMI</span>
-                </div>
-                <p style={{ fontSize: '0.8rem', color: '#475569', margin: '0.25rem 0 0 0', lineHeight: '1.4' }}>
-                  Unduh format resmi draf permohonan dalam bentuk <strong>Word (.docx)</strong> atau <strong>PDF (.pdf)</strong> untuk dicetak, ditandatangani, dan diunggah kembali sebagai berkas sah peminjaman.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={handleDownloadDocx}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  borderColor: '#3B82F6',
-                  color: '#1E3A8A',
-                  background: '#F0F9FF',
-                  fontWeight: 700,
-                  fontSize: '0.785rem'
-                }}
-              >
-                <Download size={14} color="#2563EB" />
-                <span>Unduh .DOCX (Word)</span>
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={handleDownloadPdf}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  fontWeight: 700,
-                  fontSize: '0.785rem'
-                }}
-              >
-                <Download size={14} />
-                <span>Unduh .PDF</span>
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={() => setIsFormatModalOpen(true)}
-                title="Pratinjau draf surat"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.785rem' }}
-              >
-                <Eye size={14} />
-                <span>Pratinjau</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Informasi Peminjam & Event */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -535,95 +403,6 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
             </span>
           </div>
 
-          {/* Banner Pengunduhan Format */}
-          <div style={{
-            background: '#EFF6FF',
-            border: '1.5px dashed #3B82F6',
-            borderRadius: '8px',
-            padding: '0.85rem 1rem',
-            marginBottom: '0.75rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '0.65rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <FileText size={20} color="#1E3A8A" style={{ flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1E3A8A' }}>
-                  Belum punya format surat permohonan peminjaman?
-                </div>
-                <div style={{ fontSize: '0.725rem', color: '#334155' }}>
-                  Unduh draf resmi Creative Corner dalam format <strong>Word (.docx)</strong> atau <strong>PDF (.pdf)</strong> untuk dicetak dan ditandatangani.
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={handleDownloadDocx}
-                style={{ fontSize: '0.725rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#FFFFFF' }}
-              >
-                <Download size={13} color="#2563EB" />
-                <span>Unduh .DOCX</span>
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={handleDownloadPdf}
-                style={{ fontSize: '0.725rem' }}
-              >
-                <Download size={13} />
-                <span>Unduh .PDF</span>
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={() => setIsFormatModalOpen((prev) => !prev)}
-                style={{ fontSize: '0.725rem' }}
-              >
-                <Eye size={13} />
-                <span>{isFormatModalOpen ? 'Tutup Pratinjau' : 'Lihat Format'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Pratinjau Format Surat Langsung (Tanpa Modal Bertumpuk) */}
-          {isFormatModalOpen && (
-            <div style={{
-              background: '#FFFFFF',
-              border: '1.5px solid #CBD5E1',
-              borderRadius: '8px',
-              padding: '1rem',
-              marginBottom: '0.85rem',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.75rem',
-              lineHeight: '1.5',
-              color: '#0F172A',
-              whiteSpace: 'pre-wrap',
-              maxHeight: '260px',
-              overflowY: 'auto',
-              boxShadow: 'var(--shadow-sm)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.35rem' }}>
-                <strong style={{ color: '#1E3A8A', fontFamily: 'var(--font-sans)', fontSize: '0.8rem' }}>
-                  📄 Format Surat Resmi Creative Corner:
-                </strong>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setIsFormatModalOpen(false)}
-                  style={{ fontSize: '0.675rem', padding: '0.15rem 0.45rem' }}
-                >
-                  Tutup Pratinjau
-                </button>
-              </div>
-              {FORMAT_SURAT_PEMINJAMAN_TEXT}
-            </div>
-          )}
 
           {/* Upload Input */}
           {!buktiSuratFile ? (

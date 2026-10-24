@@ -4,7 +4,6 @@ import { EventCoverageTab } from './EventCoverageTab';
 import { WhatsAppRemindersTab } from './WhatsAppRemindersTab';
 import { InventoryMasterTab } from './InventoryMasterTab';
 import { PCMonitoringTab } from './PCMonitoringTab';
-import { DocumentCenterTab } from './DocumentCenterTab';
 import { MembersManagementTab } from './MembersManagementTab';
 import { 
   ShieldCheck, 
@@ -234,14 +233,6 @@ export const AdminPortal = () => {
           )}
         </button>
 
-        <button
-          className={`tab-btn ${activeTab === 'documents' ? 'active' : ''}`}
-          onClick={() => setActiveTab('documents')}
-          id="tab-admin-docs"
-        >
-          <FileText size={18} />
-          <span>Pusat Berkas Administrasi</span>
-        </button>
       </div>
 
       {/* Konten Sub-Tab */}
@@ -250,7 +241,6 @@ export const AdminPortal = () => {
       {activeTab === 'members' && <MembersManagementTab />}
       {activeTab === 'whatsapp' && <WhatsAppRemindersTab />}
       {activeTab === 'pc-monitoring' && <PCMonitoringTab />}
-      {activeTab === 'documents' && <DocumentCenterTab />}
     </div>
   );
 };

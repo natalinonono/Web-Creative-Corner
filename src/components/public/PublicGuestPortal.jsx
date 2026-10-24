@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { Modal } from '../common/Modal';
-import { downloadLoanLetterDocx, downloadLoanLetterPdf } from '../../utils/documentGenerator';
 import { 
   Camera, 
   Clock, 
@@ -67,46 +66,6 @@ export const PublicGuestPortal = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedLoan, setSubmittedLoan] = useState(null);
 
-  // Handler Download Format Dokumen Resmi Word & PDF
-  const handleDownloadDocx = () => {
-    downloadLoanLetterDocx({
-      namaPeminjam: namaPeminjam || '[NAMA LENGKAP PEMINJAM]',
-      kelas: kelasInstansi || '[KELAS / INSTANSI / ORGANISASI]',
-      kontak: nomorWa || '[NOMOR WHATSAPP]',
-      keperluan: keperluan || 'Peminjaman Alat Studio Creative Corner',
-      tanggalPinjam: tanggalPinjam || new Date().toISOString().split('T')[0],
-      targetKembali: `${batasKembali} WIB`,
-      daftarAlat: equipment
-        .filter((eq) => selectedEquipmentIds.includes(eq.id))
-        .map((eq, i) => ({
-          no: i + 1,
-          nama: eq.nama,
-          kode: eq.id,
-          jumlah: '1 Unit',
-          kondisi: eq.kondisiFisik || 'Baik & Normal'
-        }))
-    });
-  };
-
-  const handleDownloadPdf = () => {
-    downloadLoanLetterPdf({
-      namaPeminjam: namaPeminjam || '[NAMA LENGKAP PEMINJAM]',
-      kelas: kelasInstansi || '[KELAS / INSTANSI / ORGANISASI]',
-      kontak: nomorWa || '[NOMOR WHATSAPP]',
-      keperluan: keperluan || 'Peminjaman Alat Studio Creative Corner',
-      tanggalPinjam: tanggalPinjam || new Date().toISOString().split('T')[0],
-      targetKembali: `${batasKembali} WIB`,
-      daftarAlat: equipment
-        .filter((eq) => selectedEquipmentIds.includes(eq.id))
-        .map((eq, i) => ({
-          no: i + 1,
-          nama: eq.nama,
-          kode: eq.id,
-          jumlah: '1 Unit',
-          kondisi: eq.kondisiFisik || 'Baik & Normal'
-        }))
-    });
-  };
 
   // Upload File Foto atau Dokumen
   const handleFileUpload = (e) => {
@@ -170,7 +129,7 @@ export const PublicGuestPortal = () => {
     }
 
     if (!buktiSuratFile) {
-      alert('Wajib melampirkan foto lembar surat peminjaman atau berkas dokumen resmi! Jika belum memiliki format suratnya, silakan klik tombol "Unduh Format .DOCX / .PDF" yang telah disediakan.');
+      alert('Wajib melampirkan foto lembar surat peminjaman atau berkas dokumen resmi!');
       return;
     }
 
@@ -877,57 +836,6 @@ export const PublicGuestPortal = () => {
                   Peminjam wajib melampirkan lembar surat izin/peminjaman resmi yang telah ditandatangani oleh guru pembimbing atau penanggung jawab kegiatan.
                 </p>
 
-                {/* Box Unduh Format Resmi Dokumen */}
-                <div style={{
-                  background: '#EFF6FF',
-                  border: '1px dashed #3B82F6',
-                  borderRadius: '10px',
-                  padding: '0.85rem 1rem',
-                  marginBottom: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                    <FileText size={22} color="#1E3A8A" style={{ flexShrink: 0 }} />
-                    <div>
-                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1E3A8A' }}>
-                        Belum memiliki format surat peminjaman?
-                      </div>
-                      <div style={{ fontSize: '0.725rem', color: '#475569', marginTop: '2px' }}>
-                        Unduh format resmi Creative Corner, cetak, dan minta tanda tangan guru pembimbing:
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-sm"
-                      onClick={handleDownloadDocx}
-                      style={{ fontSize: '0.75rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#FFFFFF', fontWeight: 700 }}
-                      id="btn-download-docx"
-                      title="Unduh format dokumen Microsoft Word (.docx)"
-                    >
-                      <Download size={13} color="#2563EB" />
-                      <span>Unduh .DOCX (Word)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={handleDownloadPdf}
-                      style={{ fontSize: '0.75rem', fontWeight: 700 }}
-                      id="btn-download-pdf"
-                      title="Unduh format dokumen PDF (.pdf)"
-                    >
-                      <Download size={13} />
-                      <span>Unduh .PDF</span>
-                    </button>
-                  </div>
-                </div>
 
                 {/* Area Upload File */}
                 {!buktiSuratFile ? (

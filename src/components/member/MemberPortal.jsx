@@ -3,12 +3,10 @@ import { useStudio } from '../../context/StudioContext';
 import { CalendarTab } from './CalendarTab';
 import { EquipmentLoanTab } from './EquipmentLoanTab';
 import { CreativeTasksTab } from './CreativeTasksTab';
-import { DocumentsTab } from './DocumentsTab';
 import { 
   CalendarDays, 
   Camera, 
   Palette, 
-  FileText, 
   Sparkles,
   User
 } from 'lucide-react';
@@ -158,21 +156,12 @@ export const MemberPortal = () => {
           )}
         </button>
 
-        <button
-          className={`tab-btn ${activeTab === 'documents' ? 'active' : ''}`}
-          onClick={() => setActiveTab('documents')}
-          id="tab-member-documents"
-        >
-          <FileText size={18} />
-          <span>Format Dokumen & Surat</span>
-        </button>
       </div>
 
       {/* Konten Sub-Tab */}
       {activeTab === 'calendar' && <CalendarTab />}
       {activeTab === 'equipment' && <EquipmentLoanTab />}
       {activeTab === 'tasks' && <CreativeTasksTab />}
-      {activeTab === 'documents' && <DocumentsTab />}
     </div>
   );
 };
