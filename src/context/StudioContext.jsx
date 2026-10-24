@@ -34,10 +34,15 @@ const STORAGE_KEYS = {
 };
 
 export const StudioProvider = ({ children }) => {
-  // Fungsi penentu apakah email berhak menjadi Admin (mengandung kata 'creativecorner')
+  // Hanya email resmi Administrator atau akun yang telah terdaftar dengan role/divisi Admin
   const isAdminEmail = (email) => {
     if (!email) return false;
-    return email.toLowerCase().trim().includes('creativecorner');
+    const cleanEmail = email.toLowerCase().trim();
+    if (cleanEmail === 'admin1.creativecorner@gmail.com' || cleanEmail === 'creativecorner@gmail.com') {
+      return true;
+    }
+    const foundMember = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail);
+    return Boolean(foundMember && (foundMember.role === 'admin' || foundMember.divisi === 'Admin' || foundMember.peranUtama === 'Admin'));
   };
 
   // Akun Pengguna Aktif yang Sedang Masuk (Default null agar tidak ada email dummy aktif)
@@ -874,7 +879,7 @@ export const StudioProvider = ({ children }) => {
 
   // CRUD Anggota / Siswa
   const addMember = (newMem) => {
-    const isTargetAdmin = isAdminEmail(newMem.email);
+    const isTargetAdmin = newMem.divisi === 'Admin' || newMem.role === 'admin' || (newMem.email?.toLowerCase().trim() === 'admin1.creativecorner@gmail.com');
     const id = isTargetAdmin ? `ADM-${String(members.length + 1).padStart(2, '0')}` : `MEM-${String(members.length + 1).padStart(2, '0')}`;
     const memDivisi = isTargetAdmin ? 'Admin' : (newMem.divisi || newMem.peranUtama || 'Public Relation');
     const mem = {

@@ -1,19 +1,18 @@
 // ====================================================================
 // KONFIGURASI OTENTIKASI & DATA AWAL SISTEM CREATIVE CORNER
-// ATURAN EMAIL:
-// - Akun Pengelola / Admin HANYA bisa diakses dengan email yang mengandung kata: creativecorner
-//   (contoh: admin1.creativecorner@gmail.com, pengelola.creativecorner@sch.id)
-// - Akun Anggota Creative Corner: Menggunakan akun email siswa / anggota terdaftar
-// - Bukan Anggota Creative Corner: Bisa langsung meminjam & memakai PC tanpa perlu email
+// - Akun Pengelola / Admin: Akun resmi terdaftar (admin1.creativecorner@gmail.com)
+// - Akun Anggota Creative Corner: Akun email siswa / anggota terdaftar
+// - Bukan Anggota: Peminjaman mandiri & PC Kiosk tanpa perlu email
 // ====================================================================
 
-export const ADMIN_KEYWORD = 'creativecorner';
-export const ADMIN_EMAIL_SUFFIX = 'creativecorner'; // Alias untuk kompabilitas
+export const ADMIN_KEYWORD = '';
+export const ADMIN_EMAIL_SUFFIX = '';
 export const STUDENT_EMAIL_SUFFIX = '';
 
 export const isAdminEmail = (email) => {
   if (!email) return false;
-  return email.toLowerCase().trim().includes(ADMIN_KEYWORD);
+  const clean = email.toLowerCase().trim();
+  return clean === 'admin1.creativecorner@gmail.com' || clean === 'creativecorner@gmail.com';
 };
 
 // Akun Admin Utama Resmi

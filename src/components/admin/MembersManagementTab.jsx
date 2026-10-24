@@ -112,9 +112,9 @@ export const MembersManagementTab = () => {
             Ketentuan Hak Akses & Pembagian 2 Versi Sistem:
           </h4>
           <p style={{ fontSize: '0.825rem', color: '#334155', lineHeight: '1.5' }}>
-            • <strong>Administrator / Pengelola:</strong> Alamat email <strong>WAJIB mengandung kata <code>creativecorner</code></strong> (contoh: <code>admin1.creativecorner@gmail.com</code>). Akun ini memiliki akses penuh ke Portal Pengelola (CRUD inventaris, approval pinjaman, log Kiosk, dsb).<br />
-            • <strong>Anggota Creative Corner:</strong> Masuk dengan email pribadi/sekolah (tanpa kata creativecorner) untuk mengakses Portal Anggota (Tugas Kreatif, Kalender Liputan, Roster Piket).<br />
-            • <strong>Bukan Anggota (Tamu / Siswa Umum):</strong> Bisa langsung meminjam alat/ruang dan memakai PC di <em>Versi Publik (Tanpa Email)</em>.
+            • <strong>Administrator / Pengelola:</strong> Akun resmi studio dengan hak akses penuh ke Portal Pengelola.<br />
+            • <strong>Anggota Creative Corner:</strong> Akun anggota terdaftar untuk mengakses tugas kreatif, kalender liputan, dan roster piket.<br />
+            • <strong>Bukan Anggota (Tamu / Siswa Umum):</strong> Peminjaman mandiri melalui Formulir Publik tanpa perlu email.
           </p>
         </div>
       </div>
@@ -288,12 +288,9 @@ export const MembersManagementTab = () => {
                 className="form-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@gmail.com atau admin1.creativecorner@gmail.com"
+                placeholder="nama@gmail.com"
                 required
               />
-              <div className="form-hint">
-                💡 <strong>Catatan:</strong> Jika email mengandung kata <code>creativecorner</code> (contoh: <code>admin1.creativecorner@gmail.com</code>), akun akan otomatis memiliki hak akses <strong>Administrator</strong>.
-              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

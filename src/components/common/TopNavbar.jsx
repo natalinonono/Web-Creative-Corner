@@ -48,7 +48,7 @@ export const TopNavbar = () => {
 
     if (loginType === 'admin') {
       if (!isAdminEmail(email)) {
-        alert("Akses Admin Ditolak: Email administrator wajib mengandung kata 'creativecorner' (contoh: creativecorner@gmail.com atau admin1.creativecorner@gmail.com).");
+        alert("Akses Admin Ditolak: Alamat email ini tidak terdaftar sebagai Administrator Studio.");
         return;
       }
       switchOrLoginUser({
@@ -460,9 +460,9 @@ export const TopNavbar = () => {
                 }}>
                   <div style={{ fontWeight: 700, marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                     <KeyRound size={14} />
-                    <span>Ketentuan Akun Administrator:</span>
+                    <span>Autentikasi Administrator:</span>
                   </div>
-                  Email admin wajib mengandung kata <strong>creativecorner</strong> (contoh: <code>creativecorner@gmail.com</code> atau <code>admin1.creativecorner@gmail.com</code>).
+                  Silakan masukkan alamat email resmi Administrator Studio yang telah terdaftar.
                 </div>
 
                 <div className="form-group">
@@ -472,7 +472,7 @@ export const TopNavbar = () => {
                     className="form-input"
                     value={inputEmail}
                     onChange={(e) => setInputEmail(e.target.value)}
-                    placeholder="creativecorner@gmail.com"
+                    placeholder="Masukkan email administrator..."
                     required
                     autoFocus
                   />

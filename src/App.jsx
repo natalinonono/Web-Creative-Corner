@@ -15,7 +15,7 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (!isAdminEmail(emailInput.trim())) {
-      alert("Akses ditolak: Alamat email wajib mengandung kata 'creativecorner' (contoh: admin1.creativecorner@gmail.com)");
+      alert("Akses ditolak: Alamat email ini tidak terdaftar sebagai Administrator Studio.");
       return;
     }
     switchOrLoginUser({ 
@@ -34,7 +34,7 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
         Akses Khusus Administrator / Pengelola
       </h2>
       <p style={{ fontSize: '0.875rem', color: '#64748B', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-        Portal Pengelola hanya dapat diakses oleh akun email yang mengandung kata <strong style={{ color: '#1E3A8A' }}>creativecorner</strong> (contoh: <code>admin1.creativecorner@gmail.com</code>).
+        Portal Pengelola hanya dapat diakses oleh akun email resmi Administrator Studio yang telah terdaftar.
       </p>
 
       <form onSubmit={handleAdminLogin} style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
@@ -45,7 +45,7 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
             className="form-input"
             value={emailInput}
             onChange={(e) => setEmailInput(e.target.value)}
-            placeholder="admin1.creativecorner@gmail.com"
+            placeholder="Masukkan email administrator..."
             required
             autoFocus
           />
