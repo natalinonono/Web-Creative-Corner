@@ -833,7 +833,7 @@ export const PublicGuestPortal = () => {
                 </div>
 
                 <p style={{ fontSize: '0.8rem', color: '#475569', lineHeight: '1.5', marginBottom: '0.85rem' }}>
-                  Peminjam wajib melampirkan lembar surat izin/peminjaman resmi yang telah ditandatangani oleh guru pembimbing atau penanggung jawab kegiatan.
+                  Peminjam <strong>wajib melampirkan foto lembar surat izin atau surat tugas resmi</strong> yang telah ditandatangani oleh guru pembimbing / pihak sekolah / penanggung jawab (menggunakan format surat resmi dari sekolah/instansi peminjam).
                 </p>
 
 
