@@ -223,7 +223,6 @@ export const PublicGuestPortal = () => {
     const matchesSearch = 
       eq.nama.toLowerCase().includes(catalogSearch.toLowerCase()) ||
       (eq.kategori && eq.kategori.toLowerCase().includes(catalogSearch.toLowerCase())) ||
-      (eq.lokasiRak && eq.lokasiRak.toLowerCase().includes(catalogSearch.toLowerCase())) ||
       (eq.spesifikasi && eq.spesifikasi.toLowerCase().includes(catalogSearch.toLowerCase()));
     
     if (selectedCategory === 'Semua') return matchesSearch;
@@ -668,7 +667,7 @@ export const PublicGuestPortal = () => {
                               {item.nama}
                             </div>
                             <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '2px' }}>
-                              {item.kategori} • {item.lokasiRak || 'Studio'}
+                              {item.kategori}
                             </div>
 
                             {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
@@ -1237,7 +1236,7 @@ export const PublicGuestPortal = () => {
                       {eq.nama}
                     </h3>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.75rem' }}>
-                      Kode Aset: <strong>{eq.id}</strong> • Lokasi: {eq.lokasiRak || 'Studio'}
+                      Kode Aset: <strong>{eq.id}</strong>
                     </div>
 
                     {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}

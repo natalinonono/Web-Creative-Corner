@@ -407,7 +407,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       <strong style={{ color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {item.nama}
                       </strong>
-                      <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori} • {item.lokasiRak}</div>
+                      <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori}</div>
 
                       {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
                       {itemReq && (

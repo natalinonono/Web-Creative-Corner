@@ -177,7 +177,7 @@ export const InventoryMasterTab = () => {
         kondisiFisik: kondisiFisik.trim(),
         spesifikasi: spesifikasi.trim(),
         baterai: null,
-        lokasiRak: 'Creative Corner Studio'
+        lokasiRak: ''
       });
     } else {
       addEquipment({
@@ -187,7 +187,7 @@ export const InventoryMasterTab = () => {
         kondisiFisik: kondisiFisik.trim(),
         spesifikasi: spesifikasi.trim(),
         baterai: null,
-        lokasiRak: 'Creative Corner Studio'
+        lokasiRak: ''
       });
     }
 

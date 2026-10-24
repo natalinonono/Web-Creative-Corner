@@ -149,7 +149,7 @@ export const CalendarTab = () => {
                       </div>
                       <ul style={{ paddingLeft: '1.2rem', color: '#334155', margin: 0 }}>
                         {lockedTools.map((t) => (
-                          <li key={t.id}>{t.nama} ({t.lokasiRak})</li>
+                          <li key={t.id}>{t.nama}</li>
                         ))}
                       </ul>
                     </div>
