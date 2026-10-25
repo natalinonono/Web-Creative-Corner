@@ -131,8 +131,8 @@ export const AdminPortal = () => {
               onClick={() => setActiveTab('whatsapp')}
               title="Klik untuk membuka WhatsApp Pengingat & Kirim Teguran"
             >
-              <div style={{ fontSize: '0.675rem', color: '#E11D48', textTransform: 'uppercase', fontWeight: 800 }}>⚠️ Terlambat</div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#E11D48', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '0.65rem', color: '#E11D48', textTransform: 'uppercase', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>Terlambat</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#E11D48', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
                 {overdueLoansCount}
               </div>
             </div>

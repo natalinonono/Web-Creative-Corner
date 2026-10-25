@@ -213,7 +213,7 @@ exit
             }}
           >
             <Sparkles size={16} color="#2563EB" />
-            <span>🖥️ Panduan Auto-Startup PC (Windows)</span>
+            <span>Panduan Auto-Startup PC (Windows)</span>
           </button>
 
           <button
@@ -370,7 +370,7 @@ exit
                     color: '#64748B',
                     fontSize: '0.825rem'
                   }}>
-                    {isMaintenance ? '⚠️ Unit Sedang Dalam Perawatan / Perbaikan' : '🔒 Workstation Terkunci di Layar Kiosk'}
+                    {isMaintenance ? 'Unit Sedang Dalam Perawatan / Perbaikan' : 'Workstation Terkunci di Layar Kiosk'}
                   </div>
                 )}
 
@@ -733,7 +733,7 @@ exit
         <Modal
           isOpen={isStartupGuideOpen}
           onClose={() => setIsStartupGuideOpen(false)}
-          title="🖥️ Panduan Setup Auto-Startup Kiosk PC Studio (Windows)"
+          title="Panduan Setup Auto-Startup Kiosk PC Studio (Windows)"
           footer={
             <button type="button" className="btn btn-primary" onClick={() => setIsStartupGuideOpen(false)}>
               Tutup Panduan
@@ -945,7 +945,7 @@ exit
             {activeGuideTab === 'assigned' && (
               <div style={{ fontSize: '0.825rem', color: '#334155', lineHeight: '1.6' }}>
                 <div style={{ background: '#FEF3C7', border: '1px solid #FDE68A', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1rem', color: '#92400E' }}>
-                  <strong>🔒 Tingkat Proteksi Maksimal:</strong> Metode ini mengunci sistem Windows sepenuhnya. Siswa tidak akan dapat mengakses desktop, File Explorer, atau aplikasi lain kecuali administrator keluar.
+                  <strong>Tingkat Proteksi Maksimal:</strong> Metode ini mengunci sistem Windows sepenuhnya. Siswa tidak akan dapat mengakses desktop, File Explorer, atau aplikasi lain kecuali administrator keluar.
                 </div>
 
                 <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>

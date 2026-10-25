@@ -70,7 +70,7 @@ export const EventCoverageTab = () => {
       .join(', ');
 
     const actionText = personil.statusTugas === 'Belum Mengambil Alat'
-      ? '⚠️ *MOHON SEGERA*: Hadir di Studio Creative Corner sebelum acara dimulai untuk mengambil perlengkapan alat dan mengisi *Formulir Inspeksi Pengambilan* di sistem.'
+      ? '*MOHON SEGERA*: Hadir di Studio Creative Corner sebelum acara dimulai untuk mengambil perlengkapan alat dan mengisi *Formulir Inspeksi Pengambilan* di sistem.'
       : personil.statusTugas === 'Sedang Melaksanakan Tugas'
         ? 'Pastikan seluruh momen penting acara terdokumentasikan dengan baik. Setelah agenda selesai, segera kembalikan unit alat ke studio dan mengisi *Formulir Inspeksi Pengembalian*.'
         : 'Terima kasih telah menyelesaikan seluruh rangkaian dokumentasi lapangan dan inspeksi pengembalian alat dengan baik.';
@@ -78,11 +78,11 @@ export const EventCoverageTab = () => {
     const rawMessage = `Halo *${personil.nama}*, pengingat penugasan liputan lapangan dari *Creative Corner*.
 
 Anda ditugaskan sebagai *${personil.peran}* pada agenda kegiatan berikut:
-📌 *Acara*: ${event.judul}
-📍 *Lokasi*: ${event.lokasi || 'Area Sekolah'}
-🗓️ *Tanggal*: ${event.tanggal}
-⏰ *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
-🔒 *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
+- *Acara*: ${event.judul}
+- *Lokasi*: ${event.lokasi || 'Area Sekolah'}
+- *Tanggal*: ${event.tanggal}
+- *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
+- *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
 
 Status Tugas Anda: *${personil.statusTugas}*.
 ${actionText}
@@ -418,7 +418,7 @@ _Tim Pengelola Studio Creative Corner_`;
                         <td>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                             <div style={{ fontSize: '0.7rem', color: '#0369A1', background: '#E0F2FE', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, width: 'fit-content' }}>
-                              📋 Ditugaskan manual: creativecorner@gmail.com
+                              Ditugaskan manual: creativecorner@gmail.com
                             </div>
                             {ev.personil.map((p, idx) => {
                               const getRoleBadge = (role) => {
@@ -473,7 +473,7 @@ _Tim Pengelola Studio Creative Corner_`;
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                               {lockedList.map((tool) => (
                                 <span key={tool.id} style={{ fontSize: '0.775rem', color: '#1E3A8A', fontWeight: 600 }}>
-                                  🔒 {tool.nama}
+                                  {tool.nama}
                                 </span>
                               ))}
                             </div>

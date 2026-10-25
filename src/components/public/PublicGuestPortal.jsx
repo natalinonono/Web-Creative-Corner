@@ -345,7 +345,7 @@ export const PublicGuestPortal = () => {
               <div><strong>Alat / Ruangan:</strong> {submittedLoan.peralatanNama}</div>
               <div><strong>Jadwal Ambil:</strong> Hari Ini ({submittedLoan.jamPinjam} WIB)</div>
               <div><strong>Batas Waktu Kembali:</strong> Pukul {submittedLoan.batasWaktuKembali} WIB</div>
-              <div><strong>Surat Izin:</strong> <span style={{ color: '#15803D', fontWeight: 700 }}>✓ {submittedLoan.buktiSurat?.name || 'Terlampir'}</span></div>
+              <div><strong>Surat Izin:</strong> <span style={{ color: '#15803D', fontWeight: 700 }}>{submittedLoan.buktiSurat?.name || 'Terlampir'}</span></div>
             </div>
           </div>
 
@@ -519,12 +519,12 @@ export const PublicGuestPortal = () => {
                       </div>
                       <div style={{ marginTop: '2px', color: '#1E40AF' }}>
                         {cameraReq.needsAdapter ? (
-                          <>🔍 Wajib pakai <strong>Adapter EF-M to EF</strong> dan hanya bisa pakai <strong>Lensa EF (DSLR)</strong>.</>
+                          <>Wajib pakai <strong>Adapter EF-M to EF</strong> dan hanya bisa pakai <strong>Lensa EF (DSLR)</strong>.</>
                         ) : (
-                          <>🔍 Menggunakan <strong>{cameraReq.lensLabel}</strong>.</>
+                          <>Menggunakan <strong>{cameraReq.lensLabel}</strong>.</>
                         )}
                         <span style={{ display: 'block', fontSize: '0.725rem', marginTop: '3px', color: '#B45309', fontWeight: 600 }}>
-                          ⚠️ Kamera berstatus Body Only (belum termasuk baterai & lensa). Jika perlu baterai, pilih {cameraReq.batteryLabel} di kategori Baterai.
+                          Catatan: Kamera berstatus Body Only (belum termasuk baterai & lensa). Jika perlu baterai, pilih {cameraReq.batteryLabel} di kategori Baterai.
                         </span>
                       </div>
                       <div style={{ color: '#2563EB', fontSize: '0.7rem', marginTop: '2px', fontStyle: 'italic' }}>
@@ -619,7 +619,7 @@ export const PublicGuestPortal = () => {
                                   gap: '3px',
                                   width: 'fit-content'
                                 }}>
-                                  🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
+                                  {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
                                 </span>
                               </div>
                             )}
@@ -639,7 +639,7 @@ export const PublicGuestPortal = () => {
                                   alignItems: 'center',
                                   gap: '3px'
                                 }}>
-                                  🔍 Mount: {lensMount}
+                                  Mount: {lensMount}
                                 </span>
                               </div>
                             )}
@@ -658,7 +658,7 @@ export const PublicGuestPortal = () => {
                                   alignItems: 'center',
                                   gap: '3px'
                                 }}>
-                                  🔋 {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                                  {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                                 </span>
                               </div>
                             )}
@@ -678,7 +678,7 @@ export const PublicGuestPortal = () => {
                                   alignItems: 'center',
                                   gap: '3px'
                                 }}>
-                                  💾 Memory Card
+                                  Memory Card
                                 </span>
                               </div>
                             )}
@@ -974,7 +974,7 @@ export const PublicGuestPortal = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px dashed #E2E8F0' }}>
                   <span>Surat Izin:</span>
                   <strong style={{ color: buktiSuratFile ? '#059669' : '#D97706' }}>
-                    {buktiSuratFile ? '✓ Terlampir' : 'Belum Dilampirkan'}
+                    {buktiSuratFile ? 'Terlampir' : 'Belum Dilampirkan'}
                   </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0' }}>
@@ -1149,7 +1149,7 @@ export const PublicGuestPortal = () => {
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
-                          🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : itemReq.lensLabel}
+                          {itemReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : itemReq.lensLabel}
                         </span>
                       </div>
                     )}
@@ -1167,7 +1167,7 @@ export const PublicGuestPortal = () => {
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
-                          🔍 Mount: {lensMount}
+                          Mount: {lensMount}
                         </span>
                       </div>
                     )}
@@ -1184,7 +1184,7 @@ export const PublicGuestPortal = () => {
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
-                          🔋 {(eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                          {(eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                         </span>
                       </div>
                     )}
@@ -1202,7 +1202,7 @@ export const PublicGuestPortal = () => {
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
-                          💾 Memory Card
+                          Memory Card
                         </span>
                       </div>
                     )}

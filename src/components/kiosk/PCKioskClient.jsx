@@ -633,7 +633,7 @@ export const PCKioskClient = () => {
             {/* LIVE COUNTDOWN TIMER */}
             <div className="countdown-container">
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: isNearTimeout ? '#E11D48' : '#1E3A8A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                {isNearTimeout ? '⚠️ Sisa Waktu Pemakaian Kritis!' : 'Sisa Waktu Sesi Editing'}
+                {isNearTimeout ? 'Sisa Waktu Pemakaian Kritis!' : 'Sisa Waktu Sesi Editing'}
               </div>
 
               <div className={`countdown-digits ${isNearTimeout ? 'warning' : ''}`} id="kiosk-live-timer">
@@ -708,7 +708,7 @@ export const PCKioskClient = () => {
             setShowWarningModal(false);
             setWarningDismissedForId(selectedPCId);
           }}
-          title="⚠️ Peringatan Waktu Pemakaian Hampir Habis!"
+          title="Peringatan Waktu Pemakaian Hampir Habis"
           footer={
             <>
               <button
@@ -883,8 +883,8 @@ export const PCKioskClient = () => {
               fontSize: '0.8rem',
               color: '#1E3A8A'
             }}>
-              ✓ Riwayat sesi ini akan otomatis dicatat ke dalam <strong>Arsip Log Aktivitas Admin</strong>.<br />
-              ✓ Kaitan tugas kreatif akan dilepas dan PC dikembalikan ke mode layar kunci siap pakai.
+              • Riwayat sesi ini akan otomatis dicatat ke dalam <strong>Arsip Log Aktivitas Admin</strong>.<br />
+              • Kaitan tugas kreatif akan dilepas dan PC dikembalikan ke mode layar kunci siap pakai.
             </div>
           </div>
         </Modal>

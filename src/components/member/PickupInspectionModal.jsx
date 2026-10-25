@@ -296,7 +296,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             fontWeight: 700,
                             width: 'fit-content'
                           }}>
-                            🔍 {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
+                            {itemReq.needsAdapter ? 'Wajib Adapter EF-M→EF' : itemReq.lensLabel}
                           </span>
                         </div>
                       )}
@@ -314,7 +314,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             fontWeight: 700,
                             width: 'fit-content'
                           }}>
-                            🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
+                            {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                           </span>
                         </div>
                       )}
@@ -330,7 +330,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             color: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
                             fontWeight: 700
                           }}>
-                            🔋 {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                            {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                           </span>
                         </div>
                       )}
@@ -347,7 +347,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             border: '1px solid #BAE6FD',
                             fontWeight: 700
                           }}>
-                            💾 Memory Card
+                            Memory Card
                           </span>
                         </div>
                       )}

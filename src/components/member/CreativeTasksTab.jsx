@@ -255,7 +255,7 @@ export const CreativeTasksTab = () => {
 
                     {/* Penanggung Jawab */}
                     <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.75rem' }}>
-                      👤 <strong>{task.penanggungJawabNama}</strong> ({task.penanggungJawabKelas})
+                      <strong>{task.penanggungJawabNama}</strong> ({task.penanggungJawabKelas})
                     </div>
 
                     {/* INDIKATOR BATAS WAKTU GANDA */}
@@ -271,11 +271,11 @@ export const CreativeTasksTab = () => {
                       gap: '0.25rem'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', color: '#D97706', fontWeight: 600 }}>
-                        <span>⏱️ Tenggat Draf:</span>
+                        <span>Tenggat Draf:</span>
                         <span style={{ fontFamily: 'var(--font-mono)' }}>{task.tenggatDraf} WIB</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', color: '#E11D48', fontWeight: 700 }}>
-                        <span>🎯 Tenggat Akhir:</span>
+                        <span>Tenggat Akhir:</span>
                         <span style={{ fontFamily: 'var(--font-mono)' }}>{task.tenggatKaryaAkhir} WIB</span>
                       </div>
                     </div>

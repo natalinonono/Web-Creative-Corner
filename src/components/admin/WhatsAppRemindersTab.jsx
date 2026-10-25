@@ -43,7 +43,7 @@ export const WhatsAppRemindersTab = () => {
       .join(', ');
 
     const actionText = personil.statusTugas === 'Belum Mengambil Alat'
-      ? '⚠️ *MOHON SEGERA*: Hadir di Studio Creative Corner sebelum acara dimulai untuk mengambil perlengkapan alat dan mengisi *Formulir Inspeksi Pengambilan* di sistem.'
+      ? '*MOHON SEGERA*: Hadir di Studio Creative Corner sebelum acara dimulai untuk mengambil perlengkapan alat dan mengisi *Formulir Inspeksi Pengambilan* di sistem.'
       : personil.statusTugas === 'Sedang Melaksanakan Tugas'
         ? 'Pastikan seluruh momen penting acara terdokumentasikan dengan baik. Setelah agenda selesai, segera kembalikan unit alat ke studio dan mengisi *Formulir Inspeksi Pengembalian*.'
         : 'Terima kasih telah menyelesaikan seluruh rangkaian dokumentasi lapangan dan inspeksi pengembalian alat dengan baik.';
@@ -51,11 +51,11 @@ export const WhatsAppRemindersTab = () => {
     const rawMessage = `Halo *${personil.nama}*, pengingat penugasan liputan lapangan dari *Creative Corner*.
 
 Anda ditugaskan sebagai *${personil.peran}* pada agenda kegiatan berikut:
-📌 *Acara*: ${event.judul}
-📍 *Lokasi*: ${event.lokasi || 'Area Sekolah'}
-🗓️ *Tanggal*: ${event.tanggal}
-⏰ *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
-🔒 *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
+- *Acara*: ${event.judul}
+- *Lokasi*: ${event.lokasi || 'Area Sekolah'}
+- *Tanggal*: ${event.tanggal}
+- *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
+- *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
 
 Status Tugas Anda: *${personil.statusTugas}*.
 ${actionText}
@@ -88,17 +88,17 @@ _Tim Pengelola Studio Creative Corner_`;
     );
     const phone = firstMember?.nomorWa || '6281234567890';
 
-    const rawMessage = `📢 *PENGINGAT PENUGASAN TIM DOKUMENTASI LAPANGAN*
+    const rawMessage = `*PENGINGAT PENUGASAN TIM DOKUMENTASI LAPANGAN*
 *Creative Corner Studio*
 
 Kepada seluruh rekan tim dokumentasi pada agenda:
-📌 *Acara*: ${event.judul}
-📍 *Lokasi*: ${event.lokasi || 'Area Sekolah'}
-🗓️ *Tanggal*: ${event.tanggal}
-⏰ *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
-🔒 *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
+- *Acara*: ${event.judul}
+- *Lokasi*: ${event.lokasi || 'Area Sekolah'}
+- *Tanggal*: ${event.tanggal}
+- *Waktu*: ${event.waktuMulai} - ${event.waktuSelesai} WIB
+- *Peralatan Dialokasikan*: ${lockedNames || 'Peralatan Dokumentasi Lapangan'}
 
-👥 *Susunan Petugas Dokumentasi Lapangan*:
+*Susunan Petugas Dokumentasi Lapangan*:
 ${personilListText}
 
 Mohon seluruh personil hadir tepat waktu di Studio Creative Corner sebelum jadwal pelaksanaan untuk mengambil unit alat dan mengisi *Formulir Inspeksi Pengambilan*.
@@ -125,7 +125,7 @@ _Tim Pengelola Studio Creative Corner_`;
       recipientName: b.peminjamNama,
       phoneNumber: b.peminjamWa || '6281234567890',
       messageText: rawMessage,
-      title: overdueInfo.isOverdue ? `⚠️ TEGURAN TERLAMBAT: ${b.peminjamNama}` : `Pengingat Pengembalian Alat: ${b.peminjamNama}`
+      title: overdueInfo.isOverdue ? `TEGURAN TERLAMBAT: ${b.peminjamNama}` : `Pengingat Pengembalian Alat: ${b.peminjamNama}`
     });
   };
 
@@ -270,7 +270,7 @@ _Tim Pengelola Studio Creative Corner_`;
                                 borderRadius: '4px',
                                 display: 'inline-block'
                               }}>
-                                🔒 {tool.nama}
+                                {tool.nama}
                               </span>
                             ))}
                           </div>

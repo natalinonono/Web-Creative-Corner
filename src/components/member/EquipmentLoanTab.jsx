@@ -127,7 +127,7 @@ export const EquipmentLoanTab = () => {
                     </div>
                     <div>• Fisik: {b.inspeksiPengambilan.kondisiFisik}</div>
                     <div>• Optik Lensa: {b.inspeksiPengambilan.kebersihanLensa}</div>
-                    <div>• Baterai Awal: ⚡ {b.inspeksiPengambilan.bateraiPersen}%</div>
+                    <div>• Baterai Awal: {b.inspeksiPengambilan.bateraiPersen}%</div>
                   </div>
                 )}
 
@@ -253,7 +253,7 @@ export const EquipmentLoanTab = () => {
                         fontWeight: 700,
                         width: 'fit-content'
                       }}>
-                        🔍 {toolReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : toolReq.lensLabel}
+                        {toolReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : toolReq.lensLabel}
                       </span>
                     </div>
                   )}
@@ -271,7 +271,7 @@ export const EquipmentLoanTab = () => {
                         fontWeight: 700,
                         width: 'fit-content'
                       }}>
-                        🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
+                        {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                       </span>
                     </div>
                   )}
@@ -288,7 +288,7 @@ export const EquipmentLoanTab = () => {
                         fontWeight: 700,
                         width: 'fit-content'
                       }}>
-                        🔋 {(tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                        {(tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
                       </span>
                     </div>
                   )}
@@ -306,15 +306,15 @@ export const EquipmentLoanTab = () => {
                         fontWeight: 700,
                         width: 'fit-content'
                       }}>
-                        💾 Memory Card
+                        Memory Card
                       </span>
                     </div>
                   )}
 
                   <div style={{ fontSize: '0.825rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1rem' }}>
-                    <div>🔧 <strong>Kondisi Fisik:</strong> {tool.kondisiFisik || 'Baik'}</div>
+                    <div><strong>Kondisi Fisik:</strong> {tool.kondisiFisik || 'Baik'}</div>
                     <div style={{ color: '#475569', fontSize: '0.8rem', lineHeight: 1.4 }}>
-                      📝 <strong>Keterangan:</strong> {tool.spesifikasi || '-'}
+                      <strong>Keterangan:</strong> {tool.spesifikasi || '-'}
                     </div>
                   </div>
                 </div>

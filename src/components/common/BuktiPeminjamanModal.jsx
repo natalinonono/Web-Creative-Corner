@@ -322,8 +322,8 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
             <div style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               CREATIVE CORNER STUDIO
             </div>
-            <div style={{ fontSize: '0.8rem', fontWeight: 900, margin: '2px 0' }}>
-              ★ TERVERIFIKASI RESMI ★
+            <div style={{ fontSize: '0.75rem', fontWeight: 900, margin: '2px 0', letterSpacing: '0.04em' }}>
+              TERVERIFIKASI RESMI
             </div>
             <div style={{ fontSize: '0.65rem', color: '#2563EB', fontFamily: 'var(--font-mono)' }}>
               REG: {loanData.id}

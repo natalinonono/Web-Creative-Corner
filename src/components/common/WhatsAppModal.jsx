@@ -153,7 +153,7 @@ export const WhatsAppModal = ({
               textAlign: 'right',
               marginTop: '0.5rem'
             }}>
-              {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} ✓✓
+              {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
             </div>
           </div>
         </div>

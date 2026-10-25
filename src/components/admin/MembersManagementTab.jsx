@@ -190,7 +190,7 @@ export const MembersManagementTab = () => {
                     </td>
                     <td>
                       <span className={`badge ${isAdmin ? 'badge-emerald' : 'badge-blue'}`}>
-                        {isAdmin ? '🛡️ Administrator' : '👤 Anggota Siswa'}
+                        {isAdmin ? 'Administrator' : 'Anggota Siswa'}
                       </span>
                     </td>
                     <td>
@@ -339,7 +339,7 @@ export const MembersManagementTab = () => {
                 </select>
                 <div className="form-hint" style={{ fontSize: '0.725rem' }}>
                   {angkatan === '25' ? (
-                    <span style={{ color: '#059669', fontWeight: 600 }}>✓ Divisi Dokumentasi tersedia untuk Angkatan 25.</span>
+                    <span style={{ color: '#059669', fontWeight: 600 }}>Divisi Dokumentasi tersedia untuk Angkatan 25.</span>
                   ) : (
                     <span style={{ color: '#64748B' }}>Divisi Dokumentasi hanya ada di Angkatan 25.</span>
                   )}

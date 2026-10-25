@@ -320,7 +320,7 @@ export const InventoryMasterTab = () => {
                           </span>
                         ) : hasReturnInspection ? (
                           <span style={{ color: '#059669', fontSize: '0.775rem', fontWeight: 600 }}>
-                            ✓ Kondisi Fisik Normal Sesuai Awal
+                            Kondisi Fisik Normal Sesuai Awal
                           </span>
                         ) : (
                           <span style={{ color: '#D97706', fontSize: '0.775rem' }}>
@@ -595,7 +595,7 @@ export const InventoryMasterTab = () => {
                                     padding: '1px 6px',
                                     borderRadius: '4px'
                                   }}>
-                                    🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
+                                    {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
                                   </span>
                                 </div>
                               )}
@@ -610,7 +610,7 @@ export const InventoryMasterTab = () => {
                                     padding: '1px 6px',
                                     borderRadius: '4px'
                                   }}>
-                                    🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
+                                    {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                                   </span>
                                 </div>
                               )}
@@ -696,7 +696,7 @@ export const InventoryMasterTab = () => {
                               padding: '1px 6px',
                               borderRadius: '4px'
                             }}>
-                              🔍 {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
+                              {camReq.needsAdapter ? 'Adapter EF-M to EF + ' : ''}{camReq.lensLabel}
                             </span>
                           </div>
                         )}
@@ -711,7 +711,7 @@ export const InventoryMasterTab = () => {
                               padding: '1px 6px',
                               borderRadius: '4px'
                             }}>
-                              🔍 {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
+                              {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                             </span>
                           </div>
                         )}
@@ -947,15 +947,15 @@ export const InventoryMasterTab = () => {
               onChange={(e) => setKategori(e.target.value)}
               required
             >
-              <option value="Kamera">📷 Kamera (Body Only / Mirrorless / DSLR)</option>
-              <option value="Lensa">🔍 Lensa (Prime / Zoom / Tele / Wide)</option>
-              <option value="Baterai">🔋 Baterai (LP-E17, LP-E10, dll.)</option>
-              <option value="Memory Card">💾 Memory Card (SD Card / Micro SD / CF)</option>
-              <option value="Audio & Mikrofon">🎙️ Audio & Mikrofon (Wireless / Shotgun / Recorder)</option>
-              <option value="Lighting & Tata Cahaya">💡 Lighting & Tata Cahaya (LED / Softbox / Continuous)</option>
-              <option value="Tripod & Aksesori">🎬 Tripod & Aksesori (Gimbal / Rig / Stand)</option>
-              <option value="Ruang Studio">🏢 Ruang Studio (Podcast / Green Screen / Audio Suite)</option>
-              <option value="Lainnya">📦 Lainnya (Kategori Kustom...)</option>
+              <option value="Kamera">Kamera (Body Only / Mirrorless / DSLR)</option>
+              <option value="Lensa">Lensa (Prime / Zoom / Tele / Wide)</option>
+              <option value="Baterai">Baterai (LP-E17, LP-E10, dll.)</option>
+              <option value="Memory Card">Memory Card (SD Card / Micro SD / CF)</option>
+              <option value="Audio & Mikrofon">Audio & Mikrofon (Wireless / Shotgun / Recorder)</option>
+              <option value="Lighting & Tata Cahaya">Lighting & Tata Cahaya (LED / Softbox / Continuous)</option>
+              <option value="Tripod & Aksesori">Tripod & Aksesori (Gimbal / Rig / Stand)</option>
+              <option value="Ruang Studio">Ruang Studio (Podcast / Green Screen / Audio Suite)</option>
+              <option value="Lainnya">Lainnya (Kategori Kustom...)</option>
             </select>
           </div>
 
@@ -1118,7 +1118,7 @@ export const InventoryMasterTab = () => {
                   </div>
                   {(isEfActive || isEfmActive) && (
                     <span style={{ fontSize: '0.675rem', fontWeight: 600, color: isEfActive ? '#4338CA' : '#7E22CE', background: isEfActive ? '#EEF2FF' : '#FAF5FF', padding: '0.1rem 0.45rem', borderRadius: '10px', border: `1px solid ${isEfActive ? '#C7D2FE' : '#E9D5FF'}` }}>
-                      ✓ Terpilih: {isEfActive ? 'Tipe EF (DSLR)' : 'Tipe EF-M (Mirrorless)'}
+                      Terpilih: {isEfActive ? 'Tipe EF (DSLR)' : 'Tipe EF-M (Mirrorless)'}
                     </span>
                   )}
                 </div>
