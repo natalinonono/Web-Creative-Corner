@@ -5,6 +5,7 @@ import { WhatsAppRemindersTab } from './WhatsAppRemindersTab';
 import { InventoryMasterTab } from './InventoryMasterTab';
 import { PCMonitoringTab } from './PCMonitoringTab';
 import { MembersManagementTab } from './MembersManagementTab';
+import { Modal } from '../common/Modal';
 import { 
   ShieldCheck, 
   Camera, 
@@ -14,15 +15,21 @@ import {
   FileText,
   Users,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Download,
+  FileSpreadsheet
 } from 'lucide-react';
+import { checkLoanOverdue } from '../../utils/loanOverdue';
+import { exportBorrowingsToCSV, exportEventsToCSV, exportInventoryToCSV } from '../../utils/exportReports';
 
 export const AdminPortal = () => {
   const { borrowings, pcClients, events, equipment, members, isSupabaseConfigured, clearAllData } = useStudio();
   const [activeTab, setActiveTab] = useState('inventory'); // default ke inventory agar admin langsung dapat input data
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  // Hitung notifikasi untuk tab
+  // Hitung notifikasi untuk tab & status keterlambatan
   const activeBorrowersCount = borrowings.filter((b) => b.status === 'Dipinjam').length;
+  const overdueLoansCount = borrowings.filter((b) => checkLoanOverdue(b).isOverdue).length;
   const activePCCount = pcClients.filter((p) => p.status === 'Aktif').length;
   const anomaliesCount = borrowings.filter((b) => b.inspeksiPengembalian?.anomaliTerdeteksi).length;
 
@@ -117,27 +124,60 @@ export const AdminPortal = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            style={{
-              borderColor: '#CBD5E1',
-              color: '#64748B',
-              fontSize: '0.725rem',
-              alignSelf: 'center',
-              padding: '0.4rem 0.75rem',
-              borderRadius: '8px'
-            }}
-            onClick={() => {
-              if (window.confirm('PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh data studio agar dapat mengisi inventaris dan agenda dari awal? Tindakan ini tidak dapat dibatalkan.')) {
-                clearAllData();
-              }
-            }}
-            title="Kosongkan data studio agar admin dapat mengisi dari awal"
-          >
-            <RotateCcw size={12} />
-            <span>Reset</span>
-          </button>
+          {overdueLoansCount > 0 && (
+            <div 
+              className="portal-hero-stat-card" 
+              style={{ borderColor: '#FECDD3', background: '#FFF1F2', cursor: 'pointer' }}
+              onClick={() => setActiveTab('whatsapp')}
+              title="Klik untuk membuka WhatsApp Pengingat & Kirim Teguran"
+            >
+              <div style={{ fontSize: '0.675rem', color: '#E11D48', textTransform: 'uppercase', fontWeight: 800 }}>⚠️ Terlambat</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#E11D48', lineHeight: 1.1 }}>
+                {overdueLoansCount}
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '0.4rem', alignSelf: 'center' }}>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              style={{
+                background: '#047857',
+                borderColor: '#059669',
+                fontSize: '0.725rem',
+                padding: '0.4rem 0.75rem',
+                borderRadius: '8px'
+              }}
+              onClick={() => setIsExportModalOpen(true)}
+              id="btn-open-export-modal"
+              title="Unduh rekap data peminjaman dan liputan event ke format Excel (.CSV)"
+            >
+              <Download size={13} />
+              <span>Ekspor LPJ</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              style={{
+                borderColor: '#CBD5E1',
+                color: '#64748B',
+                fontSize: '0.725rem',
+                padding: '0.4rem 0.75rem',
+                borderRadius: '8px'
+              }}
+              onClick={() => {
+                if (window.confirm('PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh data studio agar dapat mengisi inventaris dan agenda dari awal? Tindakan ini tidak dapat dibatalkan.')) {
+                  clearAllData();
+                }
+              }}
+              title="Kosongkan data studio agar admin dapat mengisi dari awal"
+            >
+              <RotateCcw size={12} />
+              <span>Reset</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -213,6 +253,146 @@ export const AdminPortal = () => {
       {activeTab === 'members' && <MembersManagementTab />}
       {activeTab === 'whatsapp' && <WhatsAppRemindersTab />}
       {activeTab === 'pc-monitoring' && <PCMonitoringTab />}
+
+      {/* MODAL EKSPOR LAPORAN LPJ (EXCEL / CSV) */}
+      {isExportModalOpen && (
+        <Modal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          title="Ekspor Laporan LPJ Studio ke Excel (.CSV)"
+          footer={
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setIsExportModalOpen(false)}
+            >
+              Tutup
+            </button>
+          }
+        >
+          <div style={{ paddingBottom: '0.5rem' }}>
+            <p style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '1.25rem', lineHeight: 1.5 }}>
+              Pilih laporan yang ingin diunduh. File diformat khusus dengan standar <strong>UTF-8 BOM</strong> sehingga dapat langsung dibuka dengan rapi dan teratur di <strong>Microsoft Excel, Google Sheets, atau Numbers</strong> untuk keperluan Laporan Pertanggungjawaban (LPJ) ke Pembina OSIS / Pihak Sekolah.
+            </p>
+
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              {/* Opsi 1: Rekap Peminjaman */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '1rem 1.15rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1E3A8A' }}>
+                    <FileSpreadsheet size={22} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '0.9rem', color: '#0F172A', display: 'block' }}>
+                      Rekap Riwayat Peminjaman Alat ({borrowings.length} Data)
+                    </strong>
+                    <span style={{ fontSize: '0.775rem', color: '#64748B' }}>
+                      Memuat nomor resi, tanggal, nama peminjam, kelas, kontak WA, daftar unit, batas jam, dan catatan inspeksi.
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  style={{ background: '#059669', borderColor: '#047857' }}
+                  onClick={() => exportBorrowingsToCSV(borrowings)}
+                  id="btn-export-borrowings"
+                >
+                  <Download size={14} />
+                  <span>Unduh .CSV</span>
+                </button>
+              </div>
+
+              {/* Opsi 2: Rekap Liputan Event */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '1rem 1.15rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+                    <Camera size={22} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '0.9rem', color: '#0F172A', display: 'block' }}>
+                      Rekap Agenda Liputan Event Lapangan ({events.length} Agenda)
+                    </strong>
+                    <span style={{ fontSize: '0.775rem', color: '#64748B' }}>
+                      Memuat judul acara, lokasi, jadwal, alokasi 4 peran petugas lapangan (Foto 1, Foto 2, Video, Live Report HP), dan alat.
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  style={{ background: '#059669', borderColor: '#047857' }}
+                  onClick={() => exportEventsToCSV(events, members, equipment)}
+                  id="btn-export-events"
+                >
+                  <Download size={14} />
+                  <span>Unduh .CSV</span>
+                </button>
+              </div>
+
+              {/* Opsi 3: Master Inventaris */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '1rem 1.15rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+                    <Layers size={22} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: '0.9rem', color: '#0F172A', display: 'block' }}>
+                      Katalog Master Inventaris Aset ({equipment.length} Unit)
+                    </strong>
+                    <span style={{ fontSize: '0.775rem', color: '#64748B' }}>
+                      Daftar seluruh unit kamera, ragam lensa, baterai, memory card, mikrofon, lighting, dan fasilitas studio.
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  style={{ background: '#059669', borderColor: '#047857' }}
+                  onClick={() => exportInventoryToCSV(equipment)}
+                  id="btn-export-inventory"
+                >
+                  <Download size={14} />
+                  <span>Unduh .CSV</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

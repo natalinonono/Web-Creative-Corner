@@ -16,6 +16,7 @@ import {
   BatteryCharging
 } from 'lucide-react';
 import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
+import { compressImage } from '../../utils/imageCompression';
 
 export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledEquipmentIds = [] }) => {
   const { equipment, activeMemberId, members, submitPickupInspection } = useStudio();
@@ -54,28 +55,30 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
   const [fotoBeforeFile, setFotoBeforeFile] = useState(null);
   const [previewZoomModal, setPreviewZoomModal] = useState(null);
 
-  // Upload & Kamera HP Handler
-  const handlePhotoCapture = (e) => {
+  // Upload & Kamera HP Handler dengan Kompresi Otomatis
+  const handlePhotoCapture = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 15 * 1024 * 1024) {
-      alert('Ukuran foto maksimal 15MB.');
-      return;
+    try {
+      const compressed = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.82 });
+      setFotoBeforeFile(compressed);
+    } catch (err) {
+      console.error('Gagal mengompresi gambar:', err);
+      // Fallback
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFotoBeforeFile({
+          name: file.name || `foto-before-${Date.now()}.jpg`,
+          size: `${(file.size / 1024).toFixed(1)} KB`,
+          type: file.type || 'image/jpeg',
+          isImage: true,
+          dataUrl: event.target.result,
+          uploadedAt: new Date().toLocaleString('id-ID')
+        });
+      };
+      reader.readAsDataURL(file);
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFotoBeforeFile({
-        name: file.name || `foto-before-${Date.now()}.jpg`,
-        size: `${(file.size / 1024).toFixed(1)} KB`,
-        type: file.type || 'image/jpeg',
-        isImage: true,
-        dataUrl: event.target.result,
-        uploadedAt: new Date().toLocaleString('id-ID')
-      });
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleToggleEq = (id) => {
@@ -515,7 +518,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                     {fotoBeforeFile.name}
                   </strong>
                   <div style={{ fontSize: '0.725rem', color: '#0284C7' }}>
-                    {fotoBeforeFile.size} • Siap Diverifikasi Sistem
+                    Ukuran: <strong>{fotoBeforeFile.size}</strong> {fotoBeforeFile.originalSize && `(dikompresi dari ${fotoBeforeFile.originalSize})`} • Siap Diverifikasi Sistem
                   </div>
                 </div>
               </div>

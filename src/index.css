@@ -383,6 +383,31 @@ h1, h2, h3, h4, .brand-font {
 .badge-crimson .badge-dot { background-color: var(--crimson-text); }
 .badge-blue .badge-dot { background-color: var(--blue-badge-text); }
 
+.badge-overdue {
+  background-color: #FFF1F2 !important;
+  color: #E11D48 !important;
+  border: 1.5px solid #F43F5E !important;
+  animation: pulse-overdue 1.8s infinite ease-in-out;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+.badge-dot-overdue {
+  background-color: #E11D48 !important;
+  box-shadow: 0 0 6px #E11D48;
+}
+
+@keyframes pulse-overdue {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
+    border-color: #F43F5E;
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(225, 29, 72, 0);
+    border-color: #BE123C;
+  }
+}
+
 /* ====================================================================
    TAB NAVIGATIONS
 ==================================================================== */
@@ -1324,6 +1349,61 @@ h1, h2, h3, h4, .brand-font {
 
   .card-title {
     font-size: 0.985rem !important;
+  }
+}
+
+/* ====================================================================
+   PRINT STYLES (LEMBAR BUKTI PEMINJAMAN RESMI)
+==================================================================== */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-bukti-peminjaman,
+  #printable-bukti-peminjaman * {
+    visibility: visible;
+  }
+
+  #printable-bukti-peminjaman {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 1.25cm !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+  }
+
+  .modal-overlay {
+    background: transparent !important;
+    position: static !important;
+    padding: 0 !important;
+  }
+
+  .modal-content,
+  .modal-content-lg {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .modal-header,
+  .modal-footer,
+  .top-navbar,
+  footer,
+  .btn {
+    display: none !important;
   }
 }
 

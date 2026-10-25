@@ -32,6 +32,9 @@ import {
   HardDrive
 } from 'lucide-react';
 import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
+import { compressImage } from '../../utils/imageCompression';
+import { BuktiPeminjamanModal } from '../common/BuktiPeminjamanModal';
+import { checkLoanOverdue } from '../../utils/loanOverdue';
 
 export const PublicGuestPortal = () => {
   const { 
@@ -65,30 +68,32 @@ export const PublicGuestPortal = () => {
   // Status Pencarian Resi Tiket
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedLoan, setSubmittedLoan] = useState(null);
+  const [buktiPeminjamanModalData, setBuktiPeminjamanModalData] = useState(null);
 
 
-  // Upload File Foto atau Dokumen
-  const handleFileUpload = (e) => {
+  // Upload File Foto atau Dokumen dengan Kompresi Otomatis
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Ukuran file maksimal 10MB.');
-      return;
+    try {
+      const compressed = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.82 });
+      setBuktiSuratFile(compressed);
+    } catch (err) {
+      console.error('Gagal mengompresi berkas:', err);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setBuktiSuratFile({
+          name: file.name,
+          size: `${(file.size / 1024).toFixed(1)} KB`,
+          type: file.type || 'document',
+          isImage: file.type.startsWith('image/'),
+          dataUrl: event.target.result,
+          uploadedAt: new Date().toLocaleString('id-ID')
+        });
+      };
+      reader.readAsDataURL(file);
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setBuktiSuratFile({
-        name: file.name,
-        size: `${(file.size / 1024).toFixed(1)} KB`,
-        type: file.type || 'document',
-        isImage: file.type.startsWith('image/'),
-        dataUrl: event.target.result,
-        uploadedAt: new Date().toLocaleString('id-ID')
-      });
-    };
-    reader.readAsDataURL(file);
   };
 
   // Toggle pilihan alat (dengan pembersihan otomatis jika memilih kamera yang tidak kompatibel dengan alat yang sudah tercentang)
@@ -346,6 +351,17 @@ export const PublicGuestPortal = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => setBuktiPeminjamanModalData(submittedLoan)}
+              style={{ background: '#1E3A8A' }}
+              id="btn-open-bukti-submitted"
+            >
+              <FileText size={14} />
+              <span>Buka Lembar Bukti Peminjaman Resmi</span>
+            </button>
+
             <a
               href={`https://wa.me/6281200000000?text=${encodeURIComponent(
                 `Halo Admin Creative Corner, saya *${submittedLoan.peminjamNama}* (${submittedLoan.peminjamKelas}) telah mengajukan permohonan peminjaman mandiri dengan Resi: *${submittedLoan.id}* untuk: *${submittedLoan.peralatanNama}*. Batas kembali: *${submittedLoan.batasWaktuKembali} WIB*. Mohon verifikasi pengambilan di studio. Terima kasih!`
@@ -1264,62 +1280,108 @@ export const PublicGuestPortal = () => {
             </div>
           ) : (
             <div style={{ display: 'grid', gap: '1rem' }}>
-              {filteredBorrowings.map((b) => (
-                <div
-                  key={b.id}
-                  style={{
-                    background: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '10px',
-                    padding: '1.15rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '1rem'
-                  }}
-                >
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E3A8A' }}>{b.id}</span>
-                      <StatusBadge status={b.status} />
-                    </div>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0F172A' }}>
-                      {b.peralatanNama}
-                    </div>
-                    <div style={{ fontSize: '0.775rem', color: '#64748B', marginTop: '2px' }}>
-                      Peminjam: <strong>{b.peminjamNama}</strong> ({b.peminjamKelas}) • Batas: <strong>{b.batasWaktuKembali || '-'} WIB</strong>
-                    </div>
-                  </div>
+              {filteredBorrowings.map((b) => {
+                const overdueInfo = checkLoanOverdue(b);
 
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    {b.buktiSurat && (
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => setPreviewBuktiModal(b.buktiSurat)}
-                        style={{ fontSize: '0.75rem' }}
-                      >
-                        <FileText size={13} />
-                        <span>Lihat Bukti Surat</span>
-                      </button>
+                return (
+                  <div
+                    key={b.id}
+                    style={{
+                      background: '#FFFFFF',
+                      border: overdueInfo.isOverdue ? '1.5px solid #F43F5E' : '1px solid #E2E8F0',
+                      borderRadius: '10px',
+                      padding: '1.15rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.85rem',
+                      boxShadow: 'var(--shadow-sm)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E3A8A' }}>{b.id}</span>
+                        <StatusBadge 
+                          status={b.status} 
+                          isOverdue={overdueInfo.isOverdue} 
+                          overdueLabel={overdueInfo.label} 
+                        />
+                      </div>
+
+                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                        Tanggal Pinjam: <strong>{b.tanggalPinjam || '-'}</strong>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.925rem', color: '#0F172A' }}>
+                        {b.peralatanNama}
+                      </div>
+                      <div style={{ fontSize: '0.785rem', color: '#64748B', marginTop: '2px' }}>
+                        Peminjam: <strong>{b.peminjamNama}</strong> ({b.peminjamKelas}) • Batas: <strong style={{ color: overdueInfo.isOverdue ? '#E11D48' : '#0F172A' }}>{b.batasWaktuKembali || '-'} WIB</strong>
+                      </div>
+                    </div>
+
+                    {/* Banner Peringatan Keterlambatan Real-Time */}
+                    {overdueInfo.isOverdue && (
+                      <div style={{
+                        background: '#FFF1F2',
+                        border: '1px solid #FECDD3',
+                        borderRadius: '6px',
+                        padding: '0.5rem 0.75rem',
+                        fontSize: '0.775rem',
+                        color: '#9F1239',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem'
+                      }}>
+                        <AlertCircle size={15} color="#E11D48" style={{ flexShrink: 0 }} />
+                        <div>
+                          <strong>WAKTU TERLAMBAT:</strong> Peminjaman ini telah melampaui batas waktu pengembalian ({overdueInfo.label}). Mohon segera serahkan unit peralatan ke studio Creative Corner.
+                        </div>
+                      </div>
                     )}
 
-                    <a
-                      href={`https://wa.me/6281200000000?text=${encodeURIComponent(
-                        `Halo Petugas Creative Corner, saya ingin menanyakan status resi tiket saya: *${b.id}* atas nama *${b.peminjamNama}*. Terima kasih.`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-whatsapp btn-sm"
-                      style={{ textDecoration: 'none', fontSize: '0.75rem' }}
-                    >
-                      <Phone size={13} />
-                      <span>Hubungi Petugas</span>
-                    </a>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', borderTop: '1px solid #F1F5F9', paddingTop: '0.75rem' }}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setBuktiPeminjamanModalData(b)}
+                        style={{ fontSize: '0.75rem', background: '#1E3A8A' }}
+                      >
+                        <FileText size={13} />
+                        <span>Buka Lembar Bukti Peminjaman Resmi</span>
+                      </button>
+
+                      {b.buktiSurat && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setPreviewBuktiModal(b.buktiSurat)}
+                          style={{ fontSize: '0.75rem' }}
+                        >
+                          <Eye size={13} />
+                          <span>Lampiran Foto/Surat</span>
+                        </button>
+                      )}
+
+                      <a
+                        href={`https://wa.me/6281200000000?text=${encodeURIComponent(
+                          overdueInfo.isOverdue
+                            ? `Halo Petugas Creative Corner, saya *${b.peminjamNama}* (${b.peminjamKelas}) dengan nomor resi *${b.id}* ingin mengonfirmasikan bahwa peminjaman *${b.peralatanNama}* terlambat dikembalikan (${overdueInfo.label}). Saya sedang menuju ke studio untuk mengembalikannya.`
+                            : `Halo Petugas Creative Corner, saya ingin menanyakan status resi tiket saya: *${b.id}* atas nama *${b.peminjamNama}*. Terima kasih.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`btn ${overdueInfo.isOverdue ? 'btn-danger' : 'btn-whatsapp'} btn-sm`}
+                        style={{ textDecoration: 'none', fontSize: '0.75rem' }}
+                      >
+                        <Phone size={13} />
+                        <span>{overdueInfo.isOverdue ? 'Konfirmasi Keterlambatan via WA' : 'Hubungi Petugas'}</span>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -1372,6 +1434,15 @@ export const PublicGuestPortal = () => {
             </div>
           )}
         </Modal>
+      )}
+
+      {/* MODAL LEMBAR BUKTI PEMINJAMAN FASILITAS STUDIO RESMI */}
+      {buktiPeminjamanModalData && (
+        <BuktiPeminjamanModal
+          isOpen={!!buktiPeminjamanModalData}
+          onClose={() => setBuktiPeminjamanModalData(null)}
+          loanData={buktiPeminjamanModalData}
+        />
       )}
     </div>
   );

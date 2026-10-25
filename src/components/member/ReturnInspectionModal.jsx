@@ -11,6 +11,7 @@ import {
   Trash2, 
   Eye 
 } from 'lucide-react';
+import { compressImage } from '../../utils/imageCompression';
 
 export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
   const { submitReturnInspection } = useStudio();
@@ -28,28 +29,30 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
   // Ambil referensi Foto BEFORE dari peminjaman jika tersedia
   const fotoBeforeRef = targetBorrowing.fotoBefore || targetBorrowing.inspeksiPengambilan?.fotoBefore || targetBorrowing.buktiSurat;
 
-  // Upload & Kamera HP Handler
-  const handlePhotoCapture = (e) => {
+  // Upload & Kamera HP Handler dengan Kompresi Otomatis
+  const handlePhotoCapture = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 15 * 1024 * 1024) {
-      alert('Ukuran foto maksimal 15MB.');
-      return;
+    try {
+      const compressed = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.82 });
+      setFotoAfterFile(compressed);
+    } catch (err) {
+      console.error('Gagal mengompresi gambar:', err);
+      // Fallback
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFotoAfterFile({
+          name: file.name || `foto-after-${Date.now()}.jpg`,
+          size: `${(file.size / 1024).toFixed(1)} KB`,
+          type: file.type || 'image/jpeg',
+          isImage: true,
+          dataUrl: event.target.result,
+          uploadedAt: new Date().toLocaleString('id-ID')
+        });
+      };
+      reader.readAsDataURL(file);
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFotoAfterFile({
-        name: file.name || `foto-after-${Date.now()}.jpg`,
-        size: `${(file.size / 1024).toFixed(1)} KB`,
-        type: file.type || 'image/jpeg',
-        isImage: true,
-        dataUrl: event.target.result,
-        uploadedAt: new Date().toLocaleString('id-ID')
-      });
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
@@ -354,7 +357,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                     {fotoAfterFile.name}
                   </strong>
                   <div style={{ fontSize: '0.725rem', color: '#059669' }}>
-                    {fotoAfterFile.size} • Siap Diverifikasi Admin
+                    Ukuran: <strong>{fotoAfterFile.size}</strong> {fotoAfterFile.originalSize && `(dikompresi dari ${fotoAfterFile.originalSize})`} • Siap Diverifikasi Admin
                   </div>
                 </div>
               </div>

@@ -1,0 +1,20 @@
+{
+  "short_name": "CreativeCorner",
+  "name": "Creative Corner Studio",
+  "description": "Sistem Terpadu Manajemen Studio, Peminjaman Alat, Kiosk PC, dan Penugasan Kreatif",
+  "icons": [
+    {
+      "src": "/logo-creative-corner.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0F172A",
+  "theme_color": "#0B192C",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["utilities", "education", "productivity"],
+  "lang": "id"
+}

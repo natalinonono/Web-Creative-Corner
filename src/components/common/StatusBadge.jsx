@@ -1,7 +1,17 @@
 import React from 'react';
 
-export const StatusBadge = ({ status, className = '' }) => {
+export const StatusBadge = ({ status, isOverdue = false, overdueLabel = '', className = '' }) => {
   if (!status) return null;
+
+  // Jika terdeteksi terlambat secara real-time
+  if (isOverdue) {
+    return (
+      <span className={`badge badge-crimson badge-overdue ${className}`} title={overdueLabel}>
+        <span className="badge-dot badge-dot-overdue"></span>
+        <span>{overdueLabel || 'TERLAMBAT'}</span>
+      </span>
+    );
+  }
 
   // Normalisasi status
   const normalized = status.trim();

@@ -17,6 +17,7 @@ import {
   MapPin,
   Users
 } from 'lucide-react';
+import { checkLoanOverdue } from '../../utils/loanOverdue';
 
 export const WhatsAppRemindersTab = () => {
   const { borrowings, creativeTasks, dutyRoster, members, events, equipment } = useStudio();
@@ -113,15 +114,18 @@ _Tim Pengelola Studio Creative Corner_`;
     });
   };
 
-  // Trigger One-Click WA Pengembalian Alat
+  // Trigger One-Click WA Pengembalian Alat (Otomatis Mendeteksi Terlambat)
   const handleSendReturnReminder = (b) => {
-    const rawMessage = `Halo *${b.peminjamNama}*, pengingat dari *Creative Corner*. Peminjaman alat: *${b.peralatanNama}* memiliki batas waktu pengembalian pada pukul *${b.batasWaktuKembali}*. Mohon segera mengembalikan alat ke studio, memastikan kebersihan ruang/alat, mengecek kelengkapan aksesori, serta mengisi *Formulir Inspeksi Pengembalian* di sistem Creative Corner agar status tugas Anda tercatat Selesai. Terima kasih!`;
+    const overdueInfo = checkLoanOverdue(b);
+    const rawMessage = overdueInfo.isOverdue
+      ? `*PERINGATAN PENGEMBALIAN TERLAMBAT*: Halo Sdr. *${b.peminjamNama}* (${b.peminjamKelas}), peminjaman alat: *${b.peralatanNama}* dengan No. Resi *${b.id}* telah *MELEWATI BATAS WAKTU PENGEMBALIAN* (${b.batasWaktuKembali} WIB - *${overdueInfo.label}*). Mohon agar unit segera diserahkan ke ruang studio Creative Corner untuk verifikasi inspeksi fisik pengembalian. Terima kasih atas kerja samanya!`
+      : `Halo *${b.peminjamNama}*, pengingat dari *Creative Corner*. Peminjaman alat: *${b.peralatanNama}* memiliki batas waktu pengembalian pada pukul *${b.batasWaktuKembali} WIB*. Mohon segera mengembalikan alat ke studio, memastikan kebersihan ruang/alat, mengecek kelengkapan aksesori, serta mengisi *Formulir Inspeksi Pengembalian* di sistem Creative Corner agar status tugas Anda tercatat Selesai. Terima kasih!`;
 
     setWaModalData({
       recipientName: b.peminjamNama,
       phoneNumber: b.peminjamWa || '6281234567890',
       messageText: rawMessage,
-      title: `Pengingat Pengembalian Alat: ${b.peminjamNama}`
+      title: overdueInfo.isOverdue ? `⚠️ TEGURAN TERLAMBAT: ${b.peminjamNama}` : `Pengingat Pengembalian Alat: ${b.peminjamNama}`
     });
   };
 
@@ -396,47 +400,57 @@ _Tim Pengelola Studio Creative Corner_`;
                 </tr>
               </thead>
               <tbody>
-                {activeBorrowers.map((b) => (
-                  <tr key={b.id}>
-                    <td>
-                      <strong>{b.peminjamNama}</strong>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{b.peminjamKelas}</div>
-                    </td>
-                    <td>
-                      <code style={{ fontSize: '0.8rem', color: '#1E3A8A' }}>+{b.peminjamWa}</code>
-                    </td>
-                    <td style={{ maxWidth: '260px' }}>
-                      <strong style={{ color: '#0F172A' }}>{b.peralatanNama}</strong>
-                    </td>
-                    <td>
-                      <span style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                        color: '#E11D48',
-                        background: '#FFF1F2',
-                        padding: '2px 8px',
-                        borderRadius: '4px'
-                      }}>
-                        Pukul {b.batasWaktuKembali} WIB
-                      </span>
-                    </td>
-                    <td style={{ fontSize: '0.8rem', color: '#475569' }}>
-                      {b.keperluan}
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-whatsapp btn-sm"
-                        onClick={() => handleSendReturnReminder(b)}
-                        id={`btn-wa-return-${b.id}`}
-                      >
-                        <Send size={14} />
-                        <span>Kirim WA Pengembalian</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {activeBorrowers.map((b) => {
+                  const overdueInfo = checkLoanOverdue(b);
+
+                  return (
+                    <tr key={b.id} style={{ background: overdueInfo.isOverdue ? '#FFF5F5' : 'transparent' }}>
+                      <td>
+                        <strong>{b.peminjamNama}</strong>
+                        <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{b.peminjamKelas}</div>
+                      </td>
+                      <td>
+                        <code style={{ fontSize: '0.8rem', color: '#1E3A8A' }}>+{b.peminjamWa}</code>
+                      </td>
+                      <td style={{ maxWidth: '260px' }}>
+                        <strong style={{ color: '#0F172A' }}>{b.peralatanNama}</strong>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <span style={{
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '0.825rem',
+                            fontWeight: 700,
+                            color: overdueInfo.isOverdue ? '#E11D48' : '#0F172A',
+                            background: overdueInfo.isOverdue ? '#FFF1F2' : '#F1F5F9',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            width: 'fit-content'
+                          }}>
+                            Pukul {b.batasWaktuKembali} WIB
+                          </span>
+                          {overdueInfo.isOverdue && (
+                            <StatusBadge status="Terlambat" isOverdue={true} overdueLabel={overdueInfo.label} />
+                          )}
+                        </div>
+                      </td>
+                      <td style={{ fontSize: '0.8rem', color: '#475569' }}>
+                        {b.keperluan}
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={`btn ${overdueInfo.isOverdue ? 'btn-danger' : 'btn-whatsapp'} btn-sm`}
+                          onClick={() => handleSendReturnReminder(b)}
+                          id={`btn-wa-return-${b.id}`}
+                        >
+                          {overdueInfo.isOverdue ? <AlertCircle size={14} /> : <Send size={14} />}
+                          <span>{overdueInfo.isOverdue ? 'Kirim Teguran Terlambat' : 'Kirim WA Pengembalian'}</span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
