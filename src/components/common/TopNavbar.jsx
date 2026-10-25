@@ -123,18 +123,7 @@ export const TopNavbar = () => {
         style={{ cursor: 'pointer' }}
         title="Kembali ke Beranda Peminjaman"
       >
-        <div style={{
-          width: '40px',
-          height: '40px',
-          background: '#FFFFFF',
-          borderRadius: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '3px',
-          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
-          flexShrink: 0
-        }}>
+        <div className="brand-logo-icon">
           <img 
             src="/logo-creative-corner.png" 
             alt="Creative Corner Logo" 
@@ -143,7 +132,10 @@ export const TopNavbar = () => {
         </div>
         <div>
           <div className="brand-title">Creative Corner</div>
-          <div className="brand-subtitle">Be Creative, Be Brave, Be Smart.</div>
+          <div className="brand-subtitle">
+            <span className="brand-status-dot"></span>
+            <span>Studio OS • Dispatch</span>
+          </div>
         </div>
       </div>
 

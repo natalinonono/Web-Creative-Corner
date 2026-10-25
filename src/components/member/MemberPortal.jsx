@@ -37,18 +37,18 @@ export const MemberPortal = () => {
     <div>
       {/* Banner Identitas Anggota yang Sedang Masuk */}
       <div className="portal-hero-banner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '12px',
+            width: '36px',
+            height: '36px',
+            borderRadius: '6px',
             background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            border: '1px solid #CBD5E1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '4px',
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+            padding: '3px',
+            boxShadow: 'var(--shadow-xs)',
             flexShrink: 0
           }}>
             <img 
@@ -58,38 +58,39 @@ export const MemberPortal = () => {
             />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <h1 style={{ fontSize: 'clamp(1.05rem, 3.5vw, 1.25rem)', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Selamat Datang, {currentMember.nama}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+              <h1 style={{ fontSize: 'clamp(1rem, 3.5vw, 1.2rem)', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                {currentMember.nama}
               </h1>
               <span style={{
-                fontSize: '0.72rem',
+                fontSize: '0.7rem',
                 background: '#EFF6FF',
                 color: '#1E3A8A',
-                padding: '2px 8px',
-                borderRadius: '9999px',
-                fontWeight: 700
+                padding: '1px 6px',
+                borderRadius: '4px',
+                fontWeight: 700,
+                border: '1px solid #BFDBFE'
               }}>
                 {currentMember.kelas}
               </span>
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '3px 0 0 0' }}>
-              Divisi: <strong>{currentMember.divisi || currentMember.peranUtama}</strong> • WA: <code>+{currentMember.nomorWa}</code>
+            <p style={{ fontSize: '0.775rem', color: '#475569', margin: '2px 0 0 0' }}>
+              Divisi: <strong>{currentMember.divisi || currentMember.peranUtama}</strong> • Kontak: <code style={{ fontFamily: 'var(--font-mono)' }}>+{currentMember.nomorWa}</code>
             </p>
           </div>
         </div>
 
         <div className="portal-hero-stats">
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Alat Dipinjam</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: activeLoansCount > 0 ? '#D97706' : '#0F172A', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Alat Dipinjam</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: activeLoansCount > 0 ? '#D97706' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {activeLoansCount}
             </div>
           </div>
 
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Tugas Aktif</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Tugas Aktif</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {activeTasksCount}
             </div>
           </div>

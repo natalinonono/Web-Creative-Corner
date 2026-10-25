@@ -37,18 +37,18 @@ export const AdminPortal = () => {
     <div>
       {/* Admin Header Banner */}
       <div className="portal-hero-banner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '12px',
+            width: '36px',
+            height: '36px',
+            borderRadius: '6px',
             background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            border: '1px solid #CBD5E1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '4px',
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+            padding: '3px',
+            boxShadow: 'var(--shadow-xs)',
             flexShrink: 0
           }}>
             <img 
@@ -59,15 +59,15 @@ export const AdminPortal = () => {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-              <h1 style={{ fontSize: 'clamp(1.05rem, 3.5vw, 1.25rem)', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                Portal Pengelola / Administrator
+              <h1 style={{ fontSize: 'clamp(1rem, 3.5vw, 1.2rem)', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                Pusat Kendali Pengelola Studio
               </h1>
               <span style={{
-                fontSize: '0.72rem',
+                fontSize: '0.685rem',
                 background: '#ECFDF5',
                 color: '#059669',
-                padding: '2px 8px',
-                borderRadius: '9999px',
+                padding: '1px 6px',
+                borderRadius: '4px',
                 fontWeight: 700,
                 border: '1px solid #A7F3D0'
               }}>
@@ -75,11 +75,11 @@ export const AdminPortal = () => {
               </span>
 
               <span style={{
-                fontSize: '0.7rem',
+                fontSize: '0.685rem',
                 background: isSupabaseConfigured ? '#EFF6FF' : '#F1F5F9',
                 color: isSupabaseConfigured ? '#1E3A8A' : '#64748B',
-                padding: '2px 8px',
-                borderRadius: '9999px',
+                padding: '1px 6px',
+                borderRadius: '4px',
                 fontWeight: 700,
                 border: isSupabaseConfigured ? '1px solid #BFDBFE' : '1px solid #CBD5E1',
                 display: 'inline-flex',
@@ -87,15 +87,15 @@ export const AdminPortal = () => {
                 gap: '0.3rem'
               }}>
                 <span style={{
-                  width: '6px',
-                  height: '6px',
+                  width: '5px',
+                  height: '5px',
                   borderRadius: '50%',
                   background: isSupabaseConfigured ? '#10B981' : '#94A3B8'
                 }}></span>
                 <span>{isSupabaseConfigured ? 'Supabase Cloud' : 'Offline Mode'}</span>
               </span>
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '3px 0 0 0' }}>
+            <p style={{ fontSize: '0.775rem', color: '#475569', margin: '2px 0 0 0' }}>
               Pusat kendali inventaris kamera, liputan event, registrasi personil, dan kiosk PC.
             </p>
           </div>
@@ -104,22 +104,22 @@ export const AdminPortal = () => {
         {/* Quick Admin Metrics */}
         <div className="portal-hero-stats">
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Aset Terdaftar</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Aset Terdaftar</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {equipment.length}
             </div>
           </div>
 
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Peminjam Aktif</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: activeBorrowersCount > 0 ? '#D97706' : '#0F172A', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Peminjam Aktif</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: activeBorrowersCount > 0 ? '#D97706' : '#0F172A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {activeBorrowersCount}
             </div>
           </div>
 
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>PC Dipakai</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>PC Dipakai</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {activePCCount} / 6
             </div>
           </div>

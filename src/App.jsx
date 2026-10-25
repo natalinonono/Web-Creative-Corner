@@ -26,20 +26,20 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
   };
 
   return (
-    <div style={{ maxWidth: '620px', margin: '3.5rem auto', textAlign: 'center', padding: '2.5rem', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: 'var(--shadow-lg)' }}>
-      <div style={{ width: '64px', height: '64px', background: '#EFF6FF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
-        <ShieldCheck size={36} color="#1E3A8A" />
+    <div style={{ maxWidth: '520px', margin: '3rem auto', textAlign: 'center', padding: '2rem', background: '#FFFFFF', borderRadius: '10px', border: '1px solid #CBD5E1', boxShadow: 'var(--shadow-md)' }}>
+      <div style={{ width: '48px', height: '48px', background: '#EFF6FF', borderRadius: '8px', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+        <ShieldCheck size={28} color="#1E3A8A" />
       </div>
-      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
-        Akses Khusus Administrator / Pengelola
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+        Akses Khusus Administrator Studio
       </h2>
-      <p style={{ fontSize: '0.875rem', color: '#64748B', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+      <p style={{ fontSize: '0.825rem', color: '#64748B', lineHeight: '1.5', marginBottom: '1.25rem' }}>
         Portal Pengelola hanya dapat diakses oleh akun email resmi Administrator Studio yang telah terdaftar.
       </p>
 
-      <form onSubmit={handleAdminLogin} style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
+      <form onSubmit={handleAdminLogin} style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
         <div className="form-group">
-          <label className="form-label">Masukkan Email Administrator *</label>
+          <label className="form-label">Email Administrator Terdaftar *</label>
           <input
             type="email"
             className="form-input"
@@ -50,13 +50,13 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
             autoFocus
           />
         </div>
-        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.75rem' }}>
+        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.7rem' }}>
           <ShieldCheck size={16} />
           <span>Verifikasi & Masuk Portal Pengelola</span>
         </button>
       </form>
 
-      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', display: 'flex', justifyContent: 'center' }}>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
@@ -122,26 +122,26 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
   };
 
   return (
-    <div style={{ maxWidth: '620px', margin: '3rem auto', textAlign: 'center', padding: '2.5rem', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: 'var(--shadow-lg)' }}>
-      <div style={{ width: '64px', height: '64px', background: '#F0FDF4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
-        <User size={36} color="#059669" />
+    <div style={{ maxWidth: '520px', margin: '3rem auto', textAlign: 'center', padding: '2rem', background: '#FFFFFF', borderRadius: '10px', border: '1px solid #CBD5E1', boxShadow: 'var(--shadow-md)' }}>
+      <div style={{ width: '48px', height: '48px', background: '#F0FDF4', borderRadius: '8px', border: '1px solid #BBF7D0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+        <User size={28} color="#059669" />
       </div>
-      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
-        Portal Resmi Anggota Creative Corner
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+        Portal Anggota Creative Corner
       </h2>
-      <p style={{ fontSize: '0.85rem', color: '#64748B', lineHeight: '1.5', marginBottom: '1.5rem' }}>
+      <p style={{ fontSize: '0.825rem', color: '#64748B', lineHeight: '1.5', marginBottom: '1.25rem' }}>
         Akses khusus anggota tim internal Creative Corner untuk melihat kalender liputan, papan tugas kreatif, dan roster piket studio.
       </p>
 
       {/* Subtab Toggle Masuk vs Daftar */}
       <div style={{
         display: 'flex',
-        background: '#F8FAFC',
-        border: '1px solid #E2E8F0',
-        borderRadius: '10px',
-        padding: '4px',
+        background: '#F1F5F9',
+        border: '1px solid #CBD5E1',
+        borderRadius: '8px',
+        padding: '3px',
         marginBottom: '1.25rem',
-        gap: '4px'
+        gap: '3px'
       }}>
         <button
           type="button"

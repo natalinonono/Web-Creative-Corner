@@ -229,47 +229,46 @@ export const PublicGuestPortal = () => {
 
   return (
     <div style={{ paddingBottom: '3.5rem' }}>
-      {/* 1. INSTITUTIONAL CLEAN HEADER */}
+      {/* 1. STUDIO OS CONTROL STRIP (ARCHITECTURAL & STRUCTURED) */}
       <div className="portal-hero-banner">
-        <div style={{ maxWidth: '720px' }}>
+        <div>
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.45rem',
-            background: '#F1F5F9',
-            border: '1px solid #E2E8F0',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '9999px',
-            fontSize: '0.75rem',
-            fontWeight: 700,
+            fontSize: '0.7rem',
+            fontWeight: 800,
             color: '#1E3A8A',
-            marginBottom: '0.65rem'
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-mono)',
+            marginBottom: '0.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
           }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }}></span>
-            <span>Layanan Publik Terbuka • Tanpa Perlu Login</span>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
+            <span>Studio Dispatch // Layanan Peminjaman Alat & Ruang</span>
           </div>
 
           <h1 className="portal-hero-title">
-            Peminjaman Fasilitas & Peralatan Studio Creative Corner
+            Peminjaman Fasilitas & Peralatan Studio
           </h1>
 
           <p className="portal-hero-subtitle">
-            Layanan peminjaman kamera, mikrofon, lighting, dan reservasi studio khusus bagi <strong>siswa, guru, pengurus OSIS, dan perwakilan kelas</strong> untuk keperluan tugas multimedia maupun kegiatan sekolah resmi.
+            Layanan mandiri bagi siswa, guru, perwakilan kelas, dan pengurus OSIS. Tanpa perlu login akun email.
           </p>
         </div>
 
-        {/* Quick Info Badges */}
+        {/* Quick Operational Metrics */}
         <div className="portal-hero-stats">
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.685rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Alat Siap Pakai</div>
-            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#059669', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Siap Pakai</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#059669', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {availableEquipment.length}
             </div>
           </div>
 
           <div className="portal-hero-stat-card">
-            <div style={{ fontSize: '0.685rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Total Inventaris</div>
-            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '0.65rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Total Aset</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {equipment.length}
             </div>
           </div>
@@ -407,8 +406,9 @@ export const PublicGuestPortal = () => {
             <form onSubmit={handleSubmitLoan}>
               {/* BAGIAN 1: IDENTITAS */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#1E3A8A', letterSpacing: '0.03em', marginBottom: '0.75rem' }}>
-                  1. Identitas Peminjam
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.75rem' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>01</span>
+                  <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Identitas Lengkap Peminjam</span>
                 </div>
 
                 <div className="form-grid-dual">
@@ -454,8 +454,9 @@ export const PublicGuestPortal = () => {
               {/* BAGIAN 2: PILIH PERALATAN & RUANGAN */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#1E3A8A', letterSpacing: '0.03em' }}>
-                    2. Pilih Peralatan / Fasilitas Studio *
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>02</span>
+                    <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Alokasi Unit Peralatan & Fasilitas *</span>
                   </div>
                   <span style={{ fontSize: '0.775rem', fontWeight: 700, color: '#1E3A8A' }}>
                     {selectedEquipmentIds.length} Unit Dipilih
@@ -736,8 +737,9 @@ export const PublicGuestPortal = () => {
 
               {/* BAGIAN 3: WAKTU & KEPERLUAN */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#1E3A8A', letterSpacing: '0.03em', marginBottom: '0.75rem' }}>
-                  3. Waktu & Keperluan
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.75rem' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>03</span>
+                  <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Jadwal Penggunaan & Keperluan *</span>
                 </div>
 
                 <div className="form-grid-dual">
@@ -797,9 +799,9 @@ export const PublicGuestPortal = () => {
                 marginBottom: '1.5rem'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#1E3A8A', letterSpacing: '0.03em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <FileCheck size={16} color="#1E3A8A" />
-                    <span>4. Surat Peminjaman Resmi (Wajib)</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>04</span>
+                    <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Lampiran Surat Izin Peminjaman Resmi *</span>
                   </div>
                   <span className="badge badge-rose" style={{ fontSize: '0.7rem' }}>
                     WAJIB DILAMPIRKAN
