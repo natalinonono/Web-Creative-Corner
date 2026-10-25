@@ -71,7 +71,7 @@ export const CalendarTab = () => {
             </p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
+          <div className="responsive-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
             {myPersonalAssignments.map(({ event, personnel }) => {
               const lockedTools = equipment.filter((eq) => event.peralatanTerkunciIds?.includes(eq.id));
 

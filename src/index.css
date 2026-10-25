@@ -819,19 +819,119 @@ h1, h2, h3, h4, .brand-font {
 }
 
 /* ====================================================================
+   RESPONSIVE TOKENS & UTILITIES
+==================================================================== */
+.portal-hero-banner {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.portal-hero-title {
+  font-size: clamp(1.2rem, 3vw, 1.75rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+
+.portal-hero-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.portal-hero-stats {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.portal-hero-stat-card {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 0.65rem 1.15rem;
+  text-align: center;
+  min-width: 105px;
+}
+
+.portal-subtabs {
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  flex-wrap: nowrap !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.portal-subtabs::-webkit-scrollbar {
+  display: none;
+}
+
+.portal-grid-split {
+  display: grid;
+  grid-template-columns: 1.75fr 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.form-grid-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.responsive-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.camera-action-group {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.nav-login-label-desktop {
+  display: inline;
+}
+
+.nav-login-label-mobile {
+  display: none;
+}
+
+/* ====================================================================
    RESPONSIVE DESIGN (LAPTOP, TABLET & MOBILE HP)
 ==================================================================== */
 
 /* 1. TABLET & COMPACT LAPTOP (<= 1024px) */
 @media (max-width: 1024px) {
   .main-content {
-    padding: 1.25rem 1.5rem;
+    padding: 1.25rem 1.25rem;
+  }
+
+  .portal-grid-split {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
   }
 
   .top-navbar {
-    padding: 0.75rem 1.25rem;
+    padding: 0.65rem 1.25rem;
     flex-wrap: wrap;
-    gap: 0.85rem;
+    gap: 0.75rem;
   }
 
   .role-switcher-container {
@@ -839,7 +939,7 @@ h1, h2, h3, h4, .brand-font {
     width: 100%;
     overflow-x: auto;
     justify-content: flex-start;
-    padding: 4px;
+    padding: 3px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
@@ -850,120 +950,317 @@ h1, h2, h3, h4, .brand-font {
 
   .role-switcher-btn {
     flex-shrink: 0;
-    padding: 0.45rem 0.95rem;
-    font-size: 0.825rem;
-  }
-
-  .top-navbar-right {
-    gap: 0.65rem;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
   }
 }
 
-/* 2. MOBILE PHONES & SMALL SCREENS (<= 768px) */
+/* 2. MOBILE PHONES & SMARTPHONES (<= 768px) */
 @media (max-width: 768px) {
-  /* Navbar Responsif di HP */
-  .top-navbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    position: sticky;
-    top: 0;
+  /* Prevent horizontal screen jitter and overflow */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100vw;
+    max-width: 100vw;
   }
 
+  .app-container {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Sleek, Compact Mobile Navbar (Single-row brand + login, sub-row swipeable pills) */
+  .top-navbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.85rem !important;
+    gap: 0.35rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #0B192C;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Baris 1 - Kiri: Brand & Logo */
   .brand-section {
-    width: 100%;
-    justify-content: flex-start;
+    order: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex: 1 1 auto;
+  }
+
+  .brand-section div[style*="width: 40px"],
+  .brand-section div[style*="width: '40px'"],
+  .brand-logo-icon {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
   }
 
   .brand-title {
-    font-size: 1.15rem;
+    font-size: 1rem !important;
+    line-height: 1.15;
   }
 
   .brand-subtitle {
-    font-size: 0.675rem;
+    display: none !important; /* Sembunyikan slogan di mobile agar header tetap slim & proporsional */
   }
 
-  .role-switcher-container {
-    width: 100%;
-    overflow-x: auto;
-    justify-content: flex-start;
+  /* Baris 1 - Kanan: Akun / Tombol Masuk */
+  .top-navbar-right {
+    order: 2;
+    flex: 0 0 auto;
+    border-top: none !important;
+    padding-top: 0 !important;
+    width: auto !important;
+    display: flex;
+    align-items: center;
     gap: 0.35rem;
-    padding: 4px;
+  }
+
+  .nav-login-label-desktop {
+    display: none !important;
+  }
+
+  .nav-login-label-mobile {
+    display: inline !important;
+  }
+
+  .navbar-user-name {
+    max-width: 85px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
+
+  .navbar-logout-text {
+    display: none;
+  }
+
+  /* Baris 2: Navigasi Switcher Horisontal Swipe */
+  .role-switcher-container {
+    order: 3;
+    width: 100% !important;
+    margin-top: 0.2rem;
+    display: flex;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    white-space: nowrap;
+    padding: 2px !important;
+    gap: 3px !important;
+    background: rgba(15, 23, 42, 0.7);
+    border-radius: 9999px;
+  }
+
+  .role-switcher-container::-webkit-scrollbar {
+    display: none !important;
   }
 
   .role-switcher-btn {
-    padding: 0.4rem 0.85rem;
-    font-size: 0.785rem;
+    flex-shrink: 0 !important;
+    padding: 0.35rem 0.75rem !important;
+    font-size: 0.75rem !important;
+    border-radius: 9999px;
+    gap: 0.35rem !important;
   }
 
-  .top-navbar-right {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    padding-top: 0.5rem;
-  }
-
-  /* Konten Utama */
+  /* Main Container */
   .main-content {
-    padding: 1rem 0.85rem;
+    padding: 0.85rem 0.75rem !important;
   }
 
-  /* Kartu & Header */
+  /* Hero Banners di HP */
+  .portal-hero-banner {
+    padding: 1rem 0.95rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 1rem !important;
+    gap: 0.85rem !important;
+  }
+
+  .portal-hero-title {
+    font-size: 1.15rem !important;
+    margin-bottom: 0.35rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .portal-hero-subtitle {
+    font-size: 0.8rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .portal-hero-stats {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .portal-hero-stat-card {
+    min-width: unset !important;
+    padding: 0.5rem 0.65rem !important;
+    flex: 1 1 auto !important;
+  }
+
+  /* Form & Split Grids di HP */
+  .portal-grid-split {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .form-grid-dual {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .responsive-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Cards */
   .card {
-    padding: 1.15rem;
-    border-radius: var(--radius-md);
+    padding: 1rem 0.85rem !important;
+    border-radius: 12px !important;
   }
 
   .card-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
   }
 
   .card-header > div:last-child {
     width: 100%;
   }
 
-  /* Perataan Grid Otomatis: Susun vertikal pada layar sempit */
+  .card-title {
+    font-size: 1.05rem !important;
+  }
+
+  /* Subtabs Navigation Swipe */
+  .tabs-header,
+  .portal-subtabs {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 0.35rem !important;
+    padding-bottom: 2px !important;
+    margin-bottom: 1.15rem !important;
+    border-bottom: 2px solid var(--border-light) !important;
+  }
+
+  .tabs-header::-webkit-scrollbar,
+  .portal-subtabs::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .tab-btn {
+    flex-shrink: 0 !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.825rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Kamera Action Group Buttons */
+  .camera-action-group .btn {
+    flex: 1 1 135px !important;
+    min-height: 42px !important;
+    justify-content: center !important;
+  }
+
+  /* Universal Overrides for rigid inline grids */
   div[style*="grid-template-columns: 1."],
   div[style*="grid-template-columns: 1fr 1fr"],
   div[style*="grid-template-columns: 1fr 2fr"],
   div[style*="grid-template-columns: 2fr 1fr"],
-  div[style*="gridTemplateColumns: '1."],
-  div[style*="gridTemplateColumns: '2."],
-  div[style*="gridTemplateColumns: '1fr 1fr"],
-  div[style*="gridTemplateColumns: '1fr 2fr"] {
+  div[style*="gridTemplateColumns: '1.75fr 1fr'"],
+  div[style*="gridTemplateColumns: '1.4fr 1fr'"],
+  div[style*="gridTemplateColumns: '1.2fr 1fr'"],
+  div[style*="gridTemplateColumns: '1fr 1fr'"],
+  div[style*="gridTemplateColumns: '1fr 2fr'"] {
     grid-template-columns: 1fr !important;
-    gap: 1rem !important;
+    gap: 0.85rem !important;
   }
 
-  /* Kolom minmax yang terlalu lebar di HP */
-  div[style*="minmax(320px"],
-  div[style*="minmax(360px"],
-  div[style*="minmax(380px"],
-  div[style*="minmax(420px"] {
+  div[style*="minmax(3"],
+  div[style*="minmax(4"] {
     grid-template-columns: 1fr !important;
   }
 
-  /* Side by side perbandingan inspeksi */
-  .inspection-comparison-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  /* Formulir & Input Responsif di HP */
+  /* Inputs, Buttons, & Modals */
   .form-input, .form-select, .form-textarea {
-    font-size: 16px !important; /* Mencegah auto-zoom di browser smartphone iOS / Android */
-    padding: 0.7rem 0.85rem;
+    font-size: 16px !important; /* Mencegah auto-zoom di smartphone browser */
+    padding: 0.65rem 0.75rem !important;
   }
 
   .btn {
     min-height: 40px;
+  }
+
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content,
+  .modal-content-lg {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: 94vh !important;
+    margin: 0 auto !important;
+    border-radius: 14px !important;
+  }
+
+  .modal-header {
+    padding: 0.85rem 1rem !important;
+  }
+
+  .modal-title {
+    font-size: 1rem !important;
+  }
+
+  .modal-body {
+    padding: 1rem !important;
+    max-height: calc(94vh - 120px) !important;
+  }
+
+  .modal-footer {
+    padding: 0.75rem 1rem !important;
+    flex-direction: column-reverse !important;
+    gap: 0.5rem !important;
+  }
+
+  .modal-footer .btn {
+    width: 100% !important;
+  }
+
+  /* Kiosk Canvas di HP */
+  .kiosk-canvas {
+    padding: 1.25rem 0.75rem !important;
+    min-height: calc(100vh - 100px);
+  }
+
+  .kiosk-card {
+    border-radius: var(--radius-lg);
+  }
+
+  .kiosk-card-header {
+    padding: 1.15rem 0.95rem;
+  }
+
+  .kiosk-card-body {
+    padding: 1.15rem 0.95rem;
+  }
+
+  .countdown-digits {
+    font-size: clamp(2.2rem, 10vw, 3.5rem);
   }
 
   /* Tabel dengan Scroll Horizontal Halus */
@@ -977,113 +1274,56 @@ h1, h2, h3, h4, .brand-font {
   }
 
   table.table, table.custom-table {
-    min-width: 560px;
-  }
-
-  /* Modal Responsif di HP */
-  .modal-overlay {
-    padding: 0.5rem;
-  }
-
-  .modal-content,
-  .modal-content-lg {
-    width: 96vw !important;
-    max-width: 96vw !important;
-    max-height: 94vh !important;
-    margin: 0 auto !important;
-    border-radius: var(--radius-lg);
-  }
-
-  .modal-header {
-    padding: 1rem 1.15rem;
-  }
-
-  .modal-title {
-    font-size: 1.05rem;
-  }
-
-  .modal-body {
-    padding: 1.15rem;
-    max-height: calc(94vh - 125px);
-    overflow-y: auto;
-  }
-
-  .modal-footer {
-    padding: 0.85rem 1.15rem;
-    flex-direction: column-reverse;
-    gap: 0.5rem;
-  }
-
-  .modal-footer .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Kiosk Mode Responsif di HP */
-  .kiosk-canvas {
-    padding: 1.5rem 0.75rem;
-    min-height: calc(100vh - 120px);
-  }
-
-  .kiosk-card {
-    border-radius: var(--radius-lg);
-  }
-
-  .kiosk-card-header {
-    padding: 1.25rem 1rem;
-  }
-
-  .kiosk-card-body {
-    padding: 1.25rem 1rem;
-  }
-
-  .countdown-digits {
-    font-size: clamp(2.4rem, 11vw, 3.75rem);
+    min-width: 540px;
   }
 
   /* Toast Notifikasi di Layar Sempit */
   div[style*="position: fixed"][style*="bottom: 24px"] {
-    bottom: 16px !important;
-    right: 16px !important;
-    left: 16px !important;
-    max-width: calc(100vw - 32px) !important;
+    bottom: 14px !important;
+    right: 14px !important;
+    left: 14px !important;
+    max-width: calc(100vw - 28px) !important;
   }
 }
 
 /* 3. EXTRA SMALL PHONES (<= 480px) */
 @media (max-width: 480px) {
-  .top-navbar {
-    padding: 0.65rem 0.75rem;
+  .main-content {
+    padding: 0.65rem 0.5rem !important;
   }
 
-  .brand-logo-icon {
-    width: 36px;
-    height: 36px;
+  .top-navbar {
+    padding: 0.4rem 0.65rem !important;
   }
 
   .brand-title {
-    font-size: 1.05rem;
-  }
-
-  .brand-subtitle {
-    display: none; /* Sembunyikan subtitle agar hemat ruang di layar sangat sempit */
+    font-size: 0.95rem !important;
   }
 
   .role-switcher-btn {
-    padding: 0.35rem 0.7rem;
-    font-size: 0.75rem;
+    padding: 0.3rem 0.65rem !important;
+    font-size: 0.725rem !important;
+  }
+
+  .portal-hero-banner {
+    padding: 0.85rem 0.75rem !important;
+  }
+
+  .portal-hero-title {
+    font-size: 1.05rem !important;
   }
 
   .tab-btn {
-    padding: 0.6rem 0.85rem;
-    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.785rem !important;
   }
 
   .card {
-    padding: 1rem 0.85rem;
+    padding: 0.85rem 0.75rem !important;
   }
 
   .card-title {
-    font-size: 1.05rem;
+    font-size: 0.985rem !important;
   }
 }
+

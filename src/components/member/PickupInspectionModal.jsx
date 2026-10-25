@@ -168,7 +168,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
       <form onSubmit={handleSubmit}>
 
         {/* Informasi Peminjam & Event */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+        <div className="form-grid-dual">
           <div>
             <label className="form-label">Nama Siswa / Anggota</label>
             <input 
@@ -357,7 +357,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
         </div>
 
         {/* Cek Fisik dan Keterangan Alat */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+        <div className="form-grid-dual">
           <div className="form-group">
             <label className="form-label">Kondisi Fisik Alat *</label>
             <input
@@ -427,7 +427,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                 Bisa langsung jepret dengan Kamera HP atau pilih foto yang sudah diambil dari galeri perangkat.
               </p>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <div className="camera-action-group" style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 {/* 1. Tombol Buka Kamera HP Langsung */}
                 <label
                   className="btn btn-primary btn-sm"

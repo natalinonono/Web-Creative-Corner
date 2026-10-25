@@ -152,7 +152,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
         </div>
 
         {/* Form Verifikasi Kondisi Akhir */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+        <div className="form-grid-dual">
           <div className="form-group">
             <label className="form-label">Kondisi Fisik Alat Saat Kembali *</label>
             <input
@@ -265,7 +265,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                 Bisa langsung jepret dengan Kamera HP atau pilih foto dari galeri perangkat Anda.
               </p>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <div className="camera-action-group" style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 {/* 1. Tombol Buka Kamera HP Langsung */}
                 <label
                   className="btn btn-primary btn-sm"

@@ -224,20 +224,8 @@ export const PublicGuestPortal = () => {
 
   return (
     <div style={{ paddingBottom: '3.5rem' }}>
-      {/* 1. INSTITUTIONAL CLEAN HEADER (BUKAN AI-SLOP NEON BANNER) */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: '16px',
-        padding: '2rem 2.25rem',
-        marginBottom: '1.75rem',
-        boxShadow: 'var(--shadow-sm)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1.5rem'
-      }}>
+      {/* 1. INSTITUTIONAL CLEAN HEADER */}
+      <div className="portal-hero-banner">
         <div style={{ maxWidth: '720px' }}>
           <div style={{
             display: 'inline-flex',
@@ -250,54 +238,33 @@ export const PublicGuestPortal = () => {
             fontSize: '0.75rem',
             fontWeight: 700,
             color: '#1E3A8A',
-            marginBottom: '0.75rem'
+            marginBottom: '0.65rem'
           }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }}></span>
-            <span>Layanan Publik Terbuka • Tanpa Perlu Login Akun</span>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }}></span>
+            <span>Layanan Publik Terbuka • Tanpa Perlu Login</span>
           </div>
 
-          <h1 style={{
-            fontSize: '1.75rem',
-            fontWeight: 800,
-            color: '#0F172A',
-            letterSpacing: '-0.025em',
-            marginBottom: '0.5rem',
-            lineHeight: '1.25'
-          }}>
+          <h1 className="portal-hero-title">
             Peminjaman Fasilitas & Peralatan Studio Creative Corner
           </h1>
 
-          <p style={{ fontSize: '0.9rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+          <p className="portal-hero-subtitle">
             Layanan peminjaman kamera, mikrofon, lighting, dan reservasi studio khusus bagi <strong>siswa, guru, pengurus OSIS, dan perwakilan kelas</strong> untuk keperluan tugas multimedia maupun kegiatan sekolah resmi.
           </p>
         </div>
 
         {/* Quick Info Badges */}
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <div style={{
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
-            borderRadius: '12px',
-            padding: '0.75rem 1.15rem',
-            textAlign: 'center',
-            minWidth: '120px'
-          }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Alat Siap Pakai</div>
-            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#059669' }}>
+        <div className="portal-hero-stats">
+          <div className="portal-hero-stat-card">
+            <div style={{ fontSize: '0.685rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Alat Siap Pakai</div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#059669', lineHeight: 1.1 }}>
               {availableEquipment.length}
             </div>
           </div>
 
-          <div style={{
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
-            borderRadius: '12px',
-            padding: '0.75rem 1.15rem',
-            textAlign: 'center',
-            minWidth: '120px'
-          }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Total Inventaris</div>
-            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1E3A8A' }}>
+          <div className="portal-hero-stat-card">
+            <div style={{ fontSize: '0.685rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Total Inventaris</div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
               {equipment.length}
             </div>
           </div>
@@ -305,17 +272,10 @@ export const PublicGuestPortal = () => {
       </div>
 
       {/* 2. SUB-NAVIGASI TAB */}
-      <div style={{
-        display: 'flex',
-        gap: '0.5rem',
-        borderBottom: '2px solid #E2E8F0',
-        marginBottom: '1.75rem',
-        flexWrap: 'wrap'
-      }}>
+      <div className="tabs-header portal-subtabs">
         <button
           className={`tab-btn ${publicTab === 'form' ? 'active' : ''}`}
           onClick={() => setPublicTab('form')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           id="tab-public-form"
         >
           <FileText size={16} />
@@ -325,7 +285,6 @@ export const PublicGuestPortal = () => {
         <button
           className={`tab-btn ${publicTab === 'katalog' ? 'active' : ''}`}
           onClick={() => setPublicTab('katalog')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           id="tab-public-katalog"
         >
           <Camera size={16} />
@@ -335,7 +294,6 @@ export const PublicGuestPortal = () => {
         <button
           className={`tab-btn ${publicTab === 'status' ? 'active' : ''}`}
           onClick={() => setPublicTab('status')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           id="tab-public-status"
         >
           <Search size={16} />
@@ -417,7 +375,7 @@ export const PublicGuestPortal = () => {
 
       {/* 4. TAB KONTEN 1: FORMULIR PEMINJAMAN */}
       {publicTab === 'form' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1.75fr 1fr', gap: '1.75rem', alignItems: 'start' }}>
+        <div className="portal-grid-split">
           {/* Kolom Kiri: Formulir */}
           <div className="card" style={{ padding: '1.75rem' }}>
             <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #E2E8F0' }}>
@@ -437,7 +395,7 @@ export const PublicGuestPortal = () => {
                   1. Identitas Peminjam
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="form-grid-dual">
                   <div className="form-group" style={{ margin: 0 }}>
                     <label className="form-label">Nama Lengkap Peminjam *</label>
                     <input
@@ -766,7 +724,7 @@ export const PublicGuestPortal = () => {
                   3. Waktu & Keperluan
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div className="form-grid-dual">
                   <div className="form-group" style={{ margin: 0 }}>
                     <label className="form-label">Tanggal Penggunaan *</label>
                     <input

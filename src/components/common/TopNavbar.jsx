@@ -244,35 +244,37 @@ export const TopNavbar = () => {
       {/* Sisi Kanan: Status Akun & Tombol Masuk */}
       <div className="top-navbar-right">
         {currentUser ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <div 
+              className="navbar-user-badge"
               style={{
                 background: 'rgba(255, 255, 255, 0.1)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 borderRadius: '9999px',
-                padding: '0.35rem 0.85rem',
+                padding: '0.3rem 0.65rem',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.8rem'
+                gap: '0.4rem',
+                fontSize: '0.785rem'
               }}
             >
               {isUserAdmin ? (
-                <ShieldCheck size={15} color="#93C5FD" />
+                <ShieldCheck size={14} color="#93C5FD" style={{ flexShrink: 0 }} />
               ) : (
-                <User size={15} color="#A7F3D0" />
+                <User size={14} color="#A7F3D0" style={{ flexShrink: 0 }} />
               )}
-              <span style={{ maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span className="navbar-user-name">
                 {currentUser.nama || currentUser.email}
               </span>
               <span style={{
-                fontSize: '0.675rem',
-                padding: '1px 6px',
+                fontSize: '0.65rem',
+                padding: '1px 5px',
                 borderRadius: '9999px',
                 fontWeight: 700,
                 background: isUserAdmin ? '#1E3A8A' : '#059669',
-                color: '#FFFFFF'
+                color: '#FFFFFF',
+                flexShrink: 0
               }}>
                 {isUserAdmin ? 'Admin' : 'Anggota'}
               </span>
@@ -286,12 +288,13 @@ export const TopNavbar = () => {
                 background: 'rgba(239, 68, 68, 0.15)',
                 borderColor: 'rgba(239, 68, 68, 0.3)',
                 color: '#FECACA',
-                padding: '0.35rem 0.65rem'
+                padding: '0.3rem 0.6rem',
+                fontSize: '0.75rem'
               }}
               title="Keluar dari sesi akun"
             >
               <LogOut size={13} />
-              <span style={{ fontSize: '0.75rem' }}>Keluar</span>
+              <span className="navbar-logout-text">Keluar</span>
             </button>
           </div>
         ) : (
@@ -304,20 +307,22 @@ export const TopNavbar = () => {
             }}
             className="btn btn-secondary btn-sm"
             style={{
-              background: 'rgba(255, 255, 255, 0.1)',
+              background: 'rgba(255, 255, 255, 0.12)',
               borderColor: 'rgba(255, 255, 255, 0.25)',
               color: '#FFFFFF',
-              padding: '0.4rem 0.95rem',
-              fontSize: '0.8rem',
+              padding: '0.35rem 0.75rem',
+              fontSize: '0.785rem',
               borderRadius: '9999px',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.45rem'
+              gap: '0.4rem'
             }}
+            id="btn-open-member-login"
             title="Masuk atau Daftar Akun Anggota Creative Corner / Admin"
           >
             <LogIn size={14} />
-            <span>Masuk / Daftar Anggota</span>
+            <span className="nav-login-label-desktop">Masuk / Daftar</span>
+            <span className="nav-login-label-mobile">Masuk</span>
           </button>
         )}
       </div>
@@ -575,7 +580,7 @@ export const TopNavbar = () => {
                       />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="form-grid-dual">
                       <div className="form-group">
                         <label className="form-label">Angkatan Berapa?</label>
                         <select

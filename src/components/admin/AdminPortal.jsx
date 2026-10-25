@@ -29,23 +29,11 @@ export const AdminPortal = () => {
   return (
     <div>
       {/* Admin Header Banner */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: '14px',
-        padding: '1.25rem 1.5rem',
-        marginBottom: '1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        boxShadow: 'var(--shadow-sm)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="portal-hero-banner">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
+            width: '44px',
+            height: '44px',
             borderRadius: '12px',
             background: '#FFFFFF',
             border: '1px solid #E2E8F0',
@@ -53,7 +41,8 @@ export const AdminPortal = () => {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '4px',
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
+            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+            flexShrink: 0
           }}>
             <img 
               src="/logo-creative-corner.png" 
@@ -62,12 +51,12 @@ export const AdminPortal = () => {
             />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h1 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+              <h1 style={{ fontSize: 'clamp(1.05rem, 3.5vw, 1.25rem)', fontWeight: 800, color: '#0F172A', margin: 0 }}>
                 Portal Pengelola / Administrator
               </h1>
               <span style={{
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 background: '#ECFDF5',
                 color: '#059669',
                 padding: '2px 8px',
@@ -75,11 +64,11 @@ export const AdminPortal = () => {
                 fontWeight: 700,
                 border: '1px solid #A7F3D0'
               }}>
-                Akses Penuh Studio
+                Akses Penuh
               </span>
 
               <span style={{
-                fontSize: '0.72rem',
+                fontSize: '0.7rem',
                 background: isSupabaseConfigured ? '#EFF6FF' : '#F1F5F9',
                 color: isSupabaseConfigured ? '#1E3A8A' : '#64748B',
                 padding: '2px 8px',
@@ -96,52 +85,34 @@ export const AdminPortal = () => {
                   borderRadius: '50%',
                   background: isSupabaseConfigured ? '#10B981' : '#94A3B8'
                 }}></span>
-                <span>{isSupabaseConfigured ? 'Supabase Cloud (Database Utama)' : 'Menghubungkan ke Supabase Cloud...'}</span>
+                <span>{isSupabaseConfigured ? 'Supabase Cloud' : 'Offline Mode'}</span>
               </span>
             </div>
-            <p style={{ fontSize: '0.825rem', color: '#475569' }}>
-              Pusat kendali inventaris kamera, liputan event sekolah, registrasi personil, validasi fisik, dan kiosk PC.
+            <p style={{ fontSize: '0.8rem', color: '#475569', margin: '3px 0 0 0' }}>
+              Pusat kendali inventaris kamera, liputan event, registrasi personil, dan kiosk PC.
             </p>
           </div>
         </div>
 
         {/* Quick Admin Metrics */}
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <div style={{
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
-            borderRadius: '8px',
-            padding: '0.5rem 1rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Aset Terdaftar</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1E3A8A' }}>
+        <div className="portal-hero-stats">
+          <div className="portal-hero-stat-card">
+            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Aset Terdaftar</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
               {equipment.length}
             </div>
           </div>
 
-          <div style={{
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
-            borderRadius: '8px',
-            padding: '0.5rem 1rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Peminjam Aktif</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: activeBorrowersCount > 0 ? '#D97706' : '#0F172A' }}>
+          <div className="portal-hero-stat-card">
+            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Peminjam Aktif</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: activeBorrowersCount > 0 ? '#D97706' : '#0F172A', lineHeight: 1.1 }}>
               {activeBorrowersCount}
             </div>
           </div>
 
-          <div style={{
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
-            borderRadius: '8px',
-            padding: '0.5rem 1rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>PC Digunakan</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1E3A8A' }}>
+          <div className="portal-hero-stat-card">
+            <div style={{ fontSize: '0.675rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>PC Dipakai</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1 }}>
               {activePCCount} / 6
             </div>
           </div>
@@ -152,9 +123,10 @@ export const AdminPortal = () => {
             style={{
               borderColor: '#CBD5E1',
               color: '#64748B',
-              fontSize: '0.75rem',
+              fontSize: '0.725rem',
               alignSelf: 'center',
-              padding: '0.5rem 0.85rem'
+              padding: '0.4rem 0.75rem',
+              borderRadius: '8px'
             }}
             onClick={() => {
               if (window.confirm('PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh data studio agar dapat mengisi inventaris dan agenda dari awal? Tindakan ini tidak dapat dibatalkan.')) {
@@ -163,8 +135,8 @@ export const AdminPortal = () => {
             }}
             title="Kosongkan data studio agar admin dapat mengisi dari awal"
           >
-            <RotateCcw size={13} />
-            <span>Reset Data</span>
+            <RotateCcw size={12} />
+            <span>Reset</span>
           </button>
         </div>
       </div>
