@@ -156,16 +156,29 @@ export const CalendarTab = () => {
                   )}
 
                   <div style={{ paddingTop: '0.75rem', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
-                    {personnel.statusTugas === 'Belum Mengambil Alat' ? (
-                      <button
-                        type="button"
-                        className="btn btn-primary btn-sm"
-                        onClick={() => setSelectedEventForPickup(event)}
-                        id={`btn-pickup-event-${event.id}`}
-                      >
-                        <ClipboardCheck size={15} />
-                        <span>Isi Formulir Inspeksi Pengambilan</span>
-                      </button>
+                    {event.status === 'Selesai' || personnel.statusTugas === 'Sudah Melaksanakan Tugas' ? (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.825rem',
+                        color: '#059669',
+                        fontWeight: 700
+                      }}>
+                        <ShieldCheck size={16} />
+                        <span>Tugas Liputan Tuntas</span>
+                      </div>
+                    ) : event.status === 'Dibatalkan' ? (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.825rem',
+                        color: '#E11D48',
+                        fontWeight: 600
+                      }}>
+                        <span>Agenda Dibatalkan</span>
+                      </div>
                     ) : personnel.statusTugas === 'Sedang Melaksanakan Tugas' ? (
                       <div style={{
                         display: 'flex',
@@ -179,17 +192,15 @@ export const CalendarTab = () => {
                         <span>Sedang Berjalan di Lapangan</span>
                       </div>
                     ) : (
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontSize: '0.825rem',
-                        color: '#059669',
-                        fontWeight: 700
-                      }}>
-                        <ShieldCheck size={16} />
-                        <span>Tugas Liputan Tuntas</span>
-                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setSelectedEventForPickup(event)}
+                        id={`btn-pickup-event-${event.id}`}
+                      >
+                        <ClipboardCheck size={15} />
+                        <span>Isi Formulir Inspeksi Pengambilan</span>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -274,7 +285,12 @@ export const CalendarTab = () => {
                         </td>
                         <td>
                           <span style={{ fontSize: '0.8rem', color: '#1E3A8A', fontWeight: 600 }}>
-                            {ev.peralatanTerkunciIds.length} Unit Terkunci
+                            {ev.peralatanTerkunciIds?.length || 0} Unit Terkunci
+                            {ev.status === 'Selesai' && (
+                              <div style={{ fontSize: '0.7rem', color: '#059669', fontStyle: 'italic', fontWeight: 500 }}>
+                                (Telah Selesai & Terbuka)
+                              </div>
+                            )}
                           </span>
                         </td>
                         <td>

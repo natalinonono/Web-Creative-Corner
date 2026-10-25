@@ -654,6 +654,200 @@ export const StudioProvider = ({ children }) => {
     return newEvent;
   };
 
+  // Selesaikan Agenda Liputan Lapangan & Lepaskan Kuota Peralatan Terkunci Otomatis
+  const completeEvent = async (eventId) => {
+    const targetEvent = events.find((ev) => ev.id === eventId);
+    if (!targetEvent) return;
+
+    // 1. Ubah status event menjadi 'Selesai' dan update semua personil menjadi 'Sudah Melaksanakan Tugas'
+    const updatedPersonil = (targetEvent.personil || []).map((p) => ({
+      ...p,
+      statusTugas: 'Sudah Melaksanakan Tugas'
+    }));
+
+    const updatedEvent = {
+      ...targetEvent,
+      status: 'Selesai',
+      personil: updatedPersonil
+    };
+
+    setEvents((prev) => prev.map((ev) => (ev.id === eventId ? updatedEvent : ev)));
+    syncEventToSupabase(updatedEvent);
+
+    // 2. Buka kunci semua peralatan yang terkait dengan event ini
+    const lockedIds = targetEvent.peralatanTerkunciIds || [];
+    if (lockedIds.length > 0) {
+      setEquipment((prev) =>
+        prev.map((item) => {
+          if (lockedIds.includes(item.id)) {
+            const isJustLocked = item.status === 'Terkunci Event' || item.terkunciOlehEventId === eventId;
+            return {
+              ...item,
+              status: isJustLocked ? 'Tersedia' : item.status,
+              terkunciOlehEventId: null
+            };
+          }
+          return item;
+        })
+      );
+
+      if (isSupabaseConfigured && supabase) {
+        try {
+          await supabase
+            .from('equipment')
+            .update({ status: 'Tersedia' })
+            .in('id', lockedIds)
+            .eq('status', 'Terkunci Event');
+        } catch (err) {
+          console.warn('Gagal reset status alat di Supabase saat completeEvent:', err);
+        }
+      }
+    }
+
+    showToast(`Agenda liputan "${targetEvent.judul}" telah ditandai Selesai. Seluruh unit alat telah dibuka kembali.`, 'success');
+    return updatedEvent;
+  };
+
+  // Hapus Agenda Liputan Lapangan & Lepaskan Kuota Alat Terkunci
+  const deleteEvent = async (eventId) => {
+    const targetEvent = events.find((ev) => ev.id === eventId);
+    if (!targetEvent) return;
+
+    // 1. Hapus event dari state
+    setEvents((prev) => prev.filter((ev) => ev.id !== eventId));
+
+    // 2. Buka kunci peralatan yang terkunci oleh event ini
+    const lockedIds = targetEvent.peralatanTerkunciIds || [];
+    if (lockedIds.length > 0) {
+      setEquipment((prev) =>
+        prev.map((item) => {
+          if (lockedIds.includes(item.id)) {
+            const isJustLocked = item.status === 'Terkunci Event' || item.terkunciOlehEventId === eventId;
+            return {
+              ...item,
+              status: isJustLocked ? 'Tersedia' : item.status,
+              terkunciOlehEventId: null
+            };
+          }
+          return item;
+        })
+      );
+
+      if (isSupabaseConfigured && supabase) {
+        try {
+          await supabase
+            .from('equipment')
+            .update({ status: 'Tersedia' })
+            .in('id', lockedIds)
+            .eq('status', 'Terkunci Event');
+        } catch (err) {
+          console.warn('Gagal reset status alat di Supabase saat deleteEvent:', err);
+        }
+      }
+    }
+
+    // 3. Hapus event dari Supabase Cloud
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('events').delete().eq('id', eventId);
+      } catch (err) {
+        console.warn('Gagal menghapus event dari Supabase:', err);
+      }
+    }
+
+    showToast(`Agenda liputan "${targetEvent.judul}" berhasil dihapus. Alokasi alat telah dilepaskan.`, 'info');
+  };
+
+  // Ubah Status Agenda Liputan ('Akan Datang' | 'Sedang Berlangsung' | 'Selesai' | 'Dibatalkan')
+  const updateEventStatus = async (eventId, newStatus) => {
+    const targetEvent = events.find((ev) => ev.id === eventId);
+    if (!targetEvent) return;
+
+    if (newStatus === 'Selesai') {
+      return completeEvent(eventId);
+    }
+
+    const lockedIds = targetEvent.peralatanTerkunciIds || [];
+
+    // Jika Dibatalkan: Buka kunci seluruh alat
+    if (newStatus === 'Dibatalkan') {
+      setEquipment((prev) =>
+        prev.map((item) => {
+          if (lockedIds.includes(item.id) && (item.status === 'Terkunci Event' || item.terkunciOlehEventId === eventId)) {
+            return { ...item, status: 'Tersedia', terkunciOlehEventId: null };
+          }
+          return item;
+        })
+      );
+      if (isSupabaseConfigured && supabase && lockedIds.length > 0) {
+        supabase.from('equipment').update({ status: 'Tersedia' }).in('id', lockedIds).eq('status', 'Terkunci Event').then(() => {}).catch(() => {});
+      }
+    } else if (newStatus === 'Akan Datang' || newStatus === 'Sedang Berlangsung') {
+      // Jika kembali ke status aktif, kunci kembali peralatan yang berstatus Tersedia
+      setEquipment((prev) =>
+        prev.map((item) => {
+          if (lockedIds.includes(item.id) && item.status === 'Tersedia') {
+            return { ...item, status: 'Terkunci Event', terkunciOlehEventId: eventId };
+          }
+          return item;
+        })
+      );
+      if (isSupabaseConfigured && supabase && lockedIds.length > 0) {
+        supabase.from('equipment').update({ status: 'Terkunci Event' }).in('id', lockedIds).eq('status', 'Tersedia').then(() => {}).catch(() => {});
+      }
+    }
+
+    const updatedEvent = { ...targetEvent, status: newStatus };
+    setEvents((prev) => prev.map((ev) => (ev.id === eventId ? updatedEvent : ev)));
+    syncEventToSupabase(updatedEvent);
+    showToast(`Status agenda liputan "${targetEvent.judul}" diubah menjadi "${newStatus}".`, 'success');
+    return updatedEvent;
+  };
+
+  // Update Detail Lengkap Agenda Liputan (Judul, Tanggal, Jam, Lokasi, Deskripsi, Personil, Peralatan)
+  const updateEvent = async (eventId, updatedData) => {
+    const currentEvent = events.find((ev) => ev.id === eventId);
+    if (!currentEvent) return;
+
+    const oldLockedIds = currentEvent.peralatanTerkunciIds || [];
+    const newLockedIds = updatedData.peralatanTerkunciIds || [];
+
+    const removedIds = oldLockedIds.filter((id) => !newLockedIds.includes(id));
+    const addedIds = newLockedIds.filter((id) => !oldLockedIds.includes(id));
+
+    setEquipment((prev) =>
+      prev.map((item) => {
+        if (removedIds.includes(item.id) && (item.status === 'Terkunci Event' || item.terkunciOlehEventId === eventId)) {
+          return { ...item, status: 'Tersedia', terkunciOlehEventId: null };
+        }
+        if (addedIds.includes(item.id) && item.status === 'Tersedia') {
+          return { ...item, status: 'Terkunci Event', terkunciOlehEventId: eventId };
+        }
+        return item;
+      })
+    );
+
+    if (isSupabaseConfigured && supabase) {
+      if (removedIds.length > 0) {
+        supabase.from('equipment').update({ status: 'Tersedia' }).in('id', removedIds).eq('status', 'Terkunci Event').then(() => {}).catch(() => {});
+      }
+      if (addedIds.length > 0) {
+        supabase.from('equipment').update({ status: 'Terkunci Event' }).in('id', addedIds).eq('status', 'Tersedia').then(() => {}).catch(() => {});
+      }
+    }
+
+    const updatedEvent = {
+      ...currentEvent,
+      ...updatedData,
+      id: eventId
+    };
+
+    setEvents((prev) => prev.map((ev) => (ev.id === eventId ? updatedEvent : ev)));
+    syncEventToSupabase(updatedEvent);
+    showToast(`Agenda liputan "${updatedEvent.judul}" berhasil diperbarui.`, 'success');
+    return updatedEvent;
+  };
+
   // TRIGGER 2: Pemicu Status Tugas dari Inspeksi Pengambilan (Awal)
   const submitPickupInspection = ({
     eventId,
@@ -1248,6 +1442,10 @@ export const StudioProvider = ({ children }) => {
         showToast,
         // State Machine Triggers
         scheduleEvent,
+        completeEvent,
+        deleteEvent,
+        updateEventStatus,
+        updateEvent,
         submitPickupInspection,
         startPCSession,
         extendPCSession,

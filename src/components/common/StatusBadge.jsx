@@ -28,22 +28,24 @@ export const StatusBadge = ({ status, isOverdue = false, overdueLabel = '', clas
   ) {
     badgeClass = 'badge-emerald';
   }
-  // 2. Kuning Amber: "Sedang Melaksanakan Tugas", "Dalam Proses", "Dipinjam", "Peninjauan"
+  // 2. Kuning Amber: "Sedang Melaksanakan Tugas", "Dalam Proses", "Dipinjam", "Peninjauan", "Sedang Berlangsung"
   else if (
     normalized === 'Sedang Melaksanakan Tugas' ||
     normalized === 'Dalam Proses' ||
     normalized === 'Dipinjam' ||
     normalized === 'Peninjauan' ||
-    normalized === 'Menunggu Persetujuan'
+    normalized === 'Menunggu Persetujuan' ||
+    normalized === 'Sedang Berlangsung'
   ) {
     badgeClass = 'badge-amber';
   }
-  // 3. Merah Crimson: "Terkunci Event", "Terlambat", "Waktu Hampir Habis", "Perbaikan"
+  // 3. Merah Crimson: "Terkunci Event", "Terlambat", "Waktu Hampir Habis", "Perbaikan", "Dibatalkan"
   else if (
     normalized === 'Terkunci Event' ||
     normalized === 'Terlambat' ||
     normalized === 'Waktu Hampir Habis' ||
-    normalized === 'Perbaikan'
+    normalized === 'Perbaikan' ||
+    normalized === 'Dibatalkan'
   ) {
     badgeClass = 'badge-crimson';
   }
