@@ -11,17 +11,24 @@ import {
   Plus, 
   CheckCircle2, 
   Layers,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
 export const CreativeTasksTab = () => {
-  const { creativeTasks, updateCreativeTaskStage, addCreativeTask, activeMemberId, members } = useStudio();
-  const currentMember = members.find((m) => m.id === activeMemberId) || members[0] || {
+  const { creativeTasks, updateCreativeTaskStage, addCreativeTask, deleteCreativeTask, activeMemberId, members, currentUser } = useStudio();
+  const currentMember = currentUser || members.find((m) => m.id === activeMemberId) || members[0] || {
     id: 'user-default',
     nama: 'Anggota Creative Corner',
     kelas: 'Studio',
     nomorWa: '6281234567890'
+  };
+
+  const getDefaultDate = (offsetDays) => {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    return d.toISOString().split('T')[0];
   };
 
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('Semua');
@@ -34,8 +41,8 @@ export const CreativeTasksTab = () => {
   const [selectedPjId, setSelectedPjId] = useState('');
   const [manualPjName, setManualPjName] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
-  const [tenggatDraf, setTenggatDraf] = useState('2026-10-25 18:00');
-  const [tenggatKaryaAkhir, setTenggatKaryaAkhir] = useState('2026-10-27 12:00');
+  const [tenggatDraf, setTenggatDraf] = useState(() => `${getDefaultDate(1)} 18:00`);
+  const [tenggatKaryaAkhir, setTenggatKaryaAkhir] = useState(() => `${getDefaultDate(3)} 12:00`);
 
   const categories = ['Semua', 'Pembuatan Naskah/Konsep', 'Desain Grafis', 'Editing Video', 'Fotografi & Retouching', 'Animasi & Motion Graphics'];
   const stages = ['Belum Dimulai', 'Dalam Proses', 'Peninjauan', 'Selesai'];
@@ -295,9 +302,8 @@ export const CreativeTasksTab = () => {
                       </div>
                     )}
 
-                    {/* Pembaruan Tahapan Progres Interaktif */}
-                    <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '0.725rem', color: '#64748B' }}>Pindah Tahap:</span>
+                    {/* Pembaruan Tahapan Progres Interaktif & Hapus */}
+                    <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem' }}>
                       <select
                         value={task.status}
                         onChange={(e) => updateCreativeTaskStage(task.id, e.target.value)}
@@ -307,13 +313,28 @@ export const CreativeTasksTab = () => {
                           padding: '0.25rem 0.5rem',
                           width: 'auto',
                           background: '#FFFFFF',
-                          borderColor: '#CBD5E1'
+                          borderColor: '#CBD5E1',
+                          flex: 1
                         }}
                       >
                         {stages.map((st) => (
                           <option key={st} value={st}>{st}</option>
                         ))}
                       </select>
+
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        style={{ padding: '0.28rem 0.45rem' }}
+                        onClick={() => {
+                          if (window.confirm(`Hapus tugas kreatif "${task.judul}"?`)) {
+                            deleteCreativeTask(task.id);
+                          }
+                        }}
+                        title="Hapus Tugas"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </div>
                 ))}

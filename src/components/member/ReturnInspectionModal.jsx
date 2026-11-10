@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { 
-  RotateCcw, 
   AlertTriangle, 
   CheckCircle, 
   CheckCircle2,
@@ -9,35 +8,76 @@ import {
   Camera, 
   Upload, 
   Trash2, 
-  Eye,
   Printer,
   X,
-  Clock,
-  Sparkles,
-  PackageCheck
+  Clock
 } from 'lucide-react';
 import { compressImage } from '../../utils/imageCompression';
 import { BuktiPeminjamanModal } from '../common/BuktiPeminjamanModal';
-import sonyLensPhoto from '../../assets/stitch/sony-fe-24-70-gm2.jpg';
 
 export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
   const { submitReturnInspection } = useStudio();
 
+  // All Hooks MUST stay unconditionally at top level (React Rules of Hooks)
+  const [kondisiFisikAkhir, setKondisiFisikAkhir] = useState('Baik & Berfungsi Normal');
+  const [keteranganAlat, setKeteranganAlat] = useState('');
+  const [accessories, setAccessories] = useState({
+    item1: true,
+    item2: true,
+    item3: true,
+    item4: true
+  });
+  const [fotoAfterFile, setFotoAfterFile] = useState(null);
+  const [previewZoomModal, setPreviewZoomModal] = useState(null);
+  const [isBuktiModalOpen, setIsBuktiModalOpen] = useState(false);
+
+  // Reset form state whenever targetBorrowing changes or modal opens
+  useEffect(() => {
+    if (isOpen && targetBorrowing) {
+      setKondisiFisikAkhir('Baik & Berfungsi Normal');
+      setKeteranganAlat('');
+      setAccessories({ item1: true, item2: true, item3: true, item4: true });
+      setFotoAfterFile(null);
+      setPreviewZoomModal(null);
+      setIsBuktiModalOpen(false);
+    }
+  }, [isOpen, targetBorrowing?.id]);
+
   if (!isOpen || !targetBorrowing) return null;
 
-  // Form Fields - Kondisi Fisik (Stitch Radio Options)
-  const [kondisiFisikAkhir, setKondisiFisikAkhir] = useState('Baik & Berfungsi Normal');
-  const [keteranganAlat, setKeteranganAlat] = useState(
-    'Kondisi optik depan dan belakang telah dibersihkan dengan blower & lens pen. Seluruh switch AF/MF dan de-click aperture berfungsi sempurna. Unit siap dimasukkan ke Dry Cabinet 1.'
-  );
+  // Determine dynamic checklist labels based on equipment name
+  const gearNameLower = (targetBorrowing.peralatanNama || '').toLowerCase();
+  const isStudioRoom = gearNameLower.includes('ruang') || gearNameLower.includes('studio') || gearNameLower.includes('podcast');
+  const isAudio = gearNameLower.includes('mic') || gearNameLower.includes('audio') || gearNameLower.includes('dji mic');
+  const isCameraOrLens = gearNameLower.includes('kamera') || gearNameLower.includes('canon') || gearNameLower.includes('sony') || gearNameLower.includes('lensa') || gearNameLower.includes('eos');
 
-  // Aksesori Checklist (2x2 Grid)
-  const [accessories, setAccessories] = useState({
-    frontRearCap: true,
-    lensHood: true,
-    pouchKain: true,
-    uvFilter: true
-  });
+  const checklistLabels = isStudioRoom
+    ? [
+        { key: 'item1', label: 'Ruangan Bersih & Rapi' },
+        { key: 'item2', label: 'AC & Lampu Sudah Dimatikan' },
+        { key: 'item3', label: 'Properti / Meja Kembali Semula' },
+        { key: 'item4', label: 'Pintu & Loker Sudah Terkunci' }
+      ]
+    : isAudio
+    ? [
+        { key: 'item1', label: 'Unit Mic / Receiver Lengkap' },
+        { key: 'item2', label: 'Kabel / Adapter TRS-TRRS Ada' },
+        { key: 'item3', label: 'Windshield / Busa Terpasang' },
+        { key: 'item4', label: 'Charging Case / Baterai Aman' }
+      ]
+    : isCameraOrLens
+    ? [
+        { key: 'item1', label: 'Body / Optik & Tutup Lensa (Cap)' },
+        { key: 'item2', label: 'Lens Hood / Strap Terpasang' },
+        { key: 'item3', label: 'Tas / Pouch Unit Lengkap' },
+        { key: 'item4', label: 'Tutup Sensor / Adapter Aman' }
+      ]
+    : [
+        { key: 'item1', label: 'Unit Utama Lengkap & Utuh' },
+        { key: 'item2', label: 'Kabel / Adaptor / Daya Ada' },
+        { key: 'item3', label: 'Tas / Case Pelindung Ada' },
+        { key: 'item4', label: 'Sekrup / Mounting Bracket Aman' }
+      ];
 
   const toggleAccessory = (key) => {
     setAccessories((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -45,13 +85,9 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
 
   const completedAccessoriesCount = Object.values(accessories).filter(Boolean).length;
 
-  // Foto Kondisi Fisik Alat Saat Dikembalikan (AFTER)
-  const [fotoAfterFile, setFotoAfterFile] = useState(null);
-  const [previewZoomModal, setPreviewZoomModal] = useState(null);
-  const [isBuktiModalOpen, setIsBuktiModalOpen] = useState(false);
-
-  // Ambil referensi Foto BEFORE dari peminjaman jika tersedia
+  // Ambil referensi Foto BEFORE asli dari peminjaman jika tersedia
   const fotoBeforeRef = targetBorrowing.fotoBefore || targetBorrowing.inspeksiPengambilan?.fotoBefore || targetBorrowing.buktiSurat;
+  const fotoBeforeSrc = fotoBeforeRef ? (fotoBeforeRef.dataUrl || fotoBeforeRef) : null;
 
   // Upload & Kamera HP Handler dengan Kompresi Otomatis
   const handlePhotoCapture = async (e) => {
@@ -81,30 +117,49 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
 
+    const isDamage = kondisiFisikAkhir.includes('Kerusakan');
+    if (isDamage && !keteranganAlat.trim()) {
+      alert('Anda memilih status "Terdapat Kerusakan / Error". Mohon tuliskan detail kerusakan atau kendala alat pada kolom catatan.');
+      return;
+    }
+
     if (!fotoAfterFile) {
-      if (!window.confirm('PERHATIAN: Anda belum melampirkan foto fisik live capture saat dikembalikan (AFTER). Apakah Anda yakin ingin menyelesaikan pengembalian dengan foto inspeksi studio standar?')) {
+      if (!window.confirm('PERHATIAN: Anda belum melampirkan foto fisik saat dikembalikan (AFTER). Apakah Anda yakin ingin menyelesaikan pengembalian tanpa bukti foto fisik akhir?')) {
         return;
       }
     }
 
-    const accessoriesSummary = Object.entries(accessories)
-      .map(([k, v]) => `${k}: ${v ? 'Lengkap' : 'Tidak Ada'}`)
+    const missingItems = checklistLabels.filter((item) => !accessories[item.key]).map((item) => item.label);
+    const accessoriesSummary = checklistLabels
+      .map((item) => `${item.label}: ${accessories[item.key] ? 'Lengkap' : 'Kurang'}`)
       .join(', ');
+
+    const hasMissingAccessory = missingItems.length > 0;
+    const anomaliTerdeteksi = Boolean(isDamage || hasMissingAccessory);
+
+    const catatanKendalaFinal = isDamage
+      ? keteranganAlat.trim()
+      : hasMissingAccessory
+      ? `Aksesori kurang (${missingItems.join(', ')}). ${keteranganAlat.trim()}`
+      : keteranganAlat.trim()
+      ? `${keteranganAlat.trim()} (Tidak ada kendala kerusakan)`
+      : 'Tidak ada kendala. Alat dikembalikan lengkap dan dalam kondisi normal.';
 
     submitReturnInspection({
       borrowingId: targetBorrowing.id,
-      fotoAfter: fotoAfterFile || { dataUrl: sonyLensPhoto, name: 'studio-inspection-verified.jpg', size: '617 KB' },
+      fotoAfter: fotoAfterFile || null,
       returnInspectionData: {
         kondisiFisikAkhir,
-        keteranganAlat,
-        fungsiTombol: 'Normal',
-        kebersihanLensa: 'Bersih',
+        keteranganAlat: keteranganAlat.trim() || 'Lengkap & berfungsi normal',
+        fungsiTombol: isDamage ? 'Perlu Pengecekan' : 'Normal',
+        kebersihanLensa: isDamage ? 'Perlu Pengecekan' : 'Bersih',
         sisaBateraiPersen: 100,
-        kelengkapanAksesori: `Aksesori (${completedAccessoriesCount}/4): ${accessoriesSummary}. Catatan: ${keteranganAlat}`,
+        kelengkapanAksesori: `Kelengkapan (${completedAccessoriesCount}/4): ${accessoriesSummary}`,
         kebersihanRuang: 'Bersih',
-        catatanKendala: keteranganAlat || 'Tidak ada kendala. Alat dikembalikan dalam kondisi normal.',
+        catatanKendala: catatanKendalaFinal,
+        anomaliTerdeteksi,
         petugasPemeriksa: `${targetBorrowing.peminjamNama} (Inspeksi Pengembalian Mandiri)`,
-        fotoAfter: fotoAfterFile || { dataUrl: sonyLensPhoto, name: 'studio-inspection-verified.jpg', size: '617 KB' }
+        fotoAfter: fotoAfterFile || null
       }
     });
 
@@ -118,8 +173,6 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     return name.slice(0, 2).toUpperCase();
   };
-
-  const activePhotoPreview = fotoAfterFile?.dataUrl || sonyLensPhoto;
 
   return (
     <>
@@ -141,7 +194,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
         }}
       >
         <div 
-          className="bg-white w-full max-w-[800px] rounded-[14px] modal-shadow border border-[#CBD5E1] text-slate-800 flex flex-col my-auto relative animate-in fade-in zoom-in-95 duration-200"
+          className="bg-white w-full max-w-[820px] rounded-[14px] modal-shadow border border-[#CBD5E1] text-slate-800 flex flex-col my-auto relative"
           style={{
             background: '#FFFFFF',
             width: '100%',
@@ -180,7 +233,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                     Verifikasi Pengembalian Alat Studio
                   </h1>
                   <p style={{ fontSize: '0.785rem', color: '#64748B', margin: '3px 0 0 0' }}>
-                    Pemeriksaan fisik komparatif sebelum unit masuk kembali ke lemari aset Creative Corner.
+                    Pemeriksaan fisik komparatif sebelum unit masuk kembali ke inventaris Creative Corner.
                   </p>
                 </div>
               </div>
@@ -230,7 +283,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   borderRadius: '6px',
                   fontSize: '0.725rem'
                 }}>
-                  #EQ-{targetBorrowing.peralatanKode || targetBorrowing.id?.slice(0, 7) || 'AST-002'}
+                  {targetBorrowing.id}
                 </span>
                 <strong style={{ color: '#0F172A', fontSize: '0.85rem' }}>
                   {targetBorrowing.peralatanNama}
@@ -263,7 +316,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   padding: '2px 8px',
                   borderRadius: '9999px'
                 }}>
-                  {targetBorrowing.keperluan || 'Liputan Acara Utama'}
+                  {targetBorrowing.keperluan || 'Peminjaman Studio'}
                 </span>
               </div>
             </div>
@@ -277,22 +330,22 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
               <section style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <h2 style={{ fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', margin: 0 }}>
-                    Komparasi Bukti Foto
+                    Komparasi Bukti Foto (Before / After)
                   </h2>
                   <span style={{
                     fontSize: '0.7rem',
                     fontWeight: 700,
-                    color: '#059669',
-                    background: '#ECFDF5',
-                    border: '1px solid #A7F3D0',
+                    color: fotoAfterFile ? '#059669' : '#D97706',
+                    background: fotoAfterFile ? '#ECFDF5' : '#FFFBEB',
+                    border: `1px solid ${fotoAfterFile ? '#A7F3D0' : '#FDE68A'}`,
                     padding: '2px 8px',
                     borderRadius: '9999px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px'
                   }}>
-                    <CheckCircle2 size={12} color="#059669" />
-                    <span>Elemen Optik Depan Bersih</span>
+                    <CheckCircle2 size={12} />
+                    <span>{fotoAfterFile ? 'Foto Pengembalian Siap' : 'Menunggu Foto AFTER'}</span>
                   </span>
                 </div>
 
@@ -306,122 +359,154 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: '5px' }}>
                       <Clock size={13} color="#64748B" />
-                      <span>Foto Kondisi Awal (Saat Pengambilan)</span>
+                      <span>Foto Kondisi Awal (BEFORE)</span>
                     </span>
                     <span style={{ fontSize: '0.675rem', background: '#E2E8F0', color: '#475569', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
-                      Kondisi: Mulus / Lengkap
+                      {targetBorrowing.inspeksiPengambilan?.kondisiFisik || 'Kondisi Awal Baik'}
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div 
-                      style={{
-                        width: '76px',
-                        height: '62px',
-                        borderRadius: '8px',
-                        background: '#0F172A',
-                        border: '1px solid #CBD5E1',
-                        overflow: 'hidden',
-                        position: 'relative',
-                        flexShrink: 0,
-                        cursor: 'pointer'
-                      }}
-                      onClick={() => setPreviewZoomModal(fotoBeforeRef?.dataUrl || fotoBeforeRef || sonyLensPhoto)}
-                      title="Klik untuk memperbesar foto awal (BEFORE)"
-                    >
-                      <img
-                        src={fotoBeforeRef?.dataUrl || fotoBeforeRef || sonyLensPhoto}
-                        alt="Foto checkout awal"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <span style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        background: 'rgba(0,0,0,0.65)',
-                        color: '#FFFFFF',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '8px',
-                        textAlign: 'center',
-                        padding: '1px 0'
-                      }}>
-                        CHECKOUT
-                      </span>
-                    </div>
+                  {fotoBeforeSrc ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div 
+                        style={{
+                          width: '76px',
+                          height: '62px',
+                          borderRadius: '8px',
+                          background: '#0F172A',
+                          border: '1px solid #CBD5E1',
+                          overflow: 'hidden',
+                          position: 'relative',
+                          flexShrink: 0,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => setPreviewZoomModal(fotoBeforeSrc)}
+                        title="Klik untuk memperbesar foto awal (BEFORE)"
+                      >
+                        <img
+                          src={fotoBeforeSrc}
+                          alt="Foto checkout awal"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        <span style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          background: 'rgba(0,0,0,0.65)',
+                          color: '#FFFFFF',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '8px',
+                          textAlign: 'center',
+                          padding: '1px 0'
+                        }}>
+                          BEFORE
+                        </span>
+                      </div>
 
-                    <div style={{ fontSize: '0.725rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <div><span style={{ color: '#94A3B8' }}>Timestamp:</span> <strong style={{ fontFamily: 'var(--font-mono)', color: '#0F172A' }}>{targetBorrowing.tanggalPinjam || 'Hari ini'} 08:30 WIB</strong></div>
-                      <div><span style={{ color: '#94A3B8' }}>Inspektor:</span> <strong>{targetBorrowing.peminjamNama} (QC Lab)</strong></div>
-                      <div style={{ color: '#059669', fontWeight: 600, fontSize: '0.7rem' }}>Grade Fisik A+ (Bebas Dust/Fungus)</div>
+                      <div style={{ fontSize: '0.725rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div>
+                          <span style={{ color: '#94A3B8' }}>Diambil:</span>{' '}
+                          <strong style={{ fontFamily: 'var(--font-mono)', color: '#0F172A' }}>
+                            {targetBorrowing.inspeksiPengambilan?.tanggalInspeksi || targetBorrowing.tanggalPinjam || '-'}
+                          </strong>
+                        </div>
+                        <div>
+                          <span style={{ color: '#94A3B8' }}>Catatan Awal:</span>{' '}
+                          <strong>{targetBorrowing.inspeksiPengambilan?.keteranganAlat || 'Kondisi normal saat pengambilan'}</strong>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div style={{ fontSize: '0.75rem', color: '#64748B', padding: '0.35rem 0' }}>
+                      Tidak ada lampiran foto BEFORE saat pengambilan. Catatan awal: <strong>{targetBorrowing.inspeksiPengambilan?.kondisiFisik || 'Baik'}</strong>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom: Foto Kondisi Akhir (AFTER Live Capture) */}
                 <div style={{
-                  border: '2px dashed #93C5FD',
+                  border: fotoAfterFile ? '1.5px solid #10B981' : '2px dashed #93C5FD',
                   borderRadius: '10px',
                   padding: '0.75rem',
-                  background: '#EFF6FF'
+                  background: fotoAfterFile ? '#F0FDF4' : '#EFF6FF'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
-                      <span>Foto Kondisi Akhir (Saat Ini)</span>
+                      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: fotoAfterFile ? '#10B981' : '#3B82F6', display: 'inline-block' }}></span>
+                      <span>Foto Kondisi Akhir (AFTER)</span>
                     </span>
                     <span style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.675rem',
-                      color: '#1E40AF',
-                      background: '#DBEAFE',
-                      border: '1px solid #BFDBFE',
+                      color: fotoAfterFile ? '#047857' : '#1E40AF',
+                      background: fotoAfterFile ? '#DCFCE7' : '#DBEAFE',
+                      border: `1px solid ${fotoAfterFile ? '#A7F3D0' : '#BFDBFE'}`,
                       padding: '1px 6px',
                       borderRadius: '4px'
                     }}>
-                      Hari ini (Live Capture)
+                      {fotoAfterFile ? (fotoAfterFile.size || 'Foto Siap') : 'Live Capture'}
                     </span>
                   </div>
 
-                  {/* High-Resolution Inspection Image Canvas */}
-                  <div 
-                    style={{
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      border: '1px solid #CBD5E1',
-                      position: 'relative',
-                      aspectRatio: '4 / 3',
-                      background: '#0F172A',
-                      cursor: 'pointer'
-                    }}
-                    onClick={() => setPreviewZoomModal(activePhotoPreview)}
-                    title="Klik untuk memperbesar pratinjau"
-                  >
-                    <img
-                      src={activePhotoPreview}
-                      alt="High-resolution close-up product photo of equipment"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '8px',
-                      left: '8px',
-                      background: 'rgba(11, 25, 44, 0.8)',
-                      backdropFilter: 'blur(4px)',
-                      padding: '3px 8px',
-                      borderRadius: '6px',
-                      color: '#FFFFFF',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.685rem',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px'
-                    }}>
-                      <CheckCircle2 size={12} color="#34D399" />
-                      <span>Optik Depan: Bersih Terkalibrasi</span>
+                  {/* Image Preview Canvas OR Empty Upload Prompt */}
+                  {fotoAfterFile ? (
+                    <div 
+                      style={{
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        border: '1px solid #86EFAC',
+                        position: 'relative',
+                        aspectRatio: '4 / 3',
+                        background: '#0F172A',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => setPreviewZoomModal(fotoAfterFile.dataUrl)}
+                      title="Klik untuk memperbesar pratinjau foto AFTER"
+                    >
+                      <img
+                        src={fotoAfterFile.dataUrl}
+                        alt="Foto kondisi fisik alat saat dikembalikan"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        left: '8px',
+                        background: 'rgba(11, 25, 44, 0.8)',
+                        backdropFilter: 'blur(4px)',
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        color: '#FFFFFF',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.685rem',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}>
+                        <CheckCircle2 size={12} color="#34D399" />
+                        <span>AFTER: {fotoAfterFile.name}</span>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div style={{
+                      borderRadius: '8px',
+                      border: '1px dashed #93C5FD',
+                      background: '#FFFFFF',
+                      padding: '1.75rem 1rem',
+                      textAlign: 'center',
+                      color: '#475569'
+                    }}>
+                      <Camera size={32} color="#1E3A8A" style={{ margin: '0 auto 0.5rem' }} />
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A' }}>
+                        Ambil Foto Kondisi Alat Saat Ini
+                      </div>
+                      <p style={{ fontSize: '0.75rem', color: '#64748B', margin: '0.25rem 0 0 0' }}>
+                        Wajib memotret kondisi fisik akhir unit sebelum dikembalikan ke lemari studio.
+                      </p>
+                    </div>
+                  )}
 
                   {/* Action buttons under photo */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.65rem' }}>
@@ -435,12 +520,12 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                         justifyContent: 'center',
                         gap: '0.4rem',
                         fontSize: '0.75rem',
-                        padding: '0.4rem 0.6rem'
+                        padding: '0.45rem 0.6rem'
                       }}
                       id="btn-trigger-camera"
                     >
                       <Camera size={14} />
-                      <span>Ambil via Kamera HP</span>
+                      <span>{fotoAfterFile ? 'Foto Ulang Kamera HP' : 'Ambil via Kamera HP'}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -459,12 +544,12 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                         justifyContent: 'center',
                         gap: '0.35rem',
                         fontSize: '0.75rem',
-                        padding: '0.4rem 0.6rem'
+                        padding: '0.45rem 0.6rem'
                       }}
                       id="btn-trigger-gallery"
                     >
                       <Upload size={13} />
-                      <span>Ganti Foto</span>
+                      <span>Galeri</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -472,6 +557,18 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                         style={{ display: 'none' }}
                       />
                     </label>
+
+                    {fotoAfterFile && (
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => setFotoAfterFile(null)}
+                        title="Hapus Foto AFTER"
+                        style={{ padding: '0.45rem 0.6rem' }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </section>
@@ -481,7 +578,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                 {/* 1. Status Kondisi Fisik Radio Group */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: '0.4rem' }}>
-                    Status Kondisi Fisik
+                    Status Kondisi Fisik Akhir
                   </label>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                     
@@ -510,7 +607,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                           <span style={{ color: '#059669', fontSize: '0.8rem' }}>✓</span>
                         </div>
                         <p style={{ fontSize: '0.725rem', color: '#64748B', margin: '2px 0 0 0' }}>
-                          Tidak ada goresan atau jamur, fungsi autofocus/manual normal
+                          Tidak ada goresan atau kerusakan baru, seluruh tombol & fungsi berjalan normal
                         </p>
                       </div>
                     </label>
@@ -539,7 +636,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                           Lecet Pemakaian Ringan
                         </div>
                         <p style={{ fontSize: '0.725rem', color: '#64748B', margin: '2px 0 0 0' }}>
-                          Tanda pakai kosmetik wajar pada bodi luar atau lens hood
+                          Tanda pakai kosmetik wajar pada bodi luar, fungsi tetap aman 100%
                         </p>
                       </div>
                     </label>
@@ -564,24 +661,29 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                         style={{ marginTop: '3px' }}
                       />
                       <div style={{ fontSize: '0.8rem' }}>
-                        <div style={{ fontWeight: 700, color: '#B91C1C' }}>
-                          Terdapat Kerusakan / Error
+                        <div style={{ fontWeight: 700, color: '#B91C1C', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <span>Terdapat Kerusakan / Error</span>
+                          <AlertTriangle size={13} color="#DC2626" />
                         </div>
                         <p style={{ fontSize: '0.725rem', color: '#64748B', margin: '2px 0 0 0' }}>
-                          Optik baret, autofocus macet, jatuh, atau tombol tidak merespon
+                          Baret/jatuh, fungsi macet, atau ada bagian hilang (Akan ditandai untuk Admin QC)
                         </p>
                       </div>
                     </label>
                   </div>
                 </div>
 
-                {/* 2. Accessories Completeness Checklist (2x2 Grid) */}
+                {/* 2. Accessories Completeness Checklist (Dynamic 2x2 Grid) */}
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                     <label style={{ fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', margin: 0 }}>
-                      Kelengkapan Aksesori
+                      Kelengkapan Aksesori & Unit
                     </label>
-                    <span style={{ fontSize: '0.725rem', fontWeight: 700, color: '#059669' }}>
+                    <span style={{
+                      fontSize: '0.725rem',
+                      fontWeight: 700,
+                      color: completedAccessoriesCount === 4 ? '#059669' : '#D97706'
+                    }}>
                       Lengkap {completedAccessoriesCount}/4 Item
                     </span>
                   </div>
@@ -596,45 +698,17 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                     border: '1px solid #E2E8F0',
                     fontSize: '0.775rem'
                   }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={accessories.frontRearCap}
-                        onChange={() => toggleAccessory('frontRearCap')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#334155', fontWeight: 500 }}>Front & Rear Cap</span>
-                    </label>
-
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={accessories.lensHood}
-                        onChange={() => toggleAccessory('lensHood')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#334155', fontWeight: 500 }}>Lens Hood (Original)</span>
-                    </label>
-
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={accessories.pouchKain}
-                        onChange={() => toggleAccessory('pouchKain')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#334155', fontWeight: 500 }}>Pouch / Tas Unit</span>
-                    </label>
-
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={accessories.uvFilter}
-                        onChange={() => toggleAccessory('uvFilter')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#334155', fontWeight: 500 }}>UV Filter / Baterai Cadangan</span>
-                    </label>
+                    {checklistLabels.map((item) => (
+                      <label key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={accessories[item.key]}
+                          onChange={() => toggleAccessory(item.key)}
+                          style={{ accentColor: '#1E3A8A' }}
+                        />
+                        <span style={{ color: '#334155', fontWeight: 500 }}>{item.label}</span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
@@ -642,7 +716,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
                     <label style={{ fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', margin: 0 }}>
-                      Catatan Kondisi / Kelengkapan
+                      {kondisiFisikAkhir.includes('Kerusakan') ? 'Detail Kerusakan / Kendala *' : 'Catatan Kondisi / Kelengkapan (Opsional)'}
                     </label>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.675rem', color: '#94A3B8' }}>
                       {keteranganAlat.length} / 500 karakter
@@ -653,14 +727,19 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                     rows={3}
                     value={keteranganAlat}
                     onChange={(e) => setKeteranganAlat(e.target.value.slice(0, 500))}
-                    placeholder="Tuliskan catatan detail jika ada kendala fisik atau fungsi..."
+                    placeholder={
+                      kondisiFisikAkhir.includes('Kerusakan')
+                        ? 'Jelaskan secara rinci kerusakan/error yang terjadi agar segera ditangani teknisi studio...'
+                        : 'Kosongkan jika kondisi normal & lengkap, atau tulis catatan tambahan seperti lokasi rak penyimpanan...'
+                    }
                     style={{
                       width: '100%',
                       fontSize: '0.785rem',
                       lineHeight: '1.4',
                       padding: '0.5rem 0.65rem',
                       borderRadius: '8px',
-                      resize: 'vertical'
+                      resize: 'vertical',
+                      borderColor: kondisiFisikAkhir.includes('Kerusakan') ? '#FCA5A5' : '#CBD5E1'
                     }}
                   />
                 </div>
@@ -679,18 +758,16 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
             justifyContent: 'space-between',
             gap: '0.75rem'
           }}>
-            {/* Left: Dismiss */}
             <button
               type="button"
               className="btn btn-secondary btn-sm"
               onClick={onClose}
               style={{ fontSize: '0.785rem', padding: '0.5rem 0.85rem' }}
             >
-              Batal / Periksa Nanti
+              Batal
             </button>
 
-            {/* Right: Print Receipt & Submit Sign-off */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
@@ -720,7 +797,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   alignItems: 'center',
                   gap: '0.45rem',
                   fontWeight: 700,
-                  background: '#1E3A8A'
+                  background: kondisiFisikAkhir.includes('Kerusakan') ? '#E11D48' : '#1E3A8A'
                 }}
               >
                 <CheckCircle size={15} color="#34D399" />
@@ -785,7 +862,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
           onClose={() => setIsBuktiModalOpen(false)}
           loanData={{
             ...targetBorrowing,
-            status: 'Dikembalikan (Verifikasi Fisik Selesai)'
+            status: 'Selesai (Verifikasi Pengembalian)'
           }}
         />
       )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { 
@@ -8,7 +8,6 @@ import {
   Clock, 
   MapPin, 
   UserCheck, 
-  Filter, 
   ClipboardCheck, 
   CalendarDays,
   ShieldCheck,
@@ -18,66 +17,196 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
-  PlusCircle,
   AlertTriangle,
   CheckCircle2,
-  Check,
-  Package,
-  Layers,
-  Building,
-  User,
-  Users
+  Users,
+  PlusCircle
 } from 'lucide-react';
 import { PickupInspectionModal } from './PickupInspectionModal';
+import { checkLoanOverdue } from '../../utils/loanOverdue';
 
 export const CalendarTab = () => {
-  const { events, dutyRoster, equipment, activeMemberId, members } = useStudio();
-  const currentMember = members.find((m) => m.id === activeMemberId) || members[0] || {
+  const { 
+    events, 
+    dutyRoster, 
+    equipment, 
+    borrowings, 
+    activeMemberId, 
+    members, 
+    currentUser,
+    isSupabaseConfigured,
+    setCurrentRole,
+    showToast
+  } = useStudio();
+
+  const currentMember = currentUser || members.find((m) => m.id === activeMemberId) || members[0] || {
     id: 'USR',
-    nama: 'Kevin Pratama',
-    kelas: '12 MIPA 1',
-    divisi: 'Lead Videographer'
+    nama: 'Anggota Creative Corner',
+    kelas: 'Studio',
+    divisi: 'Kru Studio'
   };
 
+  // State navigasi tanggal & tampilan
+  const todayISO = new Date().toISOString().split('T')[0];
+  const [referenceDate, setReferenceDate] = useState(() => new Date());
+  const [selectedDateFilter, setSelectedDateFilter] = useState(null); // null = tampilkan seluruh agenda mendatang/aktif
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('Semua');
-  const [selectedEventForPickup, setSelectedEventForPickup] = useState(null);
   const [activeViewMode, setActiveViewMode] = useState('timeline'); // 'timeline' | 'calendar' | 'my-tasks'
-  const [selectedDayOffset, setSelectedDayOffset] = useState(1); // 1 = Selasa (Today)
+  const [selectedEventForPickup, setSelectedEventForPickup] = useState(null);
+  const [eqCategoryFilter, setEqCategoryFilter] = useState('Semua');
 
-  // Interactive Checklist for Gear Pickup in Right Sidebar
-  const [gearChecklist, setGearChecklist] = useState({
-    camA7IV: true,
-    lens2470: true,
-    djiMic: false,
-    tripod: false
-  });
+  // Interactive checklist state keyed by tool id for sidebar pre-check
+  const [checkedToolIds, setCheckedToolIds] = useState({});
 
-  const toggleGearItem = (key) => {
-    setGearChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleToolCheck = (toolId) => {
+    setCheckedToolIds((prev) => ({ ...prev, [toolId]: !prev[toolId] }));
   };
 
-  const completedGearCount = Object.values(gearChecklist).filter(Boolean).length;
+  const getInitials = (name) => {
+    if (!name) return 'CC';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
 
-  // Filter kategori
-  const categories = [
-    { label: 'Semua Kategori', count: 18, dotColor: null },
-    { label: 'Event Sekolah', count: 7, dotColor: '#1E3A8A' },
-    { label: 'Piket Studio', count: 4, dotColor: '#059669' },
-    { label: 'Peminjaman Mandiri', count: 3, dotColor: '#525F75' },
-    { label: 'Sewa Komersial', count: 4, dotColor: '#D97706' }
-  ];
+  // Formatter helpers
+  const formatMonthYear = (date) => {
+    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  };
 
-  // Penugasan dokumentasi pribadi siswa aktif
-  const myPersonalAssignments = [];
-  events.forEach((ev) => {
-    const assigned = ev.personil?.find((p) => p.anggotaId === activeMemberId || p.nama === currentMember.nama);
-    if (assigned) {
-      myPersonalAssignments.push({
-        event: ev,
-        personnel: assigned
+  const formatReadableDate = (dateStr) => {
+    if (!dateStr) return '-';
+    const d = new Date(`${dateStr}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // Hitung minggu berjalan dari referenceDate (Senin - Minggu)
+  const weekDays = useMemo(() => {
+    const base = new Date(referenceDate);
+    const dayOfWeek = base.getDay(); // 0 = Min, 1 = Sen
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(base);
+    monday.setDate(base.getDate() + diffToMonday);
+
+    const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const dayEvents = events.filter((ev) => ev.tanggal === iso).length;
+      const dayLoans = borrowings.filter((b) => b.tanggalPinjam === iso && b.status === 'Dipinjam').length;
+      return {
+        iso,
+        dayName: dayNames[d.getDay()],
+        dateNum: String(d.getDate()).padStart(2, '0'),
+        isToday: iso === todayISO,
+        agendaCount: dayEvents + dayLoans
+      };
+    });
+  }, [referenceDate, events, borrowings, todayISO]);
+
+  // Kalender Bulanan cells
+  const monthDaysGrid = useMemo(() => {
+    const year = referenceDate.getFullYear();
+    const month = referenceDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startPad = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Mulai Senin
+
+    const cells = [];
+    for (let i = 0; i < startPad; i++) {
+      cells.push(null);
+    }
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const evs = events.filter((e) => e.tanggal === iso);
+      const loans = borrowings.filter((b) => b.tanggalPinjam === iso && b.status === 'Dipinjam');
+      cells.push({
+        day,
+        iso,
+        isToday: iso === todayISO,
+        events: evs,
+        loans
       });
     }
-  });
+    return cells;
+  }, [referenceDate, events, borrowings, todayISO]);
+
+  // Penugasan dokumentasi pribadi anggota aktif
+  const myPersonalAssignments = useMemo(() => {
+    const list = [];
+    events.forEach((ev) => {
+      const assigned = ev.personil?.find(
+        (p) =>
+          p.anggotaId === activeMemberId ||
+          (p.nama && currentMember.nama && p.nama.toLowerCase() === currentMember.nama.toLowerCase())
+      );
+      if (assigned) {
+        list.push({ event: ev, personnel: assigned });
+      }
+    });
+    return list;
+  }, [events, activeMemberId, currentMember.nama]);
+
+  // Tugas aktif yang belum selesai untuk sidebar kanan
+  const activeUpcomingAssignment = useMemo(() => {
+    return (
+      myPersonalAssignments.find(
+        (a) => a.event.status !== 'Selesai' && a.event.status !== 'Dibatalkan' && a.personnel.statusTugas !== 'Sudah Melaksanakan Tugas'
+      ) || myPersonalAssignments[0] || null
+    );
+  }, [myPersonalAssignments]);
+
+  // Peminjaman aktif & overdue
+  const activeLoans = useMemo(() => borrowings.filter((b) => b.status === 'Dipinjam'), [borrowings]);
+
+  // Filter data untuk Timeline
+  const filteredEvents = useMemo(() => {
+    if (activeCategoryFilter !== 'Semua' && activeCategoryFilter !== 'Event Sekolah') return [];
+    return events.filter((ev) => !selectedDateFilter || ev.tanggal === selectedDateFilter);
+  }, [events, activeCategoryFilter, selectedDateFilter]);
+
+  const filteredDutyRoster = useMemo(() => {
+    if (activeCategoryFilter !== 'Semua' && activeCategoryFilter !== 'Piket Studio') return [];
+    return dutyRoster;
+  }, [dutyRoster, activeCategoryFilter]);
+
+  const filteredBorrowingsForTimeline = useMemo(() => {
+    if (activeCategoryFilter !== 'Semua' && activeCategoryFilter !== 'Peminjaman Aktif') return [];
+    return activeLoans.filter((b) => !selectedDateFilter || b.tanggalPinjam === selectedDateFilter);
+  }, [activeLoans, activeCategoryFilter, selectedDateFilter]);
+
+  // Data ketersediaan peralatan untuk tabel status unit
+  const filteredEq = useMemo(() => {
+    return equipment.filter((eq) => eqCategoryFilter === 'Semua' || eq.kategori === eqCategoryFilter);
+  }, [equipment, eqCategoryFilter]);
+
+  // Navigation Handlers
+  const handleShiftPeriod = (direction) => {
+    const next = new Date(referenceDate);
+    if (activeViewMode === 'calendar') {
+      next.setMonth(next.getMonth() + direction);
+    } else {
+      next.setDate(next.getDate() + direction * 7);
+    }
+    setReferenceDate(next);
+  };
+
+  const handleGoToday = () => {
+    setReferenceDate(new Date());
+    setSelectedDateFilter(null);
+  };
+
+  const categories = [
+    { label: 'Semua', count: events.length + dutyRoster.length + activeLoans.length, dotColor: null },
+    { label: 'Event Sekolah', count: events.length, dotColor: '#1E3A8A' },
+    { label: 'Piket Studio', count: dutyRoster.length, dotColor: '#059669' },
+    { label: 'Peminjaman Aktif', count: activeLoans.length, dotColor: '#D97706' }
+  ];
+
+  const isUserAdmin = currentUser?.email?.toLowerCase().includes('admin') || currentMember?.divisi === 'Admin';
+  const currentTimeWIB = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
   return (
     <div style={{ paddingBottom: '2.5rem' }}>
@@ -98,7 +227,7 @@ export const CalendarTab = () => {
           <span>/</span>
           <span>JADWAL PEMINJAMAN & EVENT</span>
           <span>/</span>
-          <span style={{ color: '#1E3A8A', fontWeight: 700 }}>November 2026</span>
+          <span style={{ color: '#1E3A8A', fontWeight: 700 }}>{formatMonthYear(referenceDate)}</span>
         </div>
 
         <div style={{
@@ -114,15 +243,23 @@ export const CalendarTab = () => {
               Jadwal Operasional & Roster Kru Studio
             </h1>
             <p style={{ fontSize: '0.85rem', color: '#475569', margin: '4px 0 0 0' }}>
-              Koordinasi jadwal liputan acara resmi, sesi booking studio, piket lab, dan alokasi perlengkapan.
+              Koordinasi agenda liputan sekolah, jadwal piket studio, peminjaman unit aktif, dan ketersediaan gear real-time.
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               className="btn btn-secondary btn-sm"
-              onClick={() => alert('Jadwal operasional terhubung real-time dengan server Creative Corner.')}
+              onClick={() => {
+                handleGoToday();
+                showToast(
+                  isSupabaseConfigured
+                    ? 'Jadwal disinkronkan dengan database Supabase Studio.'
+                    : 'Tampilan jadwal diperbarui (Mode Lokal).',
+                  'success'
+                );
+              }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -133,13 +270,19 @@ export const CalendarTab = () => {
               }}
             >
               <RefreshCw size={13} color="#64748B" />
-              <span>Sinkron Kalender</span>
+              <span>Sinkron Jadwal</span>
             </button>
 
             <button
               type="button"
               className="btn btn-primary btn-sm"
-              onClick={() => alert('Untuk menambahkan agenda sekolah resmi baru, silakan buka tab Liputan Event di Portal Administrator.')}
+              onClick={() => {
+                if (isUserAdmin) {
+                  setCurrentRole('admin');
+                } else {
+                  setSelectedEventForPickup({ id: null, judul: 'Peminjaman Mandiri Creative Corner', peralatanTerkunciIds: [] });
+                }
+              }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -151,7 +294,7 @@ export const CalendarTab = () => {
               }}
             >
               <PlusCircle size={14} />
-              <span>+ Buat Jadwal Baru</span>
+              <span>{isUserAdmin ? 'Kelola Event di Admin' : 'Ajukan Pengambilan Alat'}</span>
             </button>
           </div>
         </div>
@@ -180,7 +323,7 @@ export const CalendarTab = () => {
           borderBottom: '1px solid #F1F5F9'
         }}>
           {/* Date Navigator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -190,6 +333,7 @@ export const CalendarTab = () => {
             }}>
               <button
                 type="button"
+                onClick={() => handleShiftPeriod(-1)}
                 style={{
                   border: 'none',
                   background: 'transparent',
@@ -200,12 +344,13 @@ export const CalendarTab = () => {
                   display: 'flex',
                   alignItems: 'center'
                 }}
-                title="Bulan Sebelumnya"
+                title={activeViewMode === 'calendar' ? 'Bulan Sebelumnya' : 'Minggu Sebelumnya'}
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 type="button"
+                onClick={handleGoToday}
                 style={{
                   border: 'none',
                   background: '#FFFFFF',
@@ -218,10 +363,11 @@ export const CalendarTab = () => {
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                 }}
               >
-                Hari Ini
+                Semua / Hari Ini
               </button>
               <button
                 type="button"
+                onClick={() => handleShiftPeriod(1)}
                 style={{
                   border: 'none',
                   background: 'transparent',
@@ -232,7 +378,7 @@ export const CalendarTab = () => {
                   display: 'flex',
                   alignItems: 'center'
                 }}
-                title="Bulan Selanjutnya"
+                title={activeViewMode === 'calendar' ? 'Bulan Selanjutnya' : 'Minggu Selanjutnya'}
               >
                 <ChevronRight size={16} />
               </button>
@@ -248,18 +394,21 @@ export const CalendarTab = () => {
               color: '#1E3A8A'
             }}>
               <CalendarIcon size={15} color="#1E3A8A" />
-              <strong style={{ fontSize: '0.875rem' }}>November 2026</strong>
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.685rem',
-                background: '#DBEAFE',
-                color: '#1E40AF',
-                padding: '1px 6px',
-                borderRadius: '4px',
-                fontWeight: 600
-              }}>
-                W46
-              </span>
+              <strong style={{ fontSize: '0.875rem' }}>{formatMonthYear(referenceDate)}</strong>
+              {selectedDateFilter && (
+                <span style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.685rem',
+                  background: '#1E3A8A',
+                  color: '#FFFFFF',
+                  padding: '1px 6px',
+                  borderRadius: '4px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }} onClick={() => setSelectedDateFilter(null)} title="Klik untuk reset filter tanggal">
+                  Filter: {selectedDateFilter} ✕
+                </span>
+              )}
             </div>
           </div>
 
@@ -270,7 +419,8 @@ export const CalendarTab = () => {
             background: '#F1F5F9',
             padding: '3px',
             borderRadius: '8px',
-            gap: '3px'
+            gap: '3px',
+            flexWrap: 'wrap'
           }}>
             <button
               type="button"
@@ -340,562 +490,878 @@ export const CalendarTab = () => {
           </div>
         </div>
 
-        {/* Sub-strip Filters */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginRight: '0.2rem' }}>
-            Kategori:
-          </span>
-          {categories.map((cat) => {
-            const isSelected = activeCategoryFilter === cat.label || (activeCategoryFilter === 'Semua' && cat.label.includes('Semua'));
-            return (
-              <button
-                key={cat.label}
-                type="button"
-                onClick={() => setActiveCategoryFilter(cat.label.includes('Semua') ? 'Semua' : cat.label)}
-                style={{
-                  border: 'none',
-                  background: isSelected ? '#1E3A8A' : '#F1F5F9',
-                  color: isSelected ? '#FFFFFF' : '#334155',
-                  padding: '0.3rem 0.75rem',
-                  borderRadius: '9999px',
-                  fontSize: '0.75rem',
-                  fontWeight: isSelected ? 700 : 500,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {cat.dotColor && !isSelected && (
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cat.dotColor }}></span>
-                )}
-                <span>{cat.label}</span>
-                <span style={{
-                  fontSize: '0.675rem',
-                  opacity: 0.8,
-                  fontFamily: 'var(--font-mono)'
-                }}>
-                  ({cat.count})
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 3. SPLIT VIEW: 8 COLUMNS TIMELINE + 4 COLUMNS RIGHT SIDEBAR */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
-        
-        {/* LEFT MAIN: 8 Columns Timeline & Multi-Day Strip */}
-        <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          
-          {/* Multi-Day Strip Header */}
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '0.65rem 0.75rem',
-            border: '1px solid #E2E8F0',
-            boxShadow: 'var(--shadow-sm)'
-          }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.35rem', textAlign: 'center' }}>
-              {[
-                { day: 'Sen', date: '09', count: '3 Agenda', isToday: false },
-                { day: 'Sel', date: '10', count: 'Hari Ini', isToday: true },
-                { day: 'Rab', date: '11', count: '4 Agenda', isToday: false },
-                { day: 'Kam', date: '12', count: '2 Agenda', isToday: false },
-                { day: 'Jum', date: '13', count: '5 Agenda', isToday: false },
-                { day: 'Sab', date: '14', count: '1 Studio', isToday: false },
-                { day: 'Min', date: '15', count: 'Libur', isToday: false }
-              ].map((item, idx) => (
-                <div
-                  key={item.date}
-                  onClick={() => setSelectedDayOffset(idx)}
+        {/* Sub-strip Category Filters */}
+        {activeViewMode === 'timeline' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.725rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', marginRight: '0.2rem' }}>
+              Filter:
+            </span>
+            {categories.map((cat) => {
+              const isSelected = activeCategoryFilter === cat.label;
+              return (
+                <button
+                  key={cat.label}
+                  type="button"
+                  onClick={() => setActiveCategoryFilter(cat.label)}
                   style={{
-                    padding: '0.45rem 0.25rem',
-                    borderRadius: '8px',
+                    border: 'none',
+                    background: isSelected ? '#1E3A8A' : '#F1F5F9',
+                    color: isSelected ? '#FFFFFF' : '#334155',
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.75rem',
+                    fontWeight: isSelected ? 700 : 500,
                     cursor: 'pointer',
-                    background: item.isToday ? '#EFF6FF' : 'transparent',
-                    border: item.isToday ? '1px solid #93C5FD' : '1px solid transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <div style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.675rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    color: item.isToday ? '#1E3A8A' : '#64748B'
-                  }}>
-                    {item.day}
-                  </div>
-                  <div style={{
-                    fontSize: '1.15rem',
-                    fontWeight: 800,
-                    color: item.isToday ? '#1E3A8A' : '#0F172A',
-                    lineHeight: 1.2
-                  }}>
-                    {item.date}
-                  </div>
-                  <span style={{
-                    fontSize: '0.65rem',
-                    color: item.isToday ? '#1E40AF' : '#94A3B8',
-                    fontWeight: item.isToday ? 700 : 500,
-                    display: 'block',
-                    marginTop: '2px'
-                  }}>
-                    {item.count}
+                  {cat.dotColor && !isSelected && (
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: cat.dotColor }}></span>
+                  )}
+                  <span>{cat.label}</span>
+                  <span style={{ fontSize: '0.675rem', opacity: 0.8, fontFamily: 'var(--font-mono)' }}>
+                    ({cat.count})
                   </span>
-                </div>
-              ))}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 3. VIEW MODE CONTENT */}
+      {activeViewMode === 'my-tasks' ? (
+        
+        /* VIEW: TUGAS SAYA (DEDIKATED PERSONAL ASSIGNMENTS) */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <UserCheck size={20} color="#1E3A8A" />
+                <span>Jadwal Dokumentasi Pribadi ({currentMember.nama})</span>
+              </h2>
+              <p style={{ fontSize: '0.825rem', color: '#475569', margin: '2px 0 0 0' }}>
+                Seluruh agenda liputan sekolah yang dimandatkan kepada Anda oleh Administrator Studio.
+              </p>
             </div>
           </div>
 
-          {/* Time Slot Linear Agenda Canvas */}
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '1.25rem',
-            border: '1px solid #E2E8F0',
-            boxShadow: 'var(--shadow-sm)',
-            position: 'relative'
-          }}>
-            {/* Timeline Header Strip */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingBottom: '0.85rem',
-              marginBottom: '1rem',
-              borderBottom: '1px solid #E2E8F0'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Clock size={16} color="#1E3A8A" />
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                  Timeline Operasional - Selasa, 10 Nov 2026
-                </h3>
+          {myPersonalAssignments.length === 0 ? (
+            <div className="card" style={{ textAlign: 'center', padding: '3rem', background: '#F8FAFC' }}>
+              <CalendarDays size={38} color="#94A3B8" style={{ margin: '0 auto 0.75rem' }} />
+              <div style={{ fontWeight: 700, color: '#334155', fontSize: '1rem' }}>Belum Ada Penugasan Liputan untuk Anda</div>
+              <p style={{ fontSize: '0.825rem', color: '#64748B', maxWidth: '460px', margin: '0.35rem auto 0' }}>
+                Anda belum dijadwalkan pada agenda liputan resmi. Jika perlu meminjam alat secara mandiri, gunakan tab Peminjaman Alat.
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+              {myPersonalAssignments.map(({ event, personnel }) => {
+                const lockedTools = equipment.filter((eq) => event.peralatanTerkunciIds?.includes(eq.id));
+                return (
+                  <div key={event.id} className="card" style={{ borderLeft: '4px solid #1E3A8A', margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          background: '#EFF6FF',
+                          color: '#1E3A8A',
+                          padding: '0.25rem 0.65rem',
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700
+                        }}>
+                          {personnel.peran === 'Video' || personnel.peran === 'Videografer' ? (
+                            <Video size={14} />
+                          ) : personnel.peran?.includes('Live Report') ? (
+                            <Smartphone size={14} />
+                          ) : (
+                            <Camera size={14} />
+                          )}
+                          Peran: {personnel.peran}
+                        </div>
+                        <StatusBadge status={personnel.statusTugas} />
+                      </div>
+
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                        {event.judul}
+                      </h3>
+
+                      <div style={{ fontSize: '0.825rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <CalendarIcon size={14} color="#64748B" />
+                          <span>{formatReadableDate(event.tanggal)}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <Clock size={14} color="#64748B" />
+                          <span>{event.waktuMulai} - {event.waktuSelesai} WIB</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <MapPin size={14} color="#64748B" />
+                          <span>{event.lokasi || '-'}</span>
+                        </div>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.45rem',
+                          background: '#EFF6FF',
+                          border: '1px solid #BFDBFE',
+                          padding: '0.35rem 0.65rem',
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          color: '#1E3A8A',
+                          marginTop: '0.25rem'
+                        }}>
+                          <ShieldCheck size={14} color="#1E3A8A" />
+                          <span>Ditetapkan oleh: <strong>{event.ditugaskanOleh || 'Admin Studio'}</strong></span>
+                        </div>
+                      </div>
+
+                      {lockedTools.length > 0 && (
+                        <div style={{
+                          background: '#F8FAFC',
+                          border: '1px solid #E2E8F0',
+                          borderRadius: '8px',
+                          padding: '0.65rem',
+                          marginBottom: '1rem',
+                          fontSize: '0.785rem'
+                        }}>
+                          <div style={{ fontWeight: 700, color: '#0F172A', marginBottom: '0.25rem' }}>
+                            Peralatan Terkunci untuk Agenda Ini:
+                          </div>
+                          <ul style={{ paddingLeft: '1.2rem', color: '#334155', margin: 0 }}>
+                            {lockedTools.map((t) => (
+                              <li key={t.id}>{t.nama}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ paddingTop: '0.75rem', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
+                      {event.status === 'Selesai' || personnel.statusTugas === 'Sudah Melaksanakan Tugas' ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.825rem', color: '#059669', fontWeight: 700 }}>
+                          <ShieldCheck size={16} />
+                          <span>Tugas Liputan Tuntas</span>
+                        </div>
+                      ) : event.status === 'Dibatalkan' ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.825rem', color: '#E11D48', fontWeight: 600 }}>
+                          <span>Agenda Dibatalkan</span>
+                        </div>
+                      ) : personnel.statusTugas === 'Sedang Melaksanakan Tugas' ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.825rem', color: '#D97706', fontWeight: 600 }}>
+                          <Clock size={16} />
+                          <span>Sedang Berjalan di Lapangan</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm"
+                          onClick={() => setSelectedEventForPickup(event)}
+                          id={`btn-pickup-event-${event.id}`}
+                        >
+                          <ClipboardCheck size={15} />
+                          <span>Isi Formulir Inspeksi Pengambilan</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+      ) : activeViewMode === 'calendar' ? (
+        
+        /* VIEW: KALENDER BULANAN INTERAKTIF */
+        <div className="card" style={{ padding: '1.25rem', margin: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+            {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d) => (
+              <div key={d} style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#64748B', padding: '0.35rem 0', textTransform: 'uppercase' }}>
+                {d}
               </div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.725rem',
-                color: '#64748B'
-              }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#EF4444' }}></span>
-                <span>Waktu Server Studio: <strong style={{ color: '#0F172A' }}>10:15 WIB</strong></span>
+            ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem' }}>
+            {monthDaysGrid.map((cell, idx) => {
+              if (!cell) {
+                return <div key={`pad-${idx}`} style={{ minHeight: '90px', background: '#F8FAFC', borderRadius: '8px', border: '1px dashed #E2E8F0' }} />;
+              }
+              const totalCount = cell.events.length + cell.loans.length;
+              return (
+                <div
+                  key={cell.iso}
+                  onClick={() => {
+                    setSelectedDateFilter(cell.iso);
+                    setActiveViewMode('timeline');
+                  }}
+                  style={{
+                    minHeight: '95px',
+                    padding: '0.5rem',
+                    borderRadius: '8px',
+                    background: cell.isToday ? '#EFF6FF' : '#FFFFFF',
+                    border: cell.isToday ? '1.5px solid #1E3A8A' : '1px solid #E2E8F0',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.25rem',
+                    transition: 'border-color 0.15s ease'
+                  }}
+                  className="hover:border-blue-400"
+                  title="Klik untuk melihat detail agenda di hari ini"
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      fontSize: '0.8rem',
+                      fontWeight: cell.isToday ? 800 : 600,
+                      color: cell.isToday ? '#1E3A8A' : '#0F172A'
+                    }}>
+                      {cell.day}
+                    </span>
+                    {totalCount > 0 && (
+                      <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', background: '#1E3A8A', color: '#FFFFFF', padding: '0 5px', borderRadius: '9999px' }}>
+                        {totalCount}
+                      </span>
+                    )}
+                  </div>
+
+                  {cell.events.slice(0, 2).map((ev) => (
+                    <div key={ev.id} style={{
+                      fontSize: '0.675rem',
+                      background: '#DBEAFE',
+                      color: '#1E3A8A',
+                      padding: '2px 5px',
+                      borderRadius: '4px',
+                      fontWeight: 600,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {ev.judul}
+                    </div>
+                  ))}
+                  {cell.loans.slice(0, 1).map((ln) => (
+                    <div key={ln.id} style={{
+                      fontSize: '0.65rem',
+                      background: '#FEF3C7',
+                      color: '#92400E',
+                      padding: '2px 5px',
+                      borderRadius: '4px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      Pinjam: {ln.peminjamNama}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+      ) : (
+        
+        /* VIEW: AGENDA TIMELINE (SPLIT 8-COL TIMELINE + 4-COL RIGHT SIDEBAR) */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+          
+          {/* LEFT MAIN: Timeline & Multi-Day Strip */}
+          <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            
+            {/* Interactive 7-Day Week Strip */}
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '12px',
+              padding: '0.65rem 0.75rem',
+              border: '1px solid #E2E8F0',
+              boxShadow: 'var(--shadow-sm)'
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.35rem', textAlign: 'center' }}>
+                {weekDays.map((item) => {
+                  const isSelected = selectedDateFilter === item.iso;
+                  return (
+                    <div
+                      key={item.iso}
+                      onClick={() => setSelectedDateFilter(isSelected ? null : item.iso)}
+                      style={{
+                        padding: '0.45rem 0.25rem',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        background: isSelected ? '#1E3A8A' : item.isToday ? '#EFF6FF' : 'transparent',
+                        border: isSelected ? '1px solid #1E3A8A' : item.isToday ? '1px solid #93C5FD' : '1px solid transparent',
+                        transition: 'all 0.15s ease'
+                      }}
+                      title={isSelected ? 'Klik untuk menampilkan semua tanggal' : `Filter agenda tanggal ${item.iso}`}
+                    >
+                      <div style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.675rem',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        color: isSelected ? '#DBEAFE' : item.isToday ? '#1E3A8A' : '#64748B'
+                      }}>
+                        {item.dayName}
+                      </div>
+                      <div style={{
+                        fontSize: '1.15rem',
+                        fontWeight: 800,
+                        color: isSelected ? '#FFFFFF' : item.isToday ? '#1E3A8A' : '#0F172A',
+                        lineHeight: 1.2
+                      }}>
+                        {item.dateNum}
+                      </div>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        color: isSelected ? '#93C5FD' : item.agendaCount > 0 ? '#1E40AF' : '#94A3B8',
+                        fontWeight: item.agendaCount > 0 || item.isToday ? 700 : 500,
+                        display: 'block',
+                        marginTop: '2px'
+                      }}>
+                        {item.agendaCount > 0 ? `${item.agendaCount} Agenda` : item.isToday ? 'Hari Ini' : '-'}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Vertical Timeline Schedule Cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              
-              {/* Event 1: Liputan Upacara Hari Pahlawan (Deep Obsidian Navy Theme) */}
+            {/* Linear Timeline Card Stream */}
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '12px',
+              padding: '1.25rem',
+              border: '1px solid #E2E8F0',
+              boxShadow: 'var(--shadow-sm)',
+              position: 'relative'
+            }}>
+              {/* Timeline Header */}
               <div style={{
-                background: '#0B192C',
-                color: '#FFFFFF',
-                borderRadius: '10px',
-                padding: '1rem',
-                borderLeft: '4px solid #1E3A8A',
-                boxShadow: '0 4px 6px -1px rgba(11, 25, 44, 0.2)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                      <span style={{
-                        background: '#1E3A8A',
-                        color: '#FFFFFF',
-                        fontSize: '0.685rem',
-                        fontWeight: 700,
-                        padding: '1px 6px',
-                        borderRadius: '4px'
-                      }}>
-                        EVENT RESMI SEKOLAH
-                      </span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', color: '#93C5FD' }}>
-                        07:30 - 11:30 WIB
-                      </span>
-                      <span style={{
-                        fontSize: '0.685rem',
-                        color: '#34D399',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '3px'
-                      }}>
-                        <CheckCircle2 size={12} color="#34D399" />
-                        <span>Terkonfirmasi</span>
-                      </span>
-                    </div>
-
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 4px 0' }}>
-                      Liputan Upacara Hari Pahlawan - Tim A
-                    </h4>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', fontSize: '0.785rem', color: '#CBD5E1' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <MapPin size={13} color="#94A3B8" /> Lapangan Utama Kampus
-                      </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Users size={13} color="#94A3B8" /> 3 Kru Lapangan
-                      </span>
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '0.675rem', color: '#94A3B8', textTransform: 'uppercase' }}>Status Operasi</span>
-                    <div style={{ color: '#34D399', fontWeight: 800, fontSize: '0.825rem' }}>Sedang Berlangsung</div>
-                  </div>
-                </div>
-
-                {/* Gear Kit & Roster Sub-bar */}
-                <div style={{
-                  marginTop: '0.75rem',
-                  paddingTop: '0.65rem',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '0.65rem',
-                  fontSize: '0.75rem'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                    <span style={{ color: '#94A3B8', fontWeight: 600 }}>Gear Kit:</span>
-                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px', fontFamily: 'var(--font-mono)' }}>2x Sony A7 IV</span>
-                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px', fontFamily: 'var(--font-mono)' }}>Sony 24-70 GM II</span>
-                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px', fontFamily: 'var(--font-mono)' }}>DJI Mic 2 Set</span>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: '#94A3B8' }}>Roster Kru:</span>
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '2px' }}>
-                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#1E3A8A', border: '1.5px solid #0B192C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }} title="Kevin (Lead Cam)">KV</div>
-                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#059669', border: '1.5px solid #0B192C', marginLeft: '-6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }} title="Aditya (Second Cam)">AD</div>
-                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#D97706', border: '1.5px solid #0B192C', marginLeft: '-6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700 }} title="Rian (Audio & Gimbal)">RN</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Event 2: Piket Studio Pagi (Teal / Surface Container Low Theme) */}
-              <div style={{
-                background: '#F0FDF4',
-                borderRadius: '10px',
-                padding: '0.85rem 1rem',
-                border: '1px solid #BBF7D0',
                 display: 'flex',
-                justifyContent: 'space-between',
                 alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '0.5rem'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669' }}></span>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span style={{ background: '#DCFCE7', color: '#166534', fontSize: '0.675rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px' }}>
-                        PIKET STUDIO
-                      </span>
-                      <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>
-                        Piket Studio Pagi - Lab & QC Maintenance
-                      </strong>
-                    </div>
-                    <p style={{ fontSize: '0.75rem', color: '#475569', margin: '2px 0 0 0' }}>
-                      Kalibrasi Lensa & Charging Station • Petugas: <strong>Rian & Sarah</strong>
-                    </p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#475569' }}>
-                    08:00 - 12:00 WIB
-                  </span>
-                  <span style={{
-                    background: '#166534',
-                    color: '#FFFFFF',
-                    fontSize: '0.685rem',
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: '4px'
-                  }}>
-                    Log Checklist 8/8 Siap
-                  </span>
-                </div>
-              </div>
-
-              {/* Event 3: Sewa Studio Foto Wisuda (Amber Theme) */}
-              <div style={{
-                background: '#FFFBEB',
-                borderRadius: '10px',
-                padding: '0.85rem 1rem',
-                border: '1px solid #FDE68A',
-                display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '0.5rem'
-              }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '2px' }}>
-                    <span style={{ background: '#FEF3C7', color: '#92400E', fontSize: '0.675rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px' }}>
-                      SEWA KOMERSIAL #BK-882
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', color: '#78350F' }}>
-                      13:00 - 16:30 WIB
-                    </span>
-                  </div>
-                  <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>
-                    Sewa Studio Foto Wisuda - Klien: Sdr. Hendra
-                  </strong>
-                  <p style={{ fontSize: '0.75rem', color: '#78350F', margin: '2px 0 0 0' }}>
-                    Ruang Studio B (Cyclorama Putih) + Paket Lighting Godox AD600Pro
-                  </p>
-                </div>
-
-                <div style={{ textAlign: 'right' }}>
-                  <span style={{
-                    background: '#FEF3C7',
-                    color: '#92400E',
-                    fontSize: '0.685rem',
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: '9999px',
-                    border: '1px solid #FCD34D'
-                  }}>
-                    Menunggu Check-in Klien
-                  </span>
-                </div>
-              </div>
-
-              {/* Event 4: Inspeksi Pengembalian Alat Overdue (Crimson Theme) */}
-              <div style={{
-                background: '#FFF1F2',
-                borderRadius: '10px',
-                padding: '0.85rem 1rem',
-                border: '1px solid #FECDD3',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                paddingBottom: '0.85rem',
+                marginBottom: '1rem',
+                borderBottom: '1px solid #E2E8F0',
                 flexWrap: 'wrap',
                 gap: '0.5rem'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <AlertTriangle size={18} color="#E11D48" />
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span style={{ background: '#E11D48', color: '#FFFFFF', fontSize: '0.675rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px' }}>
-                        PRIORITAS TINGGI
-                      </span>
-                      <strong style={{ fontSize: '0.875rem', color: '#9F1239' }}>
-                        Inspeksi Pengembalian Alat Overdue (2 Unit Lapangan)
-                      </strong>
+                  <Clock size={16} color="#1E3A8A" />
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    {selectedDateFilter
+                      ? `Agenda Operasional — ${formatReadableDate(selectedDateFilter)}`
+                      : 'Semua Agenda Operasional & Jadwal Studio'}
+                  </h3>
+                </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.725rem',
+                  color: '#64748B'
+                }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }}></span>
+                  <span>Jam Studio: <strong style={{ color: '#0F172A' }}>{currentTimeWIB} WIB</strong></span>
+                </div>
+              </div>
+
+              {/* Dynamic Event Cards */}
+              {filteredEvents.length === 0 && filteredDutyRoster.length === 0 && filteredBorrowingsForTimeline.length === 0 ? (
+                <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center', background: '#F8FAFC', borderRadius: '10px', color: '#64748B' }}>
+                  <Inbox size={36} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
+                  <div style={{ fontWeight: 700, color: '#334155', fontSize: '0.95rem' }}>
+                    Tidak Ada Agenda pada Filter Terpilih
+                  </div>
+                  <p style={{ fontSize: '0.8rem', margin: '0.25rem auto 0.75rem', maxWidth: '420px' }}>
+                    Belum ada jadwal liputan event, piket studio, atau peminjaman alat yang sesuai dengan tanggal atau kategori ini.
+                  </p>
+                  {selectedDateFilter && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setSelectedDateFilter(null)}
+                    >
+                      Tampilkan Semua Tanggal
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  
+                  {/* 1. REAL EVENTS FROM SUPABASE */}
+                  {filteredEvents.map((ev) => {
+                    const lockedTools = equipment.filter((eq) => ev.peralatanTerkunciIds?.includes(eq.id));
+                    const isFeaturedNavy = ev.status !== 'Selesai' && ev.status !== 'Dibatalkan';
+                    return (
+                      <div
+                        key={ev.id}
+                        style={{
+                          background: isFeaturedNavy ? '#0B192C' : '#F8FAFC',
+                          color: isFeaturedNavy ? '#FFFFFF' : '#0F172A',
+                          borderRadius: '10px',
+                          padding: '1rem',
+                          border: isFeaturedNavy ? 'none' : '1px solid #E2E8F0',
+                          borderLeft: `4px solid ${ev.status === 'Selesai' ? '#059669' : ev.status === 'Dibatalkan' ? '#E11D48' : '#1E3A8A'}`,
+                          boxShadow: isFeaturedNavy ? '0 4px 6px -1px rgba(11, 25, 44, 0.2)' : 'none'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                              <span style={{
+                                background: isFeaturedNavy ? '#1E3A8A' : '#DBEAFE',
+                                color: isFeaturedNavy ? '#FFFFFF' : '#1E40AF',
+                                fontSize: '0.675rem',
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: '4px'
+                              }}>
+                                EVENT RESMI SEKOLAH
+                              </span>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', color: isFeaturedNavy ? '#93C5FD' : '#475569' }}>
+                                {ev.tanggal} • {ev.waktuMulai || '08:00'} - {ev.waktuSelesai || '16:00'} WIB
+                              </span>
+                            </div>
+
+                            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: isFeaturedNavy ? '#FFFFFF' : '#0F172A', margin: '0 0 4px 0' }}>
+                              {ev.judul}
+                            </h4>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', fontSize: '0.785rem', color: isFeaturedNavy ? '#CBD5E1' : '#475569', flexWrap: 'wrap' }}>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <MapPin size={13} /> {ev.lokasi || 'Lokasi Studio'}
+                              </span>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Users size={13} /> {ev.personil?.length || 0} Kru Ditugaskan
+                              </span>
+                            </div>
+                          </div>
+
+                          <StatusBadge status={ev.status} />
+                        </div>
+
+                        {/* Gear Kit & Roster Sub-bar */}
+                        <div style={{
+                          marginTop: '0.75rem',
+                          paddingTop: '0.65rem',
+                          borderTop: isFeaturedNavy ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid #E2E8F0',
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '0.65rem',
+                          fontSize: '0.75rem'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                            <span style={{ color: isFeaturedNavy ? '#94A3B8' : '#64748B', fontWeight: 600 }}>Gear Kit:</span>
+                            {lockedTools.length > 0 ? (
+                              lockedTools.map((t) => (
+                                <span key={t.id} style={{
+                                  background: isFeaturedNavy ? 'rgba(255,255,255,0.1)' : '#FFFFFF',
+                                  border: isFeaturedNavy ? 'none' : '1px solid #E2E8F0',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontFamily: 'var(--font-mono)'
+                                }}>
+                                  {t.nama}
+                                </span>
+                              ))
+                            ) : (
+                              <span style={{ opacity: 0.7 }}>Belum ada gear dikunci</span>
+                            )}
+                          </div>
+
+                          {ev.personil?.length > 0 && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{ color: isFeaturedNavy ? '#94A3B8' : '#64748B' }}>Kru:</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                {ev.personil.map((p, i) => (
+                                  <span
+                                    key={i}
+                                    style={{
+                                      padding: '1px 7px',
+                                      borderRadius: '9999px',
+                                      background: isFeaturedNavy ? '#1E3A8A' : '#EFF6FF',
+                                      color: isFeaturedNavy ? '#FFFFFF' : '#1E3A8A',
+                                      fontSize: '0.7rem',
+                                      fontWeight: 600
+                                    }}
+                                    title={`${p.nama} — ${p.peran}`}
+                                  >
+                                    {p.nama} ({p.peran})
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* 2. REAL ACTIVE BORROWINGS & OVERDUE ALERTS */}
+                  {filteredBorrowingsForTimeline.map((b) => {
+                    const overdue = checkLoanOverdue(b);
+                    return (
+                      <div
+                        key={b.id}
+                        style={{
+                          background: overdue.isOverdue ? '#FFF1F2' : '#FFFBEB',
+                          borderRadius: '10px',
+                          padding: '0.85rem 1rem',
+                          border: `1px solid ${overdue.isOverdue ? '#FECDD3' : '#FDE68A'}`,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '0.5rem'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem' }}>
+                          {overdue.isOverdue && <AlertTriangle size={18} color="#E11D48" style={{ marginTop: '2px', flexShrink: 0 }} />}
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '2px', flexWrap: 'wrap' }}>
+                              <span style={{
+                                background: overdue.isOverdue ? '#E11D48' : '#FEF3C7',
+                                color: overdue.isOverdue ? '#FFFFFF' : '#92400E',
+                                fontSize: '0.675rem',
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                fontFamily: 'var(--font-mono)'
+                              }}>
+                                {overdue.isOverdue ? `OVERDUE • ${overdue.label}` : `PEMINJAMAN • ${b.id}`}
+                              </span>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', color: overdue.isOverdue ? '#9F1239' : '#78350F' }}>
+                                {b.tanggalPinjam} • Batas {b.batasWaktuKembali || '16:00'} WIB
+                              </span>
+                            </div>
+                            <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>
+                              {b.peralatanNama} — Peminjam: {b.peminjamNama} ({b.peminjamKelas})
+                            </strong>
+                            <p style={{ fontSize: '0.75rem', color: overdue.isOverdue ? '#881337' : '#78350F', margin: '2px 0 0 0' }}>
+                              Keperluan: {b.keperluan || '-'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <StatusBadge status={b.status} />
+                      </div>
+                    );
+                  })}
+
+                  {/* 3. REAL PIKET JAGA STUDIO (DUTY ROSTER) */}
+                  {filteredDutyRoster.map((duty) => (
+                    <div
+                      key={duty.id}
+                      style={{
+                        background: '#F0FDF4',
+                        borderRadius: '10px',
+                        padding: '0.85rem 1rem',
+                        border: '1px solid #BBF7D0',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669', flexShrink: 0 }}></span>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                            <span style={{ background: '#DCFCE7', color: '#166534', fontSize: '0.675rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px' }}>
+                              PIKET STUDIO
+                            </span>
+                            <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>
+                              {duty.hari} ({duty.tanggal})
+                            </strong>
+                          </div>
+                          <p style={{ fontSize: '0.75rem', color: '#475569', margin: '2px 0 0 0' }}>
+                            {duty.tanggungJawab} • Petugas: <strong>{Array.isArray(duty.petugas) ? duty.petugas.join(', ') : duty.petugas}</strong>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#475569' }}>
+                          {duty.jamOperasional} WIB
+                        </span>
+                        <StatusBadge status={duty.status} />
+                      </div>
                     </div>
-                    <p style={{ fontSize: '0.75rem', color: '#881337', margin: '2px 0 0 0' }}>
-                      Pengecekan unit pasca upacara + verifikasi kelengkapan memori SD card.
-                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Ketersediaan Unit Studio Real-time */}
+            <div className="card" style={{ margin: 0 }}>
+              <div className="card-header" style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #E2E8F0', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div>
+                  <h3 className="card-title" style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <Sparkles size={17} color="#1E3A8A" />
+                    <span>Peta Ketersediaan Unit Studio Real-Time</span>
+                  </h3>
+                  <div className="card-subtitle" style={{ fontSize: '0.775rem' }}>
+                    Pantau status ketersediaan seluruh kamera, lensa, baterai, dan ruang studio saat ini.
+                  </div>
+                </div>
+                <select
+                  className="form-select"
+                  value={eqCategoryFilter}
+                  onChange={(e) => setEqCategoryFilter(e.target.value)}
+                  style={{ width: 'auto', fontSize: '0.75rem', padding: '0.3rem 0.6rem', height: '32px' }}
+                >
+                  {['Semua', 'Kamera', 'Lensa', 'Baterai', 'Memory Card', 'Audio & Mikrofon', 'Lighting & Tata Cahaya', 'Tripod & Aksesori', 'Ruang Studio'].map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="table-container" style={{ margin: 0 }}>
+                <table className="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Nama Alat / Kode</th>
+                      <th>Kategori</th>
+                      <th>Kondisi Fisik</th>
+                      <th>Status Ketersediaan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEq.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          <strong>{item.nama}</strong>
+                          <div style={{ fontSize: '0.725rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>{item.kode || item.id}</div>
+                        </td>
+                        <td style={{ fontSize: '0.8rem', color: '#475569' }}>{item.kategori}</td>
+                        <td style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1E293B' }}>{item.kondisiFisik || 'Baik'}</td>
+                        <td>
+                          <StatusBadge status={item.status} />
+                          {item.status === 'Dipinjam' && item.peminjamAktif && (
+                            <div style={{ fontSize: '0.7rem', color: '#D97706', marginTop: '2px' }}>
+                              Dipakai: {item.peminjamAktif}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDEBAR: 4 Columns "Penugasan Saya & Checklist Persiapan Real" */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '12px',
+              padding: '1.25rem',
+              border: '1px solid #E2E8F0',
+              boxShadow: 'var(--shadow-sm)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '10px',
+                    background: '#1E3A8A',
+                    color: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    flexShrink: 0
+                  }}>
+                    {getInitials(currentMember.nama)}
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                      {currentMember.nama}
+                    </h4>
+                    <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                      {currentMember.divisi || currentMember.peranUtama || 'Anggota Kru'} • {currentMember.kelas}
+                    </span>
                   </div>
                 </div>
 
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 700, color: '#E11D48' }}>
-                  17:00 - 17:45 WIB
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT SIDEBAR: 4 Columns "Penugasan Saya & Quick Telemetry" */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          
-          {/* User Duty Header Card */}
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '12px',
-            padding: '1.25rem',
-            border: '1px solid #E2E8F0',
-            boxShadow: 'var(--shadow-sm)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '10px',
-                  background: '#1E3A8A',
-                  color: '#FFFFFF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 800,
-                  fontSize: '0.95rem'
-                }}>
-                  KP
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                    {currentMember.nama}
-                  </h4>
-                  <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-                    {currentMember.divisi || 'Lead Videographer'} • Kru Tetap
-                  </span>
-                </div>
-              </div>
-
-              <span style={{
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                color: '#1E3A8A',
-                background: '#EFF6FF',
-                border: '1px solid #BFDBFE',
-                padding: '2px 8px',
-                borderRadius: '9999px'
-              }}>
-                2 Tugas Hari Ini
-              </span>
-            </div>
-
-            {/* Active Upcoming Assignment Highlight */}
-            <div style={{
-              background: '#F8FAFC',
-              borderRadius: '10px',
-              padding: '0.85rem',
-              border: '1px solid #E2E8F0'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                 <span style={{
-                  background: '#1E3A8A',
-                  color: '#FFFFFF',
-                  fontSize: '0.685rem',
+                  fontSize: '0.7rem',
                   fontWeight: 700,
-                  padding: '1px 6px',
-                  borderRadius: '4px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '3px'
+                  color: '#1E3A8A',
+                  background: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
+                  flexShrink: 0
                 }}>
-                  <Clock size={10} />
-                  <span>Mulai 2 Jam Lagi</span>
-                </span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', color: '#0F172A', fontWeight: 600 }}>
-                  13:00 - 15:30 WIB
+                  {myPersonalAssignments.length} Tugas
                 </span>
               </div>
 
-              <h5 style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>
-                Sesi Foto & Video Profil Laboratorium
-              </h5>
-              <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.75rem' }}>
-                <MapPin size={12} color="#1E3A8A" />
-                <span>Aula Utama Lt. 3 • Partner: <strong>Sarah (Audio)</strong></span>
-              </div>
+              {activeUpcomingAssignment ? (() => {
+                const { event, personnel } = activeUpcomingAssignment;
+                const lockedTools = equipment.filter((eq) => event.peralatanTerkunciIds?.includes(eq.id));
+                const checkedCount = lockedTools.filter((t) => checkedToolIds[t.id]).length;
 
-              {/* Interactive Gear Checklist */}
-              <div style={{
-                background: '#FFFFFF',
-                borderRadius: '8px',
-                padding: '0.65rem',
-                border: '1px solid #E2E8F0',
-                marginBottom: '0.75rem'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '0.685rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B' }}>
-                    Checklist Gear Keluar:
-                  </span>
-                  <span style={{ fontSize: '0.685rem', fontWeight: 700, color: '#1E3A8A' }}>
-                    {completedGearCount} dari 4 Siap
-                  </span>
+                return (
+                  <div style={{
+                    background: '#F8FAFC',
+                    borderRadius: '10px',
+                    padding: '0.9rem',
+                    border: '1px solid #E2E8F0'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '4px' }}>
+                      <span style={{
+                        background: '#1E3A8A',
+                        color: '#FFFFFF',
+                        fontSize: '0.675rem',
+                        fontWeight: 700,
+                        padding: '1px 6px',
+                        borderRadius: '4px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px'
+                      }}>
+                        <Clock size={10} />
+                        <span>Peran: {personnel.peran}</span>
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', color: '#0F172A', fontWeight: 600 }}>
+                        {event.tanggal} • {event.waktuMulai || '08:00'} WIB
+                      </span>
+                    </div>
+
+                    <h5 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>
+                      {event.judul}
+                    </h5>
+                    <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.75rem' }}>
+                      <MapPin size={12} color="#1E3A8A" />
+                      <span>{event.lokasi || 'Lokasi Studio'}</span>
+                    </div>
+
+                    {/* Real Gear Checklist for Assigned Tools */}
+                    {lockedTools.length > 0 && (
+                      <div style={{
+                        background: '#FFFFFF',
+                        borderRadius: '8px',
+                        padding: '0.65rem',
+                        border: '1px solid #E2E8F0',
+                        marginBottom: '0.75rem'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                          <span style={{ fontSize: '0.685rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B' }}>
+                            Checklist Gear Terkunci:
+                          </span>
+                          <span style={{ fontSize: '0.685rem', fontWeight: 700, color: '#1E3A8A' }}>
+                            {checkedCount} / {lockedTools.length} Dicek
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.775rem' }}>
+                          {lockedTools.map((tool) => (
+                            <label key={tool.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', gap: '0.4rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(checkedToolIds[tool.id])}
+                                  onChange={() => toggleToolCheck(tool.id)}
+                                  style={{ accentColor: '#1E3A8A' }}
+                                />
+                                <span style={{ color: '#0F172A', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {tool.nama}
+                                </span>
+                              </div>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.675rem', color: '#64748B', flexShrink: 0 }}>
+                                {tool.kode || tool.id}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {event.status === 'Selesai' || personnel.statusTugas === 'Sudah Melaksanakan Tugas' ? (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#059669', fontWeight: 700, fontSize: '0.8rem', padding: '0.4rem' }}>
+                        <CheckCircle2 size={16} />
+                        <span>Tugas Liputan Tuntas</span>
+                      </div>
+                    ) : personnel.statusTugas === 'Sedang Melaksanakan Tugas' ? (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#D97706', fontWeight: 700, fontSize: '0.8rem', padding: '0.4rem' }}>
+                        <Clock size={15} />
+                        <span>Sedang Berjalan di Lapangan</span>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => setSelectedEventForPickup(event)}
+                        style={{
+                          width: '100%',
+                          justifyContent: 'center',
+                          fontSize: '0.785rem',
+                          padding: '0.55rem',
+                          fontWeight: 700,
+                          background: '#1E3A8A'
+                        }}
+                      >
+                        <ClipboardCheck size={15} />
+                        <span>Konfirmasi & Ambil Alat</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })() : (
+                <div style={{
+                  background: '#F8FAFC',
+                  borderRadius: '10px',
+                  padding: '1.25rem',
+                  border: '1px solid #E2E8F0',
+                  textAlign: 'center',
+                  color: '#64748B',
+                  fontSize: '0.8rem'
+                }}>
+                  <CalendarDays size={28} color="#94A3B8" style={{ margin: '0 auto 0.5rem' }} />
+                  <div style={{ fontWeight: 700, color: '#334155', marginBottom: '0.2rem' }}>
+                    Tidak Ada Penugasan Aktif
+                  </div>
+                  <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.75rem' }}>
+                    Anda belum mendapatkan mandat liputan resmi saat ini.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    style={{ width: '100%', justifyContent: 'center' }}
+                    onClick={() => setSelectedEventForPickup({ id: null, judul: 'Peminjaman Mandiri Creative Corner', peralatanTerkunciIds: [] })}
+                  >
+                    <ClipboardCheck size={14} />
+                    <span>Ambil Unit Secara Mandiri</span>
+                  </button>
                 </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.775rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={gearChecklist.camA7IV}
-                        onChange={() => toggleGearItem('camA7IV')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#0F172A', fontWeight: 500 }}>Sony Alpha 7 IV</span>
-                    </div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.685rem', color: '#64748B' }}>Loker A-02</span>
-                  </label>
-
-                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={gearChecklist.lens2470}
-                        onChange={() => toggleGearItem('lens2470')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#0F172A', fontWeight: 500 }}>FE 24-70mm f/2.8 GM II</span>
-                    </div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.685rem', color: '#64748B' }}>Dry Cab 01</span>
-                  </label>
-
-                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={gearChecklist.djiMic}
-                        onChange={() => toggleGearItem('djiMic')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#0F172A', fontWeight: 500 }}>DJI Mic 2 Set Wireless</span>
-                    </div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.685rem', color: '#64748B' }}>QC Meja 1</span>
-                  </label>
-
-                  <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={gearChecklist.tripod}
-                        onChange={() => toggleGearItem('tripod')}
-                        style={{ accentColor: '#1E3A8A' }}
-                      />
-                      <span style={{ color: '#0F172A', fontWeight: 500 }}>Manfrotto 504HD Tripod</span>
-                    </div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.685rem', color: '#64748B' }}>Loker C-04</span>
-                  </label>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => {
-                  if (myPersonalAssignments.length > 0) {
-                    setSelectedEventForPickup(myPersonalAssignments[0].event);
-                  } else {
-                    alert('Checklist perlengkapan siap divalidasi dengan Admin Studio.');
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  justifyContent: 'center',
-                  fontSize: '0.785rem',
-                  padding: '0.55rem',
-                  fontWeight: 700,
-                  background: '#1E3A8A'
-                }}
-              >
-                <ClipboardCheck size={15} />
-                <span>Konfirmasi Kehadiran & Ambil Alat</span>
-              </button>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* MODAL INSPEKSI PENGAMBILAN ALAT (BEFORE) */}
+      {/* MODAL INSPEKSI PENGAMBILAN ALAT (BEFORE) DENGAN PREFILLED LOCKED TOOLS */}
       {selectedEventForPickup && (
         <PickupInspectionModal
           isOpen={Boolean(selectedEventForPickup)}
           onClose={() => setSelectedEventForPickup(null)}
-          targetEvent={selectedEventForPickup}
+          targetEvent={selectedEventForPickup.id ? selectedEventForPickup : null}
+          prefilledEquipmentIds={selectedEventForPickup.peralatanTerkunciIds || []}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { Modal } from '../common/Modal';
@@ -56,13 +56,29 @@ export const InventoryMasterTab = () => {
     addEquipment, 
     updateEquipment, 
     deleteEquipment, 
-    borrowings 
+    borrowings,
+    verifyReturnInspection,
+    isSupabaseConfigured,
+    currentUser
   } = useStudio();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('Semua');
   const [statusFilter, setStatusFilter] = useState('Semua');
   const [viewMode, setViewMode] = useState('matrix'); // 'matrix' | 'grouped' | 'flat'
+  const [showAllInspections, setShowAllInspections] = useState(false);
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Modal State untuk Tambah / Edit Alat Master
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
@@ -125,7 +141,9 @@ export const InventoryMasterTab = () => {
   const overdueCount = overdueList.length;
 
   const inspectableBorrowings = borrowings.filter((b) => b.inspeksiPengambilan || b.buktiSurat || b.inspeksiPengembalian);
-  const pendingInspectionCount = inspectableBorrowings.filter((b) => !b.inspeksiPengembalian?.verifikasiAdminSelesai).length;
+  const pendingInspectionCount = inspectableBorrowings.filter(
+    (b) => b.inspeksiPengembalian && !b.inspeksiPengembalian.verifikasiAdminSelesai
+  ).length;
 
   // Filter Alat berdasarkan pencarian, kategori, dan status
   const filteredAssets = equipment.filter((eq) => {
@@ -260,16 +278,23 @@ export const InventoryMasterTab = () => {
             alignItems: 'center',
             gap: '0.45rem',
             padding: '0.4rem 0.75rem',
-            background: '#F1F5F9',
+            background: isSupabaseConfigured ? '#ECFDF5' : '#F1F5F9',
             borderRadius: '8px',
             fontSize: '0.75rem',
             fontFamily: 'var(--font-mono)',
             fontWeight: 600,
-            color: '#1E293B',
-            border: '1px solid #E2E8F0'
+            color: isSupabaseConfigured ? '#065F46' : '#475569',
+            border: `1px solid ${isSupabaseConfigured ? '#A7F3D0' : '#E2E8F0'}`
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block', boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)' }} />
-            <span>Live Sync: Aktif</span>
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: isSupabaseConfigured ? '#10B981' : '#94A3B8',
+              display: 'inline-block',
+              boxShadow: isSupabaseConfigured ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none'
+            }} />
+            <span>{isSupabaseConfigured ? 'Supabase Cloud: Aktif' : 'Penyimpanan Lokal'}</span>
           </div>
 
           <button
@@ -430,17 +455,29 @@ export const InventoryMasterTab = () => {
               Bandingkan catatan kondisi fisik serta foto visual alat saat diambil (BEFORE) vs saat dikembalikan (AFTER).
             </div>
           </div>
-          <span style={{
-            fontSize: '0.725rem',
-            fontFamily: 'var(--font-mono)',
-            fontWeight: 700,
-            padding: '2px 8px',
-            borderRadius: '9999px',
-            background: inspectableBorrowings.length > 0 ? '#EFF6FF' : '#F1F5F9',
-            color: inspectableBorrowings.length > 0 ? '#1E40AF' : '#64748B'
-          }}>
-            {inspectableBorrowings.length} Laporan
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {inspectableBorrowings.length > 5 && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setShowAllInspections((prev) => !prev)}
+                style={{ fontSize: '0.725rem', padding: '0.25rem 0.6rem' }}
+              >
+                {showAllInspections ? 'Ringkas (5 Terbaru)' : `Lihat Semua (${inspectableBorrowings.length})`}
+              </button>
+            )}
+            <span style={{
+              fontSize: '0.725rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: '9999px',
+              background: inspectableBorrowings.length > 0 ? '#EFF6FF' : '#F1F5F9',
+              color: inspectableBorrowings.length > 0 ? '#1E40AF' : '#64748B'
+            }}>
+              {inspectableBorrowings.length} Laporan
+            </span>
+          </div>
         </div>
 
         {inspectableBorrowings.length === 0 ? (
@@ -466,14 +503,15 @@ export const InventoryMasterTab = () => {
                 </tr>
               </thead>
               <tbody>
-                {inspectableBorrowings.slice(0, 5).map((b) => {
+                {(showAllInspections ? inspectableBorrowings : inspectableBorrowings.slice(0, 5)).map((b) => {
                   const hasReturnInspection = Boolean(b.inspeksiPengembalian);
                   const hasAnomaly = b.inspeksiPengembalian?.anomaliTerdeteksi;
+                  const isAdminVerified = b.inspeksiPengembalian?.verifikasiAdminSelesai;
                   const beforePhoto = b.fotoBefore || b.inspeksiPengambilan?.fotoBefore || b.buktiSurat;
                   const afterPhoto = b.fotoAfter || b.inspeksiPengembalian?.fotoAfter;
 
                   return (
-                    <tr key={b.id} style={{ background: hasAnomaly ? '#FFF1F2' : 'transparent' }}>
+                    <tr key={b.id} style={{ background: hasAnomaly && !isAdminVerified ? '#FFF1F2' : 'transparent' }}>
                       <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 600 }}>{b.id}</td>
                       <td>
                         <strong>{b.peminjamNama}</strong>
@@ -527,7 +565,12 @@ export const InventoryMasterTab = () => {
                         <StatusBadge status={b.status} />
                       </td>
                       <td>
-                        {hasAnomaly ? (
+                        {isAdminVerified ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#1E3A8A', fontSize: '0.75rem', fontWeight: 700 }}>
+                            <ShieldCheck size={13} />
+                            Terverifikasi Admin
+                          </span>
+                        ) : hasAnomaly ? (
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#E11D48', fontSize: '0.75rem', fontWeight: 700 }}>
                             <AlertTriangle size={13} />
                             Ada Anomali Fisik
@@ -578,9 +621,10 @@ export const InventoryMasterTab = () => {
             <div style={{ position: 'relative', flex: '1 1 260px', maxWidth: '380px' }}>
               <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
+                ref={searchInputRef}
                 type="text"
                 className="form-input"
-                placeholder="Cari gear, kode aset, serial no, spesifikasi..."
+                placeholder="Cari gear, kode aset, spesifikasi..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ paddingLeft: '2rem', paddingRight: '2.5rem', fontSize: '0.825rem', width: '100%', height: '36px', background: '#F8FAFC' }}
@@ -613,6 +657,7 @@ export const InventoryMasterTab = () => {
                 <option value="Semua">Status: Semua ({equipment.length})</option>
                 <option value="Tersedia">Tersedia</option>
                 <option value="Dipinjam">Sedang Dipinjam</option>
+                <option value="Terkunci Event">Terkunci Event</option>
                 <option value="Maintenance">Maintenance / Perbaikan</option>
               </select>
 
@@ -937,6 +982,15 @@ export const InventoryMasterTab = () => {
                           </span>
                           <span style={{ fontWeight: 700, color: lensMount === 'EF-M' ? '#7E22CE' : '#4338CA' }}>
                             {lensMount === 'EF-M' ? 'Mount EF-M' : 'Mount EF'}
+                          </span>
+                        </div>
+                      )}
+
+                      {item.status === 'Dipinjam' && item.peminjamAktif && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#B45309', fontWeight: 700 }}>
+                          <span>Peminjam Aktif:</span>
+                          <span style={{ maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {item.peminjamAktif}
                           </span>
                         </div>
                       )}
@@ -1304,13 +1358,29 @@ export const InventoryMasterTab = () => {
           size="large"
           title={`Validasi Perbandingan Fisik (Peminjaman: ${selectedBorrowingForCompare.id})`}
           footer={
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setSelectedBorrowingForCompare(null)}
-            >
-              Selesai Validasi
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setSelectedBorrowingForCompare(null)}
+              >
+                Tutup
+              </button>
+              {selectedBorrowingForCompare.inspeksiPengembalian && !selectedBorrowingForCompare.inspeksiPengembalian.verifikasiAdminSelesai && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ background: '#059669', borderColor: '#047857' }}
+                  onClick={() => {
+                    verifyReturnInspection(selectedBorrowingForCompare.id, currentUser?.nama || 'Administrator Studio');
+                    setSelectedBorrowingForCompare(null);
+                  }}
+                >
+                  <CheckCircle size={15} />
+                  <span>Tandai Terverifikasi Admin</span>
+                </button>
+              )}
+            </div>
           }
         >
           <div style={{ marginBottom: '1.25rem' }}>
@@ -1556,6 +1626,42 @@ export const InventoryMasterTab = () => {
             </div>
           )}
 
+          {/* Presets Baterai Resmi */}
+          {kategori === 'Baterai' && (
+            <div style={{ marginBottom: '1rem', background: '#ECFDF5', border: '1px dashed #A7F3D0', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#065F46', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <BatteryCharging size={13} color="#059669" />
+                <span>Preset Baterai Resmi (Klik untuk Auto-Isi):</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('Baterai Canon LP-E17');
+                    setKondisiFisik('100% Sehat & Normal');
+                    setSpesifikasi('Baterai Original Canon LP-E17 untuk Kamera EOS M6 II, EOS M6 I, dan EOS 250D.');
+                  }}
+                >
+                  Baterai LP-E17 (M6 II, M6 I, 250D)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('Baterai Canon LP-E10');
+                    setKondisiFisik('100% Sehat & Normal');
+                    setSpesifikasi('Baterai Original Canon LP-E10 khusus untuk Kamera Canon EOS 1500D.');
+                  }}
+                >
+                  Baterai LP-E10 (Khusus 1500D)
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Presets Lensa Resmi & Toggle Mount */}
           {kategori === 'Lensa' && (() => {
             const lensText = `${(nama || '').toLowerCase()} ${(spesifikasi || '').toLowerCase()}`;
@@ -1668,7 +1774,43 @@ export const InventoryMasterTab = () => {
                       setSpesifikasi('Mount: Lensa EF (Cocok untuk EOS 250D, 1500D, & M6 II + Adapter)');
                     }}
                   >
-                    Canon EF 50mm f/1.8
+                    Canon EF 50mm f/1.8 (EF)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                    onClick={() => {
+                      setNama('Lensa Canon EF-S 18-55mm f/3.5-5.6 IS II');
+                      setKondisiFisik('100% Optik Bersih & Normal');
+                      setSpesifikasi('Mount: Lensa EF (Cocok untuk EOS 250D, 1500D, & M6 II + Adapter)');
+                    }}
+                  >
+                    Canon EF-S 18-55mm (EF)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                    onClick={() => {
+                      setNama('Lensa Canon EF-M 15-45mm f/3.5-6.3 IS STM');
+                      setKondisiFisik('100% Optik Bersih & Normal');
+                      setSpesifikasi('Mount: Lensa EF-M (Khusus Canon EOS M6 I)');
+                    }}
+                  >
+                    Canon EF-M 15-45mm (EF-M)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.675rem', padding: '0.2rem 0.45rem' }}
+                    onClick={() => {
+                      setNama('Lensa Canon EF-M 22mm f/2 STM');
+                      setKondisiFisik('100% Optik Bersih & Normal');
+                      setSpesifikasi('Mount: Lensa EF-M (Khusus Canon EOS M6 I)');
+                    }}
+                  >
+                    Canon EF-M 22mm (EF-M)
                   </button>
                   <button
                     type="button"
@@ -1686,6 +1828,54 @@ export const InventoryMasterTab = () => {
               </div>
             );
           })()}
+
+          {/* Presets Memory Card Resmi */}
+          {kategori === 'Memory Card' && (
+            <div style={{ marginBottom: '1rem', background: '#F0F9FF', border: '1px dashed #BAE6FD', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#0369A1', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <HardDrive size={13} color="#0284C7" />
+                <span>Preset Memory Card Resmi (Klik untuk Auto-Isi):</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('SD Card SanDisk Extreme Pro 64GB');
+                    setKondisiFisik('Sangat Baik & Kosong');
+                    setSpesifikasi('SDXC UHS-I 64GB Kecepatan hingga 170MB/s (V30 U3 C10 4K UHD).');
+                  }}
+                >
+                  SD Card 64GB (SanDisk Extreme Pro)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('SD Card SanDisk Extreme Pro 128GB');
+                    setKondisiFisik('Sangat Baik & Kosong');
+                    setSpesifikasi('SDXC UHS-I 128GB Kecepatan hingga 200MB/s (V30 U3 C10 4K UHD).');
+                  }}
+                >
+                  SD Card 128GB (SanDisk Extreme Pro)
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+                  onClick={() => {
+                    setNama('MicroSD SanDisk Extreme 64GB + Adapter');
+                    setKondisiFisik('Sangat Baik & Kosong');
+                    setSpesifikasi('MicroSDXC 64GB + SD Adapter untuk Action Cam / Drone / Kamera Mirrorless.');
+                  }}
+                >
+                  MicroSD 64GB + Adapter
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="form-group">
             <label className="form-label">Nama Alat *</label>

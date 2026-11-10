@@ -1170,11 +1170,13 @@ export const StudioProvider = ({ children }) => {
       supabase.from('equipment').update({ status: 'Tersedia' }).in('id', borrowing.peralatanIds).then(() => {}).catch(() => {});
     }
 
-    const anomaliTerdeteksi = Boolean(
-      returnInspectionData.catatanKendala &&
-      returnInspectionData.catatanKendala.trim().length > 0 &&
-      !returnInspectionData.catatanKendala.toLowerCase().includes('tidak ada')
-    );
+    const anomaliTerdeteksi = typeof returnInspectionData.anomaliTerdeteksi === 'boolean'
+      ? returnInspectionData.anomaliTerdeteksi
+      : Boolean(
+          returnInspectionData.catatanKendala &&
+          returnInspectionData.catatanKendala.trim().length > 0 &&
+          !returnInspectionData.catatanKendala.toLowerCase().includes('tidak ada')
+        );
 
     const actualFotoAfter = fotoAfter || returnInspectionData.fotoAfter || null;
 
@@ -1187,7 +1189,8 @@ export const StudioProvider = ({ children }) => {
         ...returnInspectionData,
         fotoAfter: actualFotoAfter,
         tanggalInspeksi: new Date().toLocaleString('id-ID'),
-        anomaliTerdeteksi
+        anomaliTerdeteksi,
+        verifikasiAdminSelesai: false
       }
     };
 
@@ -1224,14 +1227,40 @@ export const StudioProvider = ({ children }) => {
     showToast(`Inspeksi Pengembalian selesai! Alat kembali "Tersedia" & penugasan personil "Sudah Melaksanakan Tugas".`, 'success');
   };
 
+  // Validasi Inspeksi Pengembalian oleh Admin
+  const verifyReturnInspection = (borrowingId, verifiedBy = 'Administrator Studio') => {
+    setBorrowings((prev) =>
+      prev.map((b) => {
+        if (b.id !== borrowingId) return b;
+        return {
+          ...b,
+          inspeksiPengembalian: {
+            ...(b.inspeksiPengembalian || {}),
+            verifikasiAdminSelesai: true,
+            diverifikasiOleh: verifiedBy,
+            tanggalVerifikasiAdmin: new Date().toLocaleString('id-ID')
+          }
+        };
+      })
+    );
+    showToast(`Laporan fisik peminjaman ${borrowingId} berhasil divalidasi oleh Admin.`, 'success');
+  };
+
   // -------------------------------------------------------------
   // CRUD MASTER UNTUK ADMIN MENGISI DATA BARU (FULL SUPABASE CLOUD)
   // -------------------------------------------------------------
 
   // CRUD Inventaris Alat & Ruang
   const addEquipment = (newItem) => {
-    const id = `EQ-${String(equipment.length + 1).padStart(2, '0')}`;
-    const item = { ...newItem, id, status: 'Tersedia', terkunciOlehEventId: null };
+    const existingNums = equipment
+      .map((e) => {
+        const m = String(e.id || '').match(/\d+$/);
+        return m ? parseInt(m[0], 10) : 0;
+      })
+      .filter((n) => !Number.isNaN(n));
+    const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+    const id = `EQ-${String(nextNum).padStart(2, '0')}`;
+    const item = { ...newItem, id, kode: newItem.kode || id, status: 'Tersedia', terkunciOlehEventId: null };
     setEquipment((prev) => [...prev, item]);
     syncEquipmentToSupabase(item);
     showToast(`Aset baru "${item.nama}" berhasil ditambahkan ke inventaris studio.`, 'success');
@@ -1452,6 +1481,7 @@ export const StudioProvider = ({ children }) => {
         simulatePCTimeout,
         endPCSession,
         submitReturnInspection,
+        verifyReturnInspection,
         // Admin CRUD
         addEquipment,
         updateEquipment,

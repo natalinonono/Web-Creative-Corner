@@ -117,45 +117,31 @@ export const TopNavbar = () => {
   return (
     <header className="top-navbar">
       {/* Brand & Logo + Facility Indicator */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-        <div 
-          className="brand-section" 
-          onClick={() => { setCurrentRole('public'); setPublicTab('form'); }}
-          style={{ cursor: 'pointer' }}
-          title="Kembali ke Beranda Peminjaman"
-        >
-          <div className="brand-logo-icon">
-            <img 
-              src="/logo-creative-corner.png" 
-              alt="Creative Corner Logo" 
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-            />
-          </div>
-          <div>
-            <div className="brand-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, letterSpacing: '-0.02em' }}>Creative Corner</div>
-            <div className="brand-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span className="brand-status-dot"></span>
-              <span style={{ color: '#90A8FF' }}>Studio OS</span>
-              <span style={{ opacity: 0.5 }}>•</span>
-              <span style={{ color: '#85F8C4' }}>v4.2-LTS</span>
-            </div>
+      <div 
+        className="brand-section" 
+        onClick={() => { setCurrentRole('public'); setPublicTab('form'); }}
+        style={{ cursor: 'pointer', order: 1 }}
+        title="Kembali ke Beranda Peminjaman"
+      >
+        <div className="brand-logo-icon">
+          <img 
+            src="/logo-creative-corner.png" 
+            alt="Creative Corner Logo" 
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          />
+        </div>
+        <div>
+          <div className="brand-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, letterSpacing: '-0.02em' }}>Creative Corner</div>
+          <div className="brand-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span className="brand-status-dot"></span>
+            <span style={{ color: '#90A8FF' }}>Studio OS</span>
+            <span style={{ opacity: 0.5 }}>•</span>
+            <span style={{ color: '#85F8C4' }}>v4.2-LTS</span>
           </div>
         </div>
 
-        {/* Studio Branch Indicator (Stitch Screen 2) */}
-        <div 
-          className="hidden lg:flex" 
-          style={{ 
-            alignItems: 'center', 
-            gap: '0.4rem', 
-            padding: '0.3rem 0.75rem', 
-            borderRadius: '8px', 
-            background: 'rgba(255, 255, 255, 0.06)', 
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            fontSize: '0.75rem',
-            color: '#D6E3FE'
-          }}
-        >
+        {/* Studio Branch Indicator (Hanya tampil di layar lebar) */}
+        <div className="studio-branch-pill" style={{ marginLeft: '0.5rem' }}>
           <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#90A8FF' }}>meeting_room</span>
           <span style={{ fontWeight: 600 }}>Studio Utama - Lantai 2</span>
         </div>

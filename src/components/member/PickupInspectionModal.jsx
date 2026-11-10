@@ -19,9 +19,14 @@ import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem,
 import { compressImage } from '../../utils/imageCompression';
 
 export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledEquipmentIds = [] }) => {
-  const { equipment, activeMemberId, members, submitPickupInspection } = useStudio();
+  const { equipment, activeMemberId, members, currentUser, submitPickupInspection } = useStudio();
 
-  const currentMember = members.find((m) => m.id === activeMemberId) || members[0];
+  const currentMember = currentUser || members.find((m) => m.id === activeMemberId) || members[0] || {
+    id: 'MEM-TEMP',
+    nama: 'Anggota Creative Corner',
+    kelas: 'Studio',
+    nomorWa: '6281200000000'
+  };
 
   // Equipment selection
   const [selectedEqIds, setSelectedEqIds] = useState(

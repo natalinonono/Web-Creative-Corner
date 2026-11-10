@@ -160,6 +160,36 @@
   box-shadow: 0 25px 50px -12px rgba(11, 25, 44, 0.35), 0 0 0 1px #CBD5E1;
 }
 
+/* Utility Helpers & Stitch Responsive Studio Pill */
+.hover\:border-blue-400:hover {
+  border-color: #60A5FA !important;
+}
+.hover\:border-blue-300:hover {
+  border-color: #93C5FD !important;
+}
+.hover\:shadow-md:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.studio-branch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  color: #D6E3FE;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .studio-branch-pill {
+    display: none;
+  }
+}
+
 /* Material Symbols Outlined Fallback Alignment */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';

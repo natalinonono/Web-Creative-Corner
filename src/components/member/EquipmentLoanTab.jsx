@@ -28,14 +28,33 @@ import { checkLoanOverdue } from '../../utils/loanOverdue';
 import sonyLensImg from '../../assets/stitch/sony-fe-24-70-gm2.jpg';
 
 export const EquipmentLoanTab = () => {
-  const { equipment, borrowings, activeMemberId, members } = useStudio();
-  const currentMember = members.find((m) => m.id === activeMemberId) || members[0] || { nama: 'Anggota Kru' };
+  const { equipment, borrowings, activeMemberId, members, currentUser } = useStudio();
+  const currentMember = currentUser || members.find((m) => m.id === activeMemberId) || members[0] || { nama: 'Anggota Kru' };
 
   const [activeKategori, setActiveKategori] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [pickupModalOpen, setPickupModalOpen] = useState(false);
   const [prefilledEqIds, setPrefilledEqIds] = useState([]);
   const [selectedBorrowingForReturn, setSelectedBorrowingForReturn] = useState(null);
+
+  const getRemainingTimeLabel = (borrowing) => {
+    try {
+      const todayStr = borrowing.tanggalPinjam || new Date().toISOString().split('T')[0];
+      const timeStr = (borrowing.batasWaktuKembali || '16:00').replace(/\s*WIB/i, '').trim();
+      const [h, m] = timeStr.split(':').map((v) => parseInt(v, 10) || 0);
+      const deadline = new Date(`${todayStr}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`);
+      const diffMs = deadline.getTime() - Date.now();
+      if (diffMs <= 0) return null;
+      const mins = Math.floor(diffMs / 60000);
+      const hrs = Math.floor(mins / 60);
+      const rem = mins % 60;
+      if (hrs > 24) return `${Math.floor(hrs / 24)} hari ${hrs % 24} jam`;
+      if (hrs >= 1) return rem > 0 ? `${hrs} jam ${rem} menit` : `${hrs} jam`;
+      return `${mins} menit`;
+    } catch {
+      return null;
+    }
+  };
 
   // Filter peralatan
   const filteredEquipment = equipment.filter((item) => {
@@ -156,6 +175,7 @@ export const EquipmentLoanTab = () => {
             {myActiveBorrowings.map((b) => {
               const overdueCheck = checkLoanOverdue(b);
               const isOverdue = overdueCheck.isOverdue;
+              const remainingLabel = !isOverdue ? getRemainingTimeLabel(b) : null;
 
               return (
                 <div
@@ -198,12 +218,12 @@ export const EquipmentLoanTab = () => {
                     </div>
 
                     {/* Gear Info */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.85rem' }}>
                       <div>
                         <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.35rem 0' }}>
                           {b.peralatanNama}
                         </h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.4rem' }}>
                           <span style={{
                             fontSize: '0.7rem',
                             fontFamily: 'var(--font-mono)',
@@ -219,6 +239,10 @@ export const EquipmentLoanTab = () => {
                             <MapPin size={12} />
                             Studio Utama CC
                           </span>
+                        </div>
+                        <div style={{ fontSize: '0.775rem', color: '#475569' }}>
+                          <div><strong>Keperluan:</strong> {b.keperluan || '-'}</div>
+                          <div><strong>Diambil:</strong> {b.tanggalPinjam} {b.jamPinjam ? `pukul ${b.jamPinjam} WIB` : ''}</div>
                         </div>
                       </div>
 
@@ -237,6 +261,25 @@ export const EquipmentLoanTab = () => {
                       </div>
                     </div>
 
+                    {/* Ringkasan Inspeksi Pengambilan Awal */}
+                    {b.inspeksiPengambilan && (
+                      <div style={{
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: '8px',
+                        padding: '0.6rem 0.75rem',
+                        marginBottom: '0.85rem',
+                        fontSize: '0.75rem',
+                        color: '#334155'
+                      }}>
+                        <div style={{ fontWeight: 700, color: '#1E3A8A', marginBottom: '0.2rem' }}>
+                          Catatan Inspeksi Awal (BEFORE):
+                        </div>
+                        <div>• Fisik: {b.inspeksiPengambilan.kondisiFisik || 'Baik'}</div>
+                        <div>• Keterangan: {b.inspeksiPengambilan.keteranganAlat || b.inspeksiPengambilan.kelengkapanAksesori || '-'}</div>
+                      </div>
+                    )}
+
                     {/* Urgency Countdown Strip */}
                     <div style={{
                       display: 'flex',
@@ -254,8 +297,10 @@ export const EquipmentLoanTab = () => {
                       <span style={{ fontWeight: 600 }}>
                         {isOverdue ? (
                           <>Waktu pinjam telah lewat: <span style={{ fontWeight: 800 }}>{overdueCheck.label}</span></>
+                        ) : remainingLabel ? (
+                          <>Harus kembali dalam <span style={{ fontWeight: 800 }}>{remainingLabel}</span></>
                         ) : (
-                          <>Wajib dikembalikan sebelum batas waktu operasional hari ini.</>
+                          <>Wajib dikembalikan sebelum batas waktu operasional.</>
                         )}
                       </span>
                     </div>
@@ -380,6 +425,7 @@ export const EquipmentLoanTab = () => {
               const isLens = isLensItem(tool);
               const lensMount = isLens ? getLensMountType(tool) : null;
               const isBattery = isBatteryItem(tool);
+              const isMemoryCard = isMemoryCardItem(tool);
 
               // Decoded Stitch Screen 3 Sony FE 24-70mm GM II Photo
               const is2470 = (tool.nama || '').toLowerCase().includes('24-70');
@@ -487,13 +533,47 @@ export const EquipmentLoanTab = () => {
                           fontWeight: 700,
                           display: 'inline-block'
                         }}>
-                          {lensMount === 'EF-M' ? 'Mount: Lensa EF-M' : 'Mount: Lensa EF'}
+                          {lensMount === 'EF-M' ? 'Mount: Lensa EF-M (Mirrorless)' : 'Mount: Lensa EF (DSLR)'}
                         </span>
                       </div>
                     )}
 
-                    <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.85rem' }}>
-                      Kondisi: <strong style={{ color: '#334155' }}>{tool.kondisiFisik || 'Baik'}</strong>
+                    {isBattery && (
+                      <div style={{ marginBottom: '0.45rem' }}>
+                        <span style={{
+                          fontSize: '0.675rem',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          background: (tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
+                          color: (tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
+                          fontWeight: 700,
+                          display: 'inline-block'
+                        }}>
+                          {(tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
+                        </span>
+                      </div>
+                    )}
+
+                    {isMemoryCard && (
+                      <div style={{ marginBottom: '0.45rem' }}>
+                        <span style={{
+                          fontSize: '0.675rem',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          background: '#F0F9FF',
+                          color: '#0369A1',
+                          border: '1px solid #BAE6FD',
+                          fontWeight: 700,
+                          display: 'inline-block'
+                        }}>
+                          Memory Card
+                        </span>
+                      </div>
+                    )}
+
+                    <div style={{ fontSize: '0.75rem', color: '#475569', background: '#F8FAFC', padding: '0.45rem 0.6rem', borderRadius: '6px', marginBottom: '0.85rem', lineHeight: 1.35 }}>
+                      <div><strong>Kondisi:</strong> {tool.kondisiFisik || 'Baik'}</div>
+                      <div style={{ color: '#64748B', marginTop: '2px' }}>{tool.spesifikasi || '-'}</div>
                     </div>
                   </div>
 
@@ -524,9 +604,10 @@ export const EquipmentLoanTab = () => {
                         className="btn btn-danger btn-sm"
                         style={{ width: '100%', height: '38px', cursor: 'not-allowed', opacity: 0.8 }}
                         disabled
+                        title="Unit ini otomatis dikunci untuk agenda liputan resmi sekolah"
                       >
                         <Lock size={14} />
-                        <span>Terkunci Event</span>
+                        <span>Terkunci Event Sekolah</span>
                       </button>
                     ) : (
                       <button
@@ -536,7 +617,7 @@ export const EquipmentLoanTab = () => {
                         disabled
                       >
                         <Clock size={14} />
-                        <span>Sedang Dipinjam</span>
+                        <span>Sedang Dipinjam ({tool.peminjamAktif || 'Anggota'})</span>
                       </button>
                     )}
                   </div>
