@@ -120,7 +120,7 @@ export const AdminPortal = () => {
           <div className="portal-hero-stat-card">
             <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>PC Dipakai</div>
             <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
-              {activePCCount} / 6
+              {activePCCount} / {pcClients.length}
             </div>
           </div>
 

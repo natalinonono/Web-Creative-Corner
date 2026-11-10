@@ -33,8 +33,424 @@ export const SEED_MEMBERS = [
   DEFAULT_ADMIN_USER
 ];
 
-// Master Peralatan & Ruangan Studio (Dimulai Kosong - Diisi oleh Admin)
-export const SEED_EQUIPMENT = [];
+// Master Peralatan & Perlengkapan Resmi Studio Creative Corner (34 Unit)
+export const SEED_EQUIPMENT = [
+  // Kamera (3 Unit)
+  {
+    id: 'EQ-01',
+    kode: 'EQ-01',
+    nama: 'Canon EOS M6 Mk I',
+    kategori: 'Kamera',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Body Only Mirrorless. Memakai Lensa Canon EF-M (tanpa adapter).',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-02',
+    kode: 'EQ-02',
+    nama: 'Canon EOS M6 Mk II',
+    kategori: 'Kamera',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Body Only Mirrorless. WAJIB PAKAI ADAPTER EOS EF-M TO EF dan Lensa Canon EF/EF-S.',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-03',
+    kode: 'EQ-03',
+    nama: 'Canon EOS 1500D',
+    kategori: 'Kamera',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Body Only DSLR. Memakai Lensa Canon EF/EF-S dan Baterai LP-E10.',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  // Lensa (4 Unit)
+  {
+    id: 'EQ-04',
+    kode: 'EQ-04',
+    nama: 'Canon Zoom Lens EF-M 18-150mm',
+    kategori: 'Lensa',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Mount: Lensa EF-M (Khusus Canon EOS M6 Mk I)',
+    kondisiFisik: 'Sangat Baik & Optik Bersih',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-05',
+    kode: 'EQ-05',
+    nama: 'Canon Zoom Lens EF-S 18-55mm #1',
+    kategori: 'Lensa',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Mount: Lensa EF (Cocok untuk EOS 1500D & M6 Mk II + Adapter EF-M to EF)',
+    kondisiFisik: 'Sangat Baik & Optik Bersih',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-06',
+    kode: 'EQ-06',
+    nama: 'Canon Zoom Lens EF-M 15-45mm',
+    kategori: 'Lensa',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Mount: Lensa EF-M (Khusus Canon EOS M6 Mk I)',
+    kondisiFisik: 'Sangat Baik & Optik Bersih',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-07',
+    kode: 'EQ-07',
+    nama: 'Canon Zoom Lens EF-S 18-55mm #2',
+    kategori: 'Lensa',
+    lokasiRak: 'Dry Cabinet Studio',
+    spesifikasi: 'Mount: Lensa EF (Cocok untuk EOS 1500D & M6 Mk II + Adapter EF-M to EF)',
+    kondisiFisik: 'Sangat Baik & Optik Bersih',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  // Lighting (3 Unit)
+  {
+    id: 'EQ-08',
+    kode: 'EQ-08',
+    nama: 'Godox LEDP120C #1',
+    kategori: 'Lighting & Tata Cahaya',
+    lokasiRak: 'Rak Lighting Studio',
+    spesifikasi: 'Panel LED Bi-Color Godox LEDP120C (Unit 1 - Daya baterai seri NP-F)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-09',
+    kode: 'EQ-09',
+    nama: 'Godox LEDP120C #2',
+    kategori: 'Lighting & Tata Cahaya',
+    lokasiRak: 'Rak Lighting Studio',
+    spesifikasi: 'Panel LED Bi-Color Godox LEDP120C (Unit 2 - Daya baterai seri NP-F)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-10',
+    kode: 'EQ-10',
+    nama: 'Godox LEDP120C #3',
+    kategori: 'Lighting & Tata Cahaya',
+    lokasiRak: 'Rak Lighting Studio',
+    spesifikasi: 'Panel LED Bi-Color Godox LEDP120C (Unit 3 - Daya baterai seri NP-F)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  // SD Card / Memory Card (1 Unit)
+  {
+    id: 'EQ-11',
+    kode: 'EQ-11',
+    nama: 'SD Card SanDisk Extreme 64GB (170MB/s)',
+    kategori: 'Memory Card',
+    lokasiRak: 'Box Memory Studio',
+    spesifikasi: 'SDXC UHS-I 64GB Kecepatan hingga 170MB/s (V30 U3 C10 4K UHD)',
+    kondisiFisik: 'Sangat Baik & Kosong',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  // Speaker & Mic / Audio (3 Unit)
+  {
+    id: 'EQ-12',
+    kode: 'EQ-12',
+    nama: 'Speaker MAX15MH #1',
+    kategori: 'Audio & Mikrofon',
+    lokasiRak: 'Area Audio Studio',
+    spesifikasi: 'Speaker Aktif Studio / Event MAX15MH (Unit 1)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-13',
+    kode: 'EQ-13',
+    nama: 'Speaker MAX15MH #2',
+    kategori: 'Audio & Mikrofon',
+    lokasiRak: 'Area Audio Studio',
+    spesifikasi: 'Speaker Aktif Studio / Event MAX15MH (Unit 2)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-14',
+    kode: 'EQ-14',
+    nama: 'Mic Wireless Hollyland Lark M2',
+    kategori: 'Audio & Mikrofon',
+    lokasiRak: 'Rak Audio Studio',
+    spesifikasi: 'Mikrofon Wireless Lavalier Hollyland Lark M2 + Charging Case',
+    kondisiFisik: 'Sangat Baik',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  // Gimbal & Tripod / Aksesori (5 Unit)
+  {
+    id: 'EQ-15',
+    kode: 'EQ-15',
+    nama: 'DJI Ronin-SC Gimbal Stabilizer',
+    kategori: 'Tripod & Aksesori',
+    lokasiRak: 'Rak Gimbal Studio',
+    spesifikasi: '3-Axis Motorized Camera Gimbal Stabilizer untuk Mirrorless',
+    kondisiFisik: 'Sangat Baik',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-16',
+    kode: 'EQ-16',
+    nama: 'Tripod Zomei Q111 #1',
+    kategori: 'Tripod & Aksesori',
+    lokasiRak: 'Rak Tripod Studio',
+    spesifikasi: 'Tripod Kamera Zomei Q111 (Unit 1)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-17',
+    kode: 'EQ-17',
+    nama: 'Tripod Zomei Q111 #2',
+    kategori: 'Tripod & Aksesori',
+    lokasiRak: 'Rak Tripod Studio',
+    spesifikasi: 'Tripod Kamera Zomei Q111 (Unit 2)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-18',
+    kode: 'EQ-18',
+    nama: 'Tripod Zomei Q111 #3',
+    kategori: 'Tripod & Aksesori',
+    lokasiRak: 'Rak Tripod Studio',
+    spesifikasi: 'Tripod Kamera Zomei Q111 (Unit 3)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-19',
+    kode: 'EQ-19',
+    nama: 'Tripod Zomei Q111 #4',
+    kategori: 'Tripod & Aksesori',
+    lokasiRak: 'Rak Tripod Studio',
+    spesifikasi: 'Tripod Kamera Zomei Q111 (Unit 4)',
+    kondisiFisik: 'Sangat Baik',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  // Baterai & Charger (15 Unit)
+  {
+    id: 'EQ-20',
+    kode: 'EQ-20',
+    nama: 'Baterai Takara #1',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Takara Studio (Unit 1)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-21',
+    kode: 'EQ-21',
+    nama: 'Baterai Takara #2',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Takara Studio (Unit 2)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-22',
+    kode: 'EQ-22',
+    nama: 'Baterai NP-F980 #1',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Seri Sony NP-F980 Kapasitas Tinggi untuk LED/Monitor (Unit 1)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-23',
+    kode: 'EQ-23',
+    nama: 'Baterai NP-F980 #2',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Seri Sony NP-F980 Kapasitas Tinggi untuk LED/Monitor (Unit 2)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-24',
+    kode: 'EQ-24',
+    nama: 'Baterai NP-F570 #1',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Seri Sony NP-F570 untuk Lighting Godox LEDP120C (Unit 1)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-25',
+    kode: 'EQ-25',
+    nama: 'Baterai NP-F570 #2',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Seri Sony NP-F570 untuk Lighting Godox LEDP120C (Unit 2)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-26',
+    kode: 'EQ-26',
+    nama: 'Baterai NP-F570 #3',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Seri Sony NP-F570 untuk Lighting Godox LEDP120C (Unit 3)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-27',
+    kode: 'EQ-27',
+    nama: 'Baterai NP-F570 #4',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Seri Sony NP-F570 untuk Lighting Godox LEDP120C (Unit 4)',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-28',
+    kode: 'EQ-28',
+    nama: 'Baterai Li-ion20',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Li-ion20 Studio',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-29',
+    kode: 'EQ-29',
+    nama: 'Baterai Canon LP-E10',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Canon LP-E10 khusus untuk Kamera Canon EOS 1500D',
+    kondisiFisik: '100% Sehat & Normal',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-30',
+    kode: 'EQ-30',
+    nama: 'Baterai Dummy #1',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Dummy Adapter Sumber Daya Listrik Langsung (Unit 1)',
+    kondisiFisik: 'Sangat Baik & Normal',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-31',
+    kode: 'EQ-31',
+    nama: 'Baterai Dummy #2',
+    kategori: 'Baterai',
+    lokasiRak: 'Drybox Baterai',
+    spesifikasi: 'Baterai Dummy Adapter Sumber Daya Listrik Langsung (Unit 2)',
+    kondisiFisik: 'Sangat Baik & Normal',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-32',
+    kode: 'EQ-32',
+    nama: 'Charger Power Fast DS-LPE17',
+    kategori: 'Baterai',
+    lokasiRak: 'Rak Charger Studio',
+    spesifikasi: 'Charger Power Fast DS-LPE17 untuk Baterai LP-E17 (M6 Mk I / Mk II)',
+    kondisiFisik: 'Sangat Baik & Normal',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-33',
+    kode: 'EQ-33',
+    nama: 'Charger Canon LC-E17E',
+    kategori: 'Baterai',
+    lokasiRak: 'Rak Charger Studio',
+    spesifikasi: 'Charger Original Canon LC-E17E untuk Baterai LP-E17 (M6 Mk I / Mk II)',
+    kondisiFisik: 'Sangat Baik & Normal',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-34',
+    kode: 'EQ-34',
+    nama: 'Charger Canon LC-E10E',
+    kategori: 'Baterai',
+    lokasiRak: 'Rak Charger Studio',
+    spesifikasi: 'Charger Original Canon LC-E10E khusus Baterai LP-E10 (Canon EOS 1500D)',
+    kondisiFisik: 'Sangat Baik & Normal',
+    baterai: null,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
+  }
+];
 
 // Agenda Liputan Sekolah (Dimulai Kosong - Diisi oleh Admin)
 export const SEED_EVENTS = [];
@@ -48,47 +464,19 @@ export const SEED_CREATIVE_TASKS = [];
 // Roster Piket Studio (Dimulai Kosong - Diisi oleh Admin)
 export const SEED_DUTY_ROSTER = [];
 
-// Slot Klien Workstation PC Creative Corner (6 Unit Siap Pakai, Status Kosong/Tersedia)
+// Slot Klien Workstation PC Resmi Creative Corner (2 Unit Aktif Studio)
 export const SEED_PC_CLIENTS = [
   {
     id: 'PC-01',
-    namaUnit: 'PC-01 (Editing Workstation)',
-    spesifikasi: 'Intel Core i9 / RAM 64GB / GPU RTX Series / Monitor 4K Color Accurate',
+    namaUnit: 'PC1-STUDIO (Dekat Pintu)',
+    spesifikasi: 'Intel Core i5-8400 @ 2.80GHz | RAM 32GB | NVIDIA GeForce GT 1030 2GB | Storage 2,75 TB | Windows 11 Pro',
     status: 'Tersedia',
     penggunaAktif: null
   },
   {
     id: 'PC-02',
-    namaUnit: 'PC-02 (Design & Motion Station)',
-    spesifikasi: 'AMD Ryzen 9 / RAM 32GB / GPU RTX Series / Pen Tablet Drawing',
-    status: 'Tersedia',
-    penggunaAktif: null
-  },
-  {
-    id: 'PC-03',
-    namaUnit: 'PC-03 (Color Grading & Audio Studio)',
-    spesifikasi: 'Intel Core i7 / RAM 32GB / Audio Interface Studio Monitor',
-    status: 'Tersedia',
-    penggunaAktif: null
-  },
-  {
-    id: 'PC-04',
-    namaUnit: 'PC-04 (General Creative Workstation)',
-    spesifikasi: 'AMD Ryzen 7 / RAM 32GB / Dual Display 27-inch',
-    status: 'Tersedia',
-    penggunaAktif: null
-  },
-  {
-    id: 'PC-05',
-    namaUnit: 'PC-05 (General Creative Workstation)',
-    spesifikasi: 'Intel Core i5 / RAM 32GB / Dual Display 27-inch',
-    status: 'Tersedia',
-    penggunaAktif: null
-  },
-  {
-    id: 'PC-06',
-    namaUnit: 'PC-06 (Podcast & Streaming Control)',
-    spesifikasi: 'Intel Core i7 / RAM 32GB / CamLink 4K Quad & Stream Controller',
+    namaUnit: 'DEKSTOP-7TVS43B (Backup)',
+    spesifikasi: 'Intel Core i7-9700 @ 3.00GHz | RAM 8GB | NVIDIA GeForce GT 730 5,9GB & Intel UHD Graphics 630 3,9GB | Storage 1,38 TB',
     status: 'Tersedia',
     penggunaAktif: null
   }

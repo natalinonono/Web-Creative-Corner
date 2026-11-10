@@ -19,11 +19,15 @@ import {
   MapPin,
   QrCode,
   Timer,
-  AlertTriangle
+  AlertTriangle,
+  Mic,
+  Sun,
+  Video,
+  HardDrive
 } from 'lucide-react';
 import { PickupInspectionModal } from './PickupInspectionModal';
 import { ReturnInspectionModal } from './ReturnInspectionModal';
-import { getCameraRequirements, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType, getBatteryBadgeMeta } from '../../utils/cameraCompatibility';
 import { checkLoanOverdue } from '../../utils/loanOverdue';
 import sonyLensImg from '../../assets/stitch/sony-fe-24-70-gm2.jpg';
 
@@ -468,11 +472,17 @@ export const EquipmentLoanTab = () => {
                           alt={tool.nama}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
-                      ) : (
-                        <div style={{ color: '#1E3A8A' }}>
-                          <Camera size={36} />
-                        </div>
-                      )}
+                      ) : (() => {
+                        const cat = (tool.kategori || '').toLowerCase();
+                        if (cat.includes('lensa')) return <Eye size={36} color="#7C3AED" />;
+                        if (cat.includes('baterai') || cat.includes('battery')) return <BatteryCharging size={36} color="#059669" />;
+                        if (cat.includes('memory') || cat.includes('sd card')) return <HardDrive size={36} color="#0284C7" />;
+                        if (cat.includes('audio') || cat.includes('mic')) return <Mic size={36} color="#059669" />;
+                        if (cat.includes('light')) return <Sun size={36} color="#D97706" />;
+                        if (cat.includes('tripod') || cat.includes('aksesori')) return <Video size={36} color="#0284C7" />;
+                        if (cat.includes('ruang')) return <Layers size={36} color="#DC2626" />;
+                        return <Camera size={36} color="#1E3A8A" />;
+                      })()}
 
                       {/* Status Tag on Top-Left */}
                       <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
@@ -538,21 +548,24 @@ export const EquipmentLoanTab = () => {
                       </div>
                     )}
 
-                    {isBattery && (
-                      <div style={{ marginBottom: '0.45rem' }}>
-                        <span style={{
-                          fontSize: '0.675rem',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          background: (tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                          color: (tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
-                          fontWeight: 700,
-                          display: 'inline-block'
-                        }}>
-                          {(tool.nama + (tool.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
-                        </span>
-                      </div>
-                    )}
+                    {isBattery && (() => {
+                      const bMeta = getBatteryBadgeMeta(tool);
+                      return (
+                        <div style={{ marginBottom: '0.45rem' }}>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: bMeta.bg,
+                            color: bMeta.color,
+                            fontWeight: 700,
+                            display: 'inline-block'
+                          }}>
+                            {bMeta.label}
+                          </span>
+                        </div>
+                      );
+                    })()}
 
                     {isMemoryCard && (
                       <div style={{ marginBottom: '0.45rem' }}>

@@ -149,14 +149,10 @@ CREATE POLICY "Akses Penuh Publik Official Documents" ON public.official_documen
 CREATE POLICY "Akses Penuh Publik Duty Roster" ON public.duty_roster FOR ALL USING (true) WITH CHECK (true);
 
 -- ===================================================================
--- SEED DATA AWAL (OPSIONAL: Menambahkan data awal workstation PC)
+-- SEED DATA AWAL (Data Workstation PC Resmi Studio Creative Corner)
 -- ===================================================================
 INSERT INTO public.pc_clients (id, nama_unit, spesifikasi, status)
 VALUES 
-    ('PC-01', 'PC-01 (Editing Video 4K)', 'Intel Core i9-13900K / RAM 64GB DDR5 / GPU RTX 4080 / SSD NVMe 2TB', 'Tersedia'),
-    ('PC-02', 'PC-02 (Editing Video 4K)', 'Intel Core i7-13700K / RAM 32GB DDR5 / GPU RTX 4070 Ti / SSD 1TB', 'Tersedia'),
-    ('PC-03', 'PC-03 (Desain Grafis & Motion)', 'AMD Ryzen 9 7900X / RAM 32GB / GPU RTX 4070 / Dual Monitor 27"', 'Tersedia'),
-    ('PC-04', 'PC-04 (Desain Grafis & 3D)', 'AMD Ryzen 7 7700X / RAM 32GB / GPU RTX 4060 Ti / Pen Tablet Wacom', 'Tersedia'),
-    ('PC-05', 'PC-05 (Audio & Podcast Workstation)', 'Intel Core i7-12700 / RAM 32GB / Focusrite Scarlett 2i2 / Shure SM7B', 'Tersedia'),
-    ('PC-06', 'PC-06 (Streaming & Live Broadcast)', 'Intel Core i7-13700 / RAM 32GB / Elgato 4K60 Pro / Stream Deck MK2', 'Tersedia')
+    ('PC-01', 'PC1-STUDIO (Dekat Pintu)', 'Intel Core i5-8400 @ 2.80GHz | RAM 32GB | NVIDIA GeForce GT 1030 2GB | Storage 2,75 TB | Windows 11 Pro', 'Tersedia'),
+    ('PC-02', 'DEKSTOP-7TVS43B (Backup)', 'Intel Core i7-9700 @ 3.00GHz | RAM 8GB | NVIDIA GeForce GT 730 5,9GB & Intel UHD Graphics 630 3,9GB | Storage 1,38 TB', 'Tersedia')
 ON CONFLICT (id) DO NOTHING;

@@ -102,10 +102,11 @@ export const StudioProvider = ({ children }) => {
       setSupabaseStatus('connecting');
 
       // 1. Data Inventaris Peralatan & Ruang
-      const { data: eq, error: eqErr } = await supabase.from('equipment').select('*');
+      const { data: eq, error: eqErr } = await supabase.from('equipment').select('*').order('id', { ascending: true });
       if (!eqErr && Array.isArray(eq)) {
         const mappedEq = eq.map((item) => ({
           id: item.id,
+          kode: item.id,
           nama: item.nama,
           kategori: item.kategori,
           nomorSeri: item.nomor_seri || '',

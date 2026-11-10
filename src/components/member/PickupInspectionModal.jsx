@@ -15,7 +15,7 @@ import {
   Sparkles,
   BatteryCharging
 } from 'lucide-react';
-import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType, getBatteryBadgeMeta } from '../../utils/cameraCompatibility';
 import { compressImage } from '../../utils/imageCompression';
 
 export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledEquipmentIds = [] }) => {
@@ -325,20 +325,23 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       )}
 
                       {/* Badge Kategori Baterai */}
-                      {isBattery && (
-                        <div style={{ marginTop: '3px' }}>
-                          <span style={{
-                            fontSize: '0.675rem',
-                            padding: '1px 5px',
-                            borderRadius: '3px',
-                            background: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                            color: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
-                            fontWeight: 700
-                          }}>
-                            {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
-                          </span>
-                        </div>
-                      )}
+                      {isBattery && (() => {
+                        const bMeta = getBatteryBadgeMeta(item);
+                        return (
+                          <div style={{ marginTop: '3px' }}>
+                            <span style={{
+                              fontSize: '0.675rem',
+                              padding: '1px 5px',
+                              borderRadius: '3px',
+                              background: bMeta.bg,
+                              color: bMeta.color,
+                              fontWeight: 700
+                            }}>
+                              {bMeta.label}
+                            </span>
+                          </div>
+                        );
+                      })()}
 
                       {/* Badge Kategori Memory Card */}
                       {isMemoryCard && (

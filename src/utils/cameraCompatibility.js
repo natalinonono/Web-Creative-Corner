@@ -85,6 +85,8 @@ export const isCameraItem = (item) => {
     name.includes('lens') || 
     name.startsWith('baterai') || 
     name.includes('battery') || 
+    name.startsWith('charger') ||
+    name.startsWith('cas') ||
     name.includes('sd card') || 
     name.includes('memory') || 
     name.includes('adapter')
@@ -107,13 +109,13 @@ export const isLensItem = (item) => {
 };
 
 /**
- * Cek apakah sebuah item adalah baterai
+ * Cek apakah sebuah item adalah baterai / charger
  */
 export const isBatteryItem = (item) => {
   if (!item) return false;
   const cat = (item.kategori || '').toLowerCase().trim();
   const name = (item.nama || '').toLowerCase().trim();
-  return cat === 'baterai' || cat.includes('battery') || name.startsWith('baterai') || name.includes('battery');
+  return cat === 'baterai' || cat.includes('battery') || name.startsWith('baterai') || name.includes('battery') || name.startsWith('charger');
 };
 
 /**
@@ -140,6 +142,9 @@ export const getCameraRequirements = (cameraItem) => {
   const isM6IIByName = 
     name.includes('m6 ii') || 
     name.includes('m6 mark ii') || 
+    name.includes('m6 mk ii') || 
+    name.includes('m6 mk 2') || 
+    name.includes('m6 mkii') ||
     name.includes('m6 2') ||
     name.includes('m6-ii');
 
@@ -157,10 +162,15 @@ export const getCameraRequirements = (cameraItem) => {
 
   // 2. Canon EOS M6 Mark I (Lensa EF-M murni tanpa adapter)
   const isM6IByName = 
-    name.includes('m6 i') || 
-    name.includes('m6 mark i') || 
-    name.includes('m6 1') ||
-    name.includes('m6-i');
+    !name.includes('ii') && (
+      name.includes('m6 i') || 
+      name.includes('m6 mark i') || 
+      name.includes('m6 mk i') ||
+      name.includes('m6 mk 1') ||
+      name.includes('m6 mki') ||
+      name.includes('m6 1') ||
+      name.includes('m6-i')
+    );
 
   const isM6IBySpec = 
     (name.includes('m6') || fullText.includes('m6')) && 
@@ -272,28 +282,70 @@ export const isLensCompatible = (lensItem, cameraReq) => {
 };
 
 /**
- * Cek apakah Baterai tertentu kompatibel dengan kamera yang sedang dipilih
+ * Cek apakah Baterai / Charger tertentu kompatibel dengan kamera yang sedang dipilih
  */
 export const isBatteryCompatible = (batteryItem, cameraReq) => {
   if (!cameraReq) return true; // Jika tidak ada kamera dipilih, semua baterai tampil
   const text = `${batteryItem.nama || ''} ${batteryItem.spesifikasi || ''}`.toLowerCase();
 
-  const isLpE10 = text.includes('lp-e10') || text.includes('lpe10') || text.includes('1500');
-  const isLpE17 = text.includes('lp-e17') || text.includes('lpe17');
+  const isLpE10 = text.includes('lp-e10') || text.includes('lpe10') || text.includes('lc-e10') || text.includes('1500');
+  const isLpE17 = text.includes('lp-e17') || text.includes('lpe17') || text.includes('lc-e17') || text.includes('ds-lpe17');
 
   if (cameraReq.batteryType === 'LP-E10') {
-    // Khusus 1500D: hanya LP-E10, jangan munculkan LP-E17
+    // Khusus 1500D: jangan munculkan LP-E17 / Charger LC-E17E
     if (isLpE17) return false;
-    return isLpE10 || (!isLpE17 && !text.includes('lp-e'));
+    return isLpE10 || (!isLpE17 && !text.includes('lp-e') && !text.includes('lc-e'));
   }
 
   if (cameraReq.batteryType === 'LP-E17') {
-    // M6 II, M6 I, 250D: hanya LP-E17, jangan munculkan LP-E10
+    // M6 II, M6 I, 250D: jangan munculkan LP-E10 / Charger LC-E10E
     if (isLpE10) return false;
-    return isLpE17 || (!isLpE10 && !text.includes('lp-e'));
+    return isLpE17 || (!isLpE10 && !text.includes('lp-e') && !text.includes('lc-e'));
   }
 
   return true;
+};
+
+/**
+ * Label badge identifikasi untuk item Baterai / Charger
+ */
+export const getBatteryBadgeMeta = (item) => {
+  const text = `${item?.nama || ''} ${item?.spesifikasi || ''}`.toLowerCase();
+  if (text.includes('lp-e10') || text.includes('lpe10') || text.includes('lc-e10')) {
+    const isCharger = text.includes('charger') || text.includes('cas') || text.includes('lc-e10');
+    return {
+      label: isCharger ? 'Charger LP-E10 (1500D)' : 'Khusus 1500D (LP-E10)',
+      bg: '#FEE2E2',
+      color: '#991B1B'
+    };
+  }
+  if (text.includes('lp-e17') || text.includes('lpe17') || text.includes('lc-e17') || text.includes('ds-lpe17')) {
+    const isCharger = text.includes('charger') || text.includes('cas') || text.includes('lc-e17') || text.includes('ds-lpe17');
+    return {
+      label: isCharger ? 'Charger LP-E17 (M6 I/II)' : 'Baterai LP-E17 (M6 I/II)',
+      bg: '#F0FDF4',
+      color: '#166534'
+    };
+  }
+  if (text.includes('np-f')) {
+    return {
+      label: 'Baterai Lighting / LED (NP-F)',
+      bg: '#FFFBEB',
+      color: '#B45309'
+    };
+  }
+  if (text.includes('dummy')) {
+    return {
+      label: 'Baterai Dummy (AC Studio)',
+      bg: '#EFF6FF',
+      color: '#1E40AF'
+    };
+  }
+  return {
+    label: 'Baterai & Daya Studio',
+    bg: '#F0FDF4',
+    color: '#166534'
+  };
 };
 
 /**
@@ -303,18 +355,13 @@ export const isEquipmentCompatible = (item, cameraReq) => {
   if (!cameraReq) return true;
   if (!item) return false;
 
-  const cat = (item.kategori || '').toLowerCase();
-  const name = (item.nama || '').toLowerCase();
-
   // Jika item adalah Lensa
-  const isLens = cat === 'lensa' || name.startsWith('lensa') || name.includes('lens');
-  if (isLens) {
+  if (isLensItem(item)) {
     return isLensCompatible(item, cameraReq);
   }
 
-  // Jika item adalah Baterai
-  const isBattery = cat === 'baterai' || name.startsWith('baterai') || name.includes('battery');
-  if (isBattery) {
+  // Jika item adalah Baterai / Charger
+  if (isBatteryItem(item)) {
     return isBatteryCompatible(item, cameraReq);
   }
 

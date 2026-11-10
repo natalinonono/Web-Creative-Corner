@@ -29,9 +29,12 @@ import {
   ArrowRight,
   X,
   BatteryCharging,
-  HardDrive
+  HardDrive,
+  Mic,
+  Sun,
+  Video
 } from 'lucide-react';
-import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType } from '../../utils/cameraCompatibility';
+import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem, isBatteryItem, isMemoryCardItem, getLensMountType, getBatteryBadgeMeta } from '../../utils/cameraCompatibility';
 import { compressImage } from '../../utils/imageCompression';
 import { BuktiPeminjamanModal } from '../common/BuktiPeminjamanModal';
 import { checkLoanOverdue } from '../../utils/loanOverdue';
@@ -646,23 +649,26 @@ export const PublicGuestPortal = () => {
                             )}
 
                             {/* Badge Kategori Baterai */}
-                            {isBattery && (
-                              <div style={{ marginTop: '4px' }}>
-                                <span style={{
-                                  fontSize: '0.685rem',
-                                  padding: '1px 6px',
-                                  borderRadius: '4px',
-                                  background: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                                  color: (item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
-                                  fontWeight: 700,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '3px'
-                                }}>
-                                  {(item.nama + (item.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
-                                </span>
-                              </div>
-                            )}
+                            {isBattery && (() => {
+                              const bMeta = getBatteryBadgeMeta(item);
+                              return (
+                                <div style={{ marginTop: '4px' }}>
+                                  <span style={{
+                                    fontSize: '0.685rem',
+                                    padding: '1px 6px',
+                                    borderRadius: '4px',
+                                    background: bMeta.bg,
+                                    color: bMeta.color,
+                                    fontWeight: 700,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '3px'
+                                  }}>
+                                    {bMeta.label}
+                                  </span>
+                                </div>
+                              );
+                            })()}
 
                             {/* Badge Kategori Memory Card */}
                             {isMemoryCard && (
@@ -1147,11 +1153,17 @@ export const PublicGuestPortal = () => {
                           alt={eq.nama}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
-                      ) : (
-                        <div style={{ color: '#1E3A8A' }}>
-                          <Camera size={34} />
-                        </div>
-                      )}
+                      ) : (() => {
+                        const cat = (eq.kategori || '').toLowerCase();
+                        if (cat.includes('lensa')) return <Eye size={34} color="#7C3AED" />;
+                        if (cat.includes('baterai') || cat.includes('battery')) return <BatteryCharging size={34} color="#059669" />;
+                        if (cat.includes('memory') || cat.includes('sd card')) return <HardDrive size={34} color="#0284C7" />;
+                        if (cat.includes('audio') || cat.includes('mic')) return <Mic size={34} color="#059669" />;
+                        if (cat.includes('light')) return <Sun size={34} color="#D97706" />;
+                        if (cat.includes('tripod') || cat.includes('aksesori')) return <Video size={34} color="#0284C7" />;
+                        if (cat.includes('ruang')) return <Layers size={34} color="#DC2626" />;
+                        return <Camera size={34} color="#1E3A8A" />;
+                      })()}
 
                       <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
                         <StatusBadge status={eq.status} />
@@ -1217,21 +1229,24 @@ export const PublicGuestPortal = () => {
                     )}
 
                     {/* Badge Kategori Baterai */}
-                    {isBattery && (
-                      <div style={{ marginBottom: '0.5rem' }}>
-                        <span style={{
-                          fontSize: '0.675rem',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          background: (eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
-                          color: (eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
-                          fontWeight: 700,
-                          width: 'fit-content'
-                        }}>
-                          {(eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? 'Khusus 1500D (LP-E10)' : 'Baterai LP-E17'}
-                        </span>
-                      </div>
-                    )}
+                    {isBattery && (() => {
+                      const bMeta = getBatteryBadgeMeta(eq);
+                      return (
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <span style={{
+                            fontSize: '0.675rem',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: bMeta.bg,
+                            color: bMeta.color,
+                            fontWeight: 700,
+                            width: 'fit-content'
+                          }}>
+                            {bMeta.label}
+                          </span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Badge Kategori Memory Card */}
                     {isMemoryCard && (
