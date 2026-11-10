@@ -124,8 +124,12 @@ export const TopNavbar = () => {
           style={{ cursor: 'pointer' }}
           title="Kembali ke Beranda Peminjaman"
         >
-          <div className="brand-logo-icon" style={{ background: '#1E3A8A', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <span className="material-symbols-outlined" style={{ color: '#FFFFFF', fontSize: '20px' }}>photo_camera</span>
+          <div className="brand-logo-icon">
+            <img 
+              src="/logo-creative-corner.png" 
+              alt="Creative Corner Logo" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+            />
           </div>
           <div>
             <div className="brand-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, letterSpacing: '-0.02em' }}>Creative Corner</div>
