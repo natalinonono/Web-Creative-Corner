@@ -35,6 +35,7 @@ import { getCameraRequirements, isEquipmentCompatible, isCameraItem, isLensItem,
 import { compressImage } from '../../utils/imageCompression';
 import { BuktiPeminjamanModal } from '../common/BuktiPeminjamanModal';
 import { checkLoanOverdue } from '../../utils/loanOverdue';
+import sonyLensImg from '../../assets/stitch/sony-fe-24-70-gm2.jpg';
 
 export const PublicGuestPortal = () => {
   const { 
@@ -1107,6 +1108,7 @@ export const PublicGuestPortal = () => {
               const lensMount = isLens ? getLensMountType(eq) : null;
               const isBattery = isBatteryItem(eq);
               const isMemoryCard = isMemoryCardItem(eq);
+              const is2470 = (eq.nama || '').toLowerCase().includes('24-70');
 
               return (
                 <div
@@ -1114,52 +1116,94 @@ export const PublicGuestPortal = () => {
                   style={{
                     background: '#FFFFFF',
                     border: '1px solid #E2E8F0',
-                    borderRadius: '10px',
-                    padding: '1.15rem',
+                    borderRadius: '12px',
+                    padding: '0.85rem',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    boxShadow: 'var(--shadow-sm)'
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
+                    transition: 'border-color 0.15s ease'
                   }}
+                  className="hover:border-blue-300"
                 >
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.725rem', background: '#F1F5F9', color: '#475569', padding: '2px 8px', borderRadius: '9999px', fontWeight: 600 }}>
-                        {eq.kategori}
-                      </span>
-                      <StatusBadge status={eq.status} />
+                    {/* Thumbnail Container (Stitch Screen 6) */}
+                    <div style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '135px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      background: '#F1F5F9',
+                      border: '1px solid #E2E8F0',
+                      marginBottom: '0.65rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      {is2470 ? (
+                        <img
+                          src={sonyLensImg}
+                          alt={eq.nama}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{ color: '#1E3A8A' }}>
+                          <Camera size={34} />
+                        </div>
+                      )}
+
+                      <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
+                        <StatusBadge status={eq.status} />
+                      </div>
                     </div>
 
-                    <h3 style={{ fontSize: '0.975rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', background: '#F1F5F9', color: '#475569', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                        {eq.kode || `#EQ-${eq.id}`}
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 500 }}>
+                        {eq.lokasiRak || 'Dry Cab 01'}
+                      </span>
+                    </div>
+
+                    <h3 style={{
+                      fontSize: '0.95rem',
+                      fontWeight: 700,
+                      color: '#0F172A',
+                      lineHeight: 1.3,
+                      marginBottom: '0.35rem',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }} title={eq.nama}>
                       {eq.nama}
                     </h3>
-                    <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.75rem' }}>
-                      Kode Aset: <strong>{eq.id}</strong>
-                    </div>
 
-                    {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
+                    {/* Badge Panduan Lensa Kamera */}
                     {itemReq && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.65rem' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '0.5rem' }}>
                         <span style={{
-                          fontSize: '0.7rem',
-                          padding: '2px 8px',
+                          fontSize: '0.675rem',
+                          padding: '2px 6px',
                           borderRadius: '4px',
                           background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
                           color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
-                          {itemReq.needsAdapter ? 'Wajib Adapter EF-M to EF (Hanya Lensa EF/DSLR)' : itemReq.lensLabel}
+                          {itemReq.needsAdapter ? 'Wajib Adapter EF' : itemReq.lensLabel}
                         </span>
                       </div>
                     )}
 
                     {/* Badge Mount Lensa */}
                     {isLens && lensMount && (
-                      <div style={{ marginBottom: '0.65rem' }}>
+                      <div style={{ marginBottom: '0.5rem' }}>
                         <span style={{
-                          fontSize: '0.7rem',
-                          padding: '2px 8px',
+                          fontSize: '0.675rem',
+                          padding: '2px 6px',
                           borderRadius: '4px',
                           background: lensMount.includes('EF-M') ? '#F3E8FF' : '#E0E7FF',
                           color: lensMount.includes('EF-M') ? '#6B21A8' : '#3730A3',
@@ -1174,10 +1218,10 @@ export const PublicGuestPortal = () => {
 
                     {/* Badge Kategori Baterai */}
                     {isBattery && (
-                      <div style={{ marginBottom: '0.65rem' }}>
+                      <div style={{ marginBottom: '0.5rem' }}>
                         <span style={{
-                          fontSize: '0.7rem',
-                          padding: '2px 8px',
+                          fontSize: '0.675rem',
+                          padding: '2px 6px',
                           borderRadius: '4px',
                           background: (eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#FEE2E2' : '#F0FDF4',
                           color: (eq.nama + (eq.spesifikasi || '')).toLowerCase().includes('lp-e10') ? '#991B1B' : '#166534',
@@ -1191,10 +1235,10 @@ export const PublicGuestPortal = () => {
 
                     {/* Badge Kategori Memory Card */}
                     {isMemoryCard && (
-                      <div style={{ marginBottom: '0.65rem' }}>
+                      <div style={{ marginBottom: '0.5rem' }}>
                         <span style={{
-                          fontSize: '0.7rem',
-                          padding: '2px 8px',
+                          fontSize: '0.675rem',
+                          padding: '2px 6px',
                           borderRadius: '4px',
                           background: '#F0F9FF',
                           color: '#0369A1',
@@ -1207,10 +1251,11 @@ export const PublicGuestPortal = () => {
                       </div>
                     )}
 
-                    <div style={{ fontSize: '0.775rem', color: '#334155', background: '#F8FAFC', padding: '0.5rem 0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>
-                      <div><strong>Kondisi Fisik:</strong> {eq.kondisiFisik || 'Baik & Normal'}</div>
-                      <div><strong>Keterangan:</strong> {eq.spesifikasi || '-'}</div>
-                      <div><strong>Status:</strong> {isAvailable ? 'Siap Dipinjam' : 'Sedang Digunakan'}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#475569', background: '#F8FAFC', padding: '0.45rem 0.65rem', borderRadius: '6px', marginBottom: '0.85rem', lineHeight: 1.35 }}>
+                      <div><strong>Kondisi:</strong> {eq.kondisiFisik || 'Baik & Normal'}</div>
+                      <div style={{ color: '#64748B', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {eq.spesifikasi || '-'}
+                      </div>
                     </div>
                   </div>
 
@@ -1218,7 +1263,7 @@ export const PublicGuestPortal = () => {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      style={{ width: '100%', justifyContent: 'center' }}
+                      style={{ width: '100%', height: '38px', justifyContent: 'center', fontWeight: 700 }}
                       onClick={() => {
                         if (!selectedEquipmentIds.includes(eq.id)) {
                           setSelectedEquipmentIds((prev) => [...prev, eq.id]);
@@ -1226,7 +1271,7 @@ export const PublicGuestPortal = () => {
                         setPublicTab('form');
                       }}
                     >
-                      <span>Pilih & Ajukan Peminjaman</span>
+                      <span>Pilih & Ajukan Pinjam</span>
                       <ChevronRight size={14} />
                     </button>
                   ) : (
@@ -1234,7 +1279,7 @@ export const PublicGuestPortal = () => {
                       type="button"
                       className="btn btn-secondary btn-sm"
                       disabled
-                      style={{ width: '100%', justifyContent: 'center', opacity: 0.6 }}
+                      style={{ width: '100%', height: '38px', justifyContent: 'center', opacity: 0.6 }}
                     >
                       <span>Sedang Tidak Tersedia</span>
                     </button>

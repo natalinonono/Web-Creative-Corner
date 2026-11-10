@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "inverse-surface": "#213145",
+        "background": "#f8f9ff",
+        "primary-fixed": "#dce1ff",
+        "tertiary-fixed": "#85f8c4",
+        "surface-variant": "#d3e4fe",
+        "on-background": "#0b1c30",
+        "on-primary": "#ffffff",
+        "surface-container-highest": "#d3e4fe",
+        "on-secondary-fixed-variant": "#3a475c",
+        "surface-container-lowest": "#ffffff",
+        "tertiary": "#003120",
+        "surface-dim": "#cbdbf5",
+        "error": "#ba1a1a",
+        "on-secondary": "#ffffff",
+        "surface-container-high": "#dce9ff",
+        "on-primary-fixed-variant": "#264191",
+        "on-surface": "#0b1c30",
+        "on-tertiary": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-secondary-fixed": "#0e1c2f",
+        "tertiary-fixed-dim": "#68dba9",
+        "on-tertiary-fixed-variant": "#005137",
+        "inverse-primary": "#b6c4ff",
+        "inverse-on-surface": "#eaf1ff",
+        "surface-container": "#e5eeff",
+        "on-primary-fixed": "#00164e",
+        "primary": "#00236f",
+        "on-tertiary-container": "#4ac08f",
+        "on-secondary-container": "#58657b",
+        "primary-fixed-dim": "#b6c4ff",
+        "surface-bright": "#f8f9ff",
+        "secondary-container": "#d6e3fe",
+        "secondary-fixed-dim": "#bac7e1",
+        "surface-container-low": "#eff4ff",
+        "on-error-container": "#93000a",
+        "on-error": "#ffffff",
+        "outline-variant": "#c5c5d3",
+        "surface-tint": "#4059aa",
+        "primary-container": "#1e3a8a",
+        "tertiary-container": "#004a32",
+        "secondary": "#525f75",
+        "secondary-fixed": "#d6e3fe",
+        "on-tertiary-fixed": "#002114",
+        "on-primary-container": "#90a8ff",
+        "outline": "#757682",
+        "on-surface-variant": "#444651",
+        "surface": "#f8f9ff"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "space-xl": "1.75rem",
+        "gutter-desktop": "1.25rem",
+        "space-sm": "0.5rem",
+        "space-xs": "0.25rem",
+        "margin": "1.5rem",
+        "gutter": "1rem",
+        "space-lg": "1.25rem",
+        "margin-compact": "1rem",
+        "space-md": "0.75rem"
+      },
+      "fontFamily": {
+        "body-md": ["Plus Jakarta Sans"],
+        "label-code-xs": ["JetBrains Mono"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "headline-xl": ["Plus Jakarta Sans"],
+        "label-code-lg": ["JetBrains Mono"],
+        "body-lg": ["Plus Jakarta Sans"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "body-sm": ["Plus Jakarta Sans"],
+        "label-code-sm": ["JetBrains Mono"],
+        "headline-sm": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-md": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+        "label-code-xs": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.02em", "fontWeight": "600" }],
+        "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+        "headline-xl": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+        "label-code-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+        "body-lg": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+        "headline-lg": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+        "body-sm": ["0.75rem", { "lineHeight": "1rem", "fontWeight": "400" }],
+        "label-code-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0em", "fontWeight": "500" }],
+        "headline-sm": ["1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+      }
+    }
+  }
+}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-[#0B192C] text-white shadow-[0_1px_8px_rgba(0,0,0,0.08)]"><div class="w-full h-16 px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container shadow-inner"><span class="material-symbols-outlined text-[20px]">camera</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold text-white tracking-tight leading-none">Creative Corner</span><span class="font-label-code-xs text-label-code-xs text-surface-variant font-semibold tracking-wider uppercase leading-none mt-1">Studio OS</span></div></div><div class="h-5 w-px bg-secondary/30 hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"><span class="material-symbols-outlined text-surface-variant text-[16px]">meeting_room</span><span class="font-body-sm text-body-sm font-medium text-white">Studio Utama - Lantai 2</span><span class="material-symbols-outlined text-surface-variant text-[16px]">expand_more</span></div></div><div class="flex-1 max-w-md hidden lg:block mx-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-space-md text-surface-variant text-[18px]">search</span><input class="w-full h-9 pl-10 pr-14 bg-white/10 rounded-lg text-white placeholder:text-surface-variant/70 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-surface-variant/40" placeholder="Cari perlengkapan, serial no, kode aset..." type="text"/><div class="absolute right-space-sm flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/10 text-surface-variant font-label-code-xs text-label-code-xs"><span class="text-[10px]">⌘</span><span>K</span></div></div></div><div class="flex items-center gap-space-md"><button class="relative p-2 rounded-lg text-surface-variant hover:text-white hover:bg-white/10 transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary-fixed-dim ring-2 ring-[#0B192C]"></span></button><div class="h-6 w-px bg-secondary/30 hidden sm:block"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="flex flex-col items-end hidden sm:flex"><span class="font-body-sm text-body-sm font-semibold text-white leading-tight">Budi Prasetyo</span><div class="flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span><span class="font-label-code-xs text-label-code-xs text-secondary-fixed-dim font-medium">Pengelola Studio</span></div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-lowest z-40 flex flex-col justify-between py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-md"><div class="px-space-lg"><span class="font-label-code-xs text-label-code-xs uppercase tracking-wider text-secondary font-semibold">Console Views</span></div><nav class="px-space-sm space-y-1" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="katalog-alat" href="#"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Katalog Alat</span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="jadwal-peminjaman" href="#"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-body-md text-body-md">Jadwal Peminjaman</span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="log-inspeksi-maintenance" href="#"><span class="material-symbols-outlined text-[20px]">home_repair_service</span><span class="font-body-md text-body-md">Log Inspeksi &amp; Maintenance</span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="riwayat-pengembalian" href="#"><span class="material-symbols-outlined text-[20px]">assignment_return</span><span class="font-body-md text-body-md">Riwayat Pengembalian</span></a><a class="flex items-center gap-space-md px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="laporan-aset" href="#"><span class="material-symbols-outlined text-[20px]">monitoring</span><span class="font-body-md text-body-md">Laporan Aset</span></a></nav></div><div class="px-space-md"><div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-code-xs text-label-code-xs text-secondary font-semibold uppercase tracking-wider">Kapasitas Baterai &amp; Lab</span><span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span></div><p class="font-body-sm text-body-sm text-on-surface-variant">48/52 unit kamera &amp; pencahayaan terkalibrasi siap pakai.</p></div></div></aside><div class="pl-64"><main class="w-full pt-16 bg-surface min-h-[calc(100vh-4rem)] p-space-xl"><div class="flex flex-col w-full">
+<!-- Breadcrumbs & Super Title Header -->
+<div class="flex flex-col gap-space-xs mb-space-lg">
+<div class="flex items-center gap-space-xs font-label-code-xs text-label-code-xs text-secondary uppercase tracking-widest">
+<span>CONSOLE</span>
+<span>/</span>
+<span>JADWAL PEMINJAMAN &amp; EVENT</span>
+<span>/</span>
+<span class="text-primary-container font-semibold">November 2026</span>
+</div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md mt-1">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Jadwal Operasional &amp; Roster Kru Studio</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Koordinasi jadwal liputan acara, sesi booking studio, piket lab, dan alokasi perlengkapan.</p>
+</div>
+<!-- Main Action Buttons -->
+<div class="flex items-center gap-space-sm self-start lg:self-auto">
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-secondary">sync</span>
+<span class="font-body-sm text-body-sm font-semibold">Sinkron Kalender</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-lg py-2 rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="font-body-sm text-body-sm font-semibold tracking-wide">+ Buat Jadwal Baru</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Command Strip: Date Nav, View Switchers, & High-Density Filters -->
+<div class="flex flex-col gap-space-sm mb-space-lg bg-surface-container-lowest p-space-sm rounded-xl shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-xs">
+<!-- Date Navigator -->
+<div class="flex items-center gap-space-xs">
+<div class="flex items-center bg-surface-container-low rounded-lg p-0.5">
+<button class="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors" title="Bulan Sebelumnya">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="px-space-md py-1 text-on-surface font-body-sm text-body-sm font-semibold hover:bg-surface-container rounded-md transition-colors">
+            Hari Ini
+          </button>
+<button class="p-1.5 rounded-md hover:bg-surface-container text-on-surface-variant transition-colors" title="Bulan Selanjutnya">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-surface-container-low text-on-surface cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary-container">calendar_today</span>
+<span class="font-body-md text-body-md font-bold tracking-tight">November 2026</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary px-1.5 py-0.5 rounded bg-surface-container-highest">W46</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">expand_more</span>
+</div>
+</div>
+<!-- View Switcher -->
+<div class="flex items-center bg-surface-container-low p-1 rounded-lg">
+<button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow-sm transition-all">
+<span class="material-symbols-outlined text-[16px]">view_timeline</span>
+<span>Agenda Timeline</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-body-sm text-body-sm font-medium transition-all">
+<span class="material-symbols-outlined text-[16px]">calendar_view_month</span>
+<span>Kalender Bulanan</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-body-sm text-body-sm font-medium transition-all">
+<span class="material-symbols-outlined text-[16px]">person_check</span>
+<span>Tugas Saya</span>
+</button>
+</div>
+</div>
+<!-- Sub-strip Filters -->
+<div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-semibold uppercase pr-2">Kategori:</span>
+<button class="px-space-md py-1 rounded-full bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold">
+        Semua Kategori (18)
+      </button>
+<button class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>Event Sekolah (7)</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span>Piket Studio (4)</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>Peminjaman Mandiri (3)</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+<span>Sewa Komersial (4)</span>
+</button>
+<div class="h-4 w-px bg-surface-container-highest mx-1 hidden sm:block"></div>
+<button class="flex items-center gap-1 px-space-sm py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-secondary font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_alt</span>
+<span>+ Filter Kru</span>
+</button>
+<button class="flex items-center gap-1 px-space-sm py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-secondary font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Studio / Room</span>
+</button>
+</div>
+</div>
+<!-- Split View: 2/3 Main Scheduling Canvas + 1/3 Duty & Quick Telemetry Sidebar -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT MAIN: 8 Columns Timeline & Calendar Track -->
+<div class="xl:col-span-8 flex flex-col gap-space-md">
+<!-- Multi-Day Strip Header -->
+<div class="bg-surface-container-lowest rounded-xl p-space-sm shadow-sm">
+<div class="grid grid-cols-7 gap-1 text-center">
+<div class="p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-semibold">Sen</span>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">09</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs text-secondary">3 Agenda</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container text-on-surface font-semibold ring-1 ring-primary-container shadow-xs">
+<div class="flex items-center justify-center gap-1">
+<span class="font-label-code-xs text-label-code-xs text-primary-container uppercase font-bold">Sel</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+<div class="font-headline-sm text-headline-sm font-bold text-primary-container mt-0.5">10</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs bg-primary-container text-on-primary px-1.5 py-0.2 rounded-full">Hari Ini</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-semibold">Rab</span>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">11</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs text-secondary">4 Agenda</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-semibold">Kam</span>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">12</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs text-secondary">2 Agenda</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-semibold">Jum</span>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">13</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs text-secondary">5 Agenda</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-low transition-colors opacity-75">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-semibold">Sab</span>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">14</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs text-secondary">1 Studio</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-low transition-colors opacity-75">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-semibold">Min</span>
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">15</div>
+<span class="inline-block mt-1 font-label-code-xs text-label-code-xs text-secondary">Libur</span>
+</div>
+</div>
+</div>
+<!-- Time Slot Linear Agenda Canvas -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<!-- Section Tracker Top Info -->
+<div class="flex items-center justify-between pb-space-md mb-space-md bg-surface-container-low/50 -mx-space-lg -mt-space-lg p-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">schedule</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Timeline Operasional - Selasa, 10 Nov 2026</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="flex items-center gap-1.5 font-label-code-xs text-label-code-xs text-secondary">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+<span>Waktu Server Studio: <strong class="text-on-surface">10:15 WIB</strong></span>
+</span>
+</div>
+</div>
+<!-- Live Current Time Indicator Marker (Absolute Placement Over Content) -->
+<div class="relative w-full">
+<div class="absolute left-0 right-0 z-20 pointer-events-none flex items-center" style="top: 245px;">
+<div class="flex items-center bg-error text-on-error font-label-code-xs text-label-code-xs px-2 py-0.5 rounded shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-white mr-1.5 animate-pulse"></span>
+              SEKARANG 10:15 WIB
+            </div>
+<div class="flex-1 h-0.5 bg-error/70 ml-2"></div>
+</div>
+<!-- Vertical Timeline Schedule -->
+<div class="space-y-space-md">
+<!-- Slot 07:00 - 08:00 -->
+<div class="grid grid-cols-12 gap-space-sm items-start group">
+<div class="col-span-2 pt-1">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">07:00</span>
+<span class="block font-label-code-xs text-label-code-xs text-secondary/60">WIB</span>
+</div>
+<div class="col-span-10 flex flex-col gap-2">
+<!-- Event Capsule: Upacara Hari Pahlawan (Deep Obsidian Navy Theme) -->
+<div class="p-space-md rounded-xl bg-inverse-surface text-inverse-on-surface shadow-md relative overflow-hidden transition-all hover:translate-x-0.5">
+<div class="absolute top-0 left-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex flex-wrap items-start justify-between gap-space-xs pl-space-xs">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-code-xs text-label-code-xs px-2 py-0.5 rounded bg-primary-container text-on-primary font-semibold">EVENT RESMI</span>
+<span class="font-label-code-xs text-label-code-xs text-surface-variant font-mono">07:30 - 11:30 WIB</span>
+<span class="font-label-code-xs text-label-code-xs text-tertiary-fixed font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Terkonfirmasi
+                        </span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-white tracking-tight">Liputan Upacara Hari Pahlawan - Tim A</h2>
+<div class="flex items-center gap-space-md text-surface-variant font-body-sm text-body-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Lapangan Utama Kampus</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">group</span> 3 Kru Lapangan</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code-xs text-label-code-xs text-surface-variant/80 uppercase">Status Operasi</span>
+<span class="block font-label-code-sm text-label-code-sm text-tertiary-fixed font-bold">Sedang Berlangsung</span>
+</div>
+</div>
+<!-- Gear & Crew Sub-bar -->
+<div class="mt-space-md pt-space-xs bg-white/5 rounded-lg p-space-sm pl-space-sm flex flex-wrap items-center justify-between gap-space-sm font-body-sm text-body-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-code-xs text-label-code-xs text-surface-variant uppercase font-semibold">Gear Kit:</span>
+<span class="font-label-code-xs text-label-code-xs bg-white/10 px-2 py-0.5 rounded text-white font-mono">2x Sony A7 IV</span>
+<span class="font-label-code-xs text-label-code-xs bg-white/10 px-2 py-0.5 rounded text-white font-mono">Sony 24-70 GM II</span>
+<span class="font-label-code-xs text-label-code-xs bg-white/10 px-2 py-0.5 rounded text-white font-mono">DJI Mic 2 Set</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code-xs text-label-code-xs text-surface-variant">Roster:</span>
+<div class="flex items-center -space-x-1.5">
+<div class="w-6 h-6 rounded-full bg-primary-container text-white flex items-center justify-center font-label-code-xs text-[10px] ring-2 ring-inverse-surface" title="Kevin (Lead Cam)">KV</div>
+<div class="w-6 h-6 rounded-full bg-tertiary-container text-white flex items-center justify-center font-label-code-xs text-[10px] ring-2 ring-inverse-surface" title="Aditya (Second Cam)">AD</div>
+<div class="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center font-label-code-xs text-[10px] ring-2 ring-inverse-surface" title="Rian (Audio &amp; Gimbal)">RN</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 08:00 - 10:00 -->
+<div class="grid grid-cols-12 gap-space-sm items-start group">
+<div class="col-span-2 pt-1">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">08:00</span>
+<span class="block font-label-code-xs text-label-code-xs text-secondary/60">WIB</span>
+</div>
+<div class="col-span-10 flex flex-col gap-2">
+<!-- Emerald/Teal Pill: Piket Lab & QC Maintenance -->
+<div class="p-space-md rounded-xl bg-surface-container-low text-on-surface shadow-xs transition-all hover:bg-surface-container">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-code-xs text-label-code-xs px-2 py-0.5 rounded bg-surface-container text-on-secondary font-semibold">PIKET STUDIO</span>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Piket Studio Pagi - Lab &amp; QC Maintenance</h3>
+</div>
+<span class="font-label-code-sm text-label-code-sm text-secondary font-mono">08:00 - 12:00 WIB</span>
+</div>
+<div class="flex flex-wrap items-center justify-between mt-2 pt-2 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-space-md">
+<span class="flex items-center gap-1 font-label-code-xs text-label-code-xs bg-surface-container-lowest px-2 py-1 rounded shadow-2xs">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">tune</span> Kalibrasi Lensa &amp; Charging Station
+                      </span>
+<span class="flex items-center gap-1 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">assignment_ind</span> Petugas: Rian &amp; Sarah
+                      </span>
+</div>
+<span class="font-label-code-xs text-label-code-xs px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">Log Checklist 8/8 Siap</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 12:00 - 13:00 (Break / Reset Studio) -->
+<div class="grid grid-cols-12 gap-space-sm items-center py-1 opacity-70">
+<div class="col-span-2">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">12:00</span>
+</div>
+<div class="col-span-10 flex items-center gap-2">
+<div class="h-px bg-surface-container-highest flex-1"></div>
+<span class="font-label-code-xs text-label-code-xs uppercase tracking-wider text-secondary">Break Siang &amp; Sanitasi Studio Pod</span>
+<div class="h-px bg-surface-container-highest flex-1"></div>
+</div>
+</div>
+<!-- Slot 13:00 - 16:30 -->
+<div class="grid grid-cols-12 gap-space-sm items-start group">
+<div class="col-span-2 pt-1">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">13:00</span>
+<span class="block font-label-code-xs text-label-code-xs text-secondary/60">WIB</span>
+</div>
+<div class="col-span-10 flex flex-col gap-space-sm">
+<!-- Amber / Warm Pill: Booking Studio Komersial -->
+<div class="p-space-md rounded-xl bg-surface-container text-on-surface shadow-xs transition-all hover:bg-surface-container-high">
+<div class="flex flex-wrap items-start justify-between gap-space-xs">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-code-xs text-label-code-xs px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-semibold">SEWA KOMERSIAL</span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface font-mono font-bold">#BK-882</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary font-mono">13:00 - 16:30 WIB</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Sewa Studio Foto Wisuda - Klien: Sdr. Hendra</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Ruang Studio B (Cyclorama Putih) + Paket Lighting Godox AD600Pro</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-code-xs text-label-code-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 font-semibold flex items-center gap-1 shadow-2xs">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Menunggu Check-in Klien
+                      </span>
+<span class="font-label-code-xs text-label-code-xs text-secondary mt-1">Operator: Budi Prasetyo</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex flex-wrap items-center justify-between gap-space-xs font-label-code-xs text-label-code-xs text-on-surface-variant">
+<div class="flex items-center gap-space-sm">
+<span class="font-semibold text-secondary">Alokasi Aset:</span>
+<span class="px-2 py-0.5 bg-surface-container-lowest rounded shadow-2xs">2x Godox AD600Pro</span>
+<span class="px-2 py-0.5 bg-surface-container-lowest rounded shadow-2xs">Softbox Octa 120cm</span>
+<span class="px-2 py-0.5 bg-surface-container-lowest rounded shadow-2xs">C-Stand Avenger (3x)</span>
+</div>
+<button class="text-primary-container hover:underline font-semibold flex items-center gap-0.5">
+                      Lihat Kontrak Sewa <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Indigo / Cobalt Pill: Workshop Videografi Multimedia -->
+<div class="p-space-md rounded-xl bg-surface-container-low text-on-surface shadow-xs transition-all hover:bg-surface-container">
+<div class="flex flex-wrap items-start justify-between gap-space-xs">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-code-xs text-label-code-xs px-2 py-0.5 rounded bg-primary text-on-primary font-semibold">WORKSHOP INTERNAL</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary font-mono">14:00 - 17:00 WIB</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Workshop Color Grading &amp; Cinema Rigging</h3>
+<div class="flex items-center gap-space-md text-on-surface-variant font-body-sm text-body-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-primary-container">apartment</span> Studio Utama Lt. 2</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> 15 Mahasiswa / Peserta</span>
+</div>
+</div>
+<span class="font-label-code-xs text-label-code-xs px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-semibold">
+                      Instruktur: Aditya S.
+                    </span>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center gap-space-sm font-label-code-xs text-label-code-xs text-secondary">
+<span>Perangkat Demo:</span>
+<span class="px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface font-mono shadow-2xs">Blackmagic Pocket Cinema 6K Pro</span>
+<span class="px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface font-mono shadow-2xs">Tilta Nucleus-M</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Slot 17:00 - 19:00 -->
+<div class="grid grid-cols-12 gap-space-sm items-start group">
+<div class="col-span-2 pt-1">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">17:00</span>
+<span class="block font-label-code-xs text-label-code-xs text-secondary/60">WIB</span>
+</div>
+<div class="col-span-10 flex flex-col gap-2">
+<!-- Crimson Accent Tag: Inspeksi Pengembalian Alat Overdue -->
+<div class="p-space-md rounded-xl bg-error-container/40 text-on-surface shadow-xs transition-all hover:bg-error-container/60">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-on-error-container">Inspeksi Pengembalian Alat Overdue (3 Item)</span>
+<span class="font-label-code-xs text-label-code-xs px-2 py-0.5 rounded bg-error text-on-error font-semibold">PRIORITAS TINGGI</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">QC Meja 1: Pengecekan unit Sony A7 IV pasca upacara + Verifikasi kelengkapan memori SD card.</p>
+</div>
+</div>
+<span class="font-label-code-sm text-label-code-sm text-error font-mono font-bold">17:00 - 17:45 WIB</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDEBAR: 4 Columns "Penugasan Saya / My Duty & Studio Telemetry" -->
+<div class="xl:col-span-4 flex flex-col gap-space-lg">
+<!-- User Duty Header Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-headline-sm font-bold">
+              KP
+            </div>
+<div>
+<span class="font-body-md text-body-md font-bold text-on-surface block leading-tight">Kevin Pratama</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary">Lead Videographer • Kru Tetap</span>
+</div>
+</div>
+<span class="font-label-code-xs text-label-code-xs px-2 py-1 rounded-full bg-surface-container text-on-surface font-semibold">
+            2 Tugas Hari Ini
+          </span>
+</div>
+<!-- Active Upcoming Assignment Highlight (The Core Interactive Duty Block) -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="flex items-center gap-1 font-label-code-xs text-label-code-xs px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary font-bold">
+<span class="material-symbols-outlined text-[14px]">bolt</span> Mulai 2 Jam Lagi
+            </span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface font-mono font-semibold">13:00 - 15:30 WIB</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Sesi Foto &amp; Video Profil Laboratorium</h3>
+<div class="flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm mt-1 mb-space-md">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-primary-container">location_on</span> Aula Utama Lt. 3</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">person</span> Partner: Sarah (Audio)</span>
+</div>
+<!-- Interactive Gear Checklist -->
+<div class="p-space-sm bg-surface-container-lowest rounded-lg mb-space-md">
+<div class="flex items-center justify-between pb-1.5 mb-2">
+<span class="font-label-code-xs text-label-code-xs font-bold uppercase text-secondary">Checklist Gear Keluar:</span>
+<span class="font-label-code-xs text-label-code-xs text-primary-container font-semibold" id="checklist-counter">2 dari 4 Siap</span>
+</div>
+<div class="space-y-1.5 font-body-sm text-body-sm text-on-surface">
+<label class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" onchange="updateChecklist(this)" type="checkbox"/>
+<span class="font-medium">Sony Alpha 7 IV</span>
+</div>
+<span class="font-label-code-xs text-label-code-xs text-secondary font-mono">Loker A-02</span>
+</label>
+<label class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" onchange="updateChecklist(this)" type="checkbox"/>
+<span class="font-medium">Sony FE 24-70mm GM II</span>
+</div>
+<span class="font-label-code-xs text-label-code-xs text-secondary font-mono">Loker A-02</span>
+</label>
+<label class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<input class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" onchange="updateChecklist(this)" type="checkbox"/>
+<span class="font-medium">DJI Mic 2 Wireless Set</span>
+</div>
+<span class="font-label-code-xs text-label-code-xs text-amber-700 font-mono font-semibold">QC Meja 1</span>
+</label>
+<label class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<input class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" onchange="updateChecklist(this)" type="checkbox"/>
+<span class="font-medium">2x NP-FZ100 Spare Batt</span>
+</div>
+<span class="font-label-code-xs text-label-code-xs text-tertiary font-mono font-semibold">100% Charged</span>
+</label>
+</div>
+</div>
+<!-- Primary CTA Button -->
+<button class="w-full py-2.5 px-space-md rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-primary transition-all active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+<span>Konfirmasi Kehadiran &amp; Ambil Alat</span>
+</button>
+</div>
+<!-- Secondary Upcoming Duty Block (Next Day) -->
+<div class="mt-space-md pt-space-md">
+<span class="font-label-code-xs text-label-code-xs uppercase font-bold text-secondary tracking-wider block mb-2">Tugas Mendatang:</span>
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<div class="p-2 rounded bg-surface-container-lowest text-primary-container font-label-code-xs text-label-code-xs font-bold text-center leading-none">
+              RAB<br/><span class="text-sm font-bold">11</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-mono">09:00 - 12:30 WIB</span>
+<h4 class="font-body-sm text-body-sm font-bold text-on-surface truncate">Dokumentasi Kunjungan Industri PT Media Raya</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Studio Utama Lt. 2 • Operator Switcher</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-[16px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Studio Facility Availability Mini-Widget -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">room_preferences</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Ketersediaan Ruang Studio</span>
+</div>
+<span class="font-label-code-xs text-label-code-xs text-secondary font-mono">Real-time</span>
+</div>
+<div class="space-y-space-sm">
+<!-- Studio Utama -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+<div>
+<span class="font-body-sm text-body-sm font-bold text-on-surface block leading-tight">Studio Utama (Lt. 2)</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary">Kapasitas 30 Orang • Cyclorama</span>
+</div>
+</div>
+<span class="font-label-code-xs text-label-code-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-semibold">
+              Terpakai 13:00 - 17:00
+            </span>
+</div>
+<!-- Studio Podcast -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-fixed-dim"></span>
+<div>
+<span class="font-body-sm text-body-sm font-bold text-on-surface block leading-tight">Studio Podcast &amp; VO</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary">Acoustic Treated • 4 Shure SM7B</span>
+</div>
+</div>
+<span class="font-label-code-xs text-label-code-xs bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded font-semibold">
+              Tersedia Hari Ini
+            </span>
+</div>
+<!-- Dry Cabinet & QC Room -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<div>
+<span class="font-body-sm text-body-sm font-bold text-on-surface block leading-tight">Dry Cabinet &amp; Charging Bay</span>
+<span class="font-label-code-xs text-label-code-xs text-secondary">Humidity 42% RH • Normal</span>
+</div>
+</div>
+<span class="font-label-code-xs text-label-code-xs bg-surface-container-highest text-on-surface font-semibold px-2 py-0.5 rounded font-mono">
+              07:30 - 21:00 WIB
+            </span>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs text-center">
+<button class="font-body-sm text-body-sm font-bold text-primary-container hover:underline inline-flex items-center gap-1">
+<span>Buka Skema Denah &amp; Reservasi Ruang</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Quick Roster Telemetry / Active Personnel Summary -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-code-xs text-label-code-xs text-secondary uppercase font-bold tracking-wider">Kru Sedang Standby (3)</span>
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-2 px-2 py-1 rounded bg-surface-container-low font-body-sm text-body-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-medium text-on-surface">Dimas (Grip)</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 rounded bg-surface-container-low font-body-sm text-body-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-medium text-on-surface">Nabila (Lighting)</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 rounded bg-surface-container-low font-body-sm text-body-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-medium text-on-surface">Fikri (Audio)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function updateChecklist() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+    const total = checkboxes.length;
+    const counter = document.getElementById('checklist-counter');
+    if (counter) {
+      counter.textContent = `${checked} dari ${total} Siap`;
+      if (checked === total) {
+        counter.classList.remove('text-primary-container');
+        counter.classList.add('text-tertiary-container', 'font-bold');
+      } else {
+        counter.classList.add('text-primary-container');
+        counter.classList.remove('text-tertiary-container');
+      }
+    }
+  }
+</script></main></div></body></html>

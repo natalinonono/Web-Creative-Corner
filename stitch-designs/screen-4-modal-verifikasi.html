@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Creative Corner Studio OS - Verifikasi Pengembalian Alat</title>
+<!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Forms & Container Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom styles for modal elevation, typography and layout fine-tuning -->
+<style data-purpose="custom-styling">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .modal-shadow {
+      box-shadow: 0 25px 50px -12px rgba(11, 25, 44, 0.35), 0 0 0 1px #cbd5e1;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 min-h-screen relative overflow-hidden select-none">
+<!-- BEGIN: DimmedDashboardBackground -->
+<!-- Backdrop representing the blurred Creative Corner Studio OS Dashboard -->
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none filter blur-[6px] opacity-40 scale-[1.02] transform transition-transform">
+<!-- Mock Top Navigation Bar -->
+<header class="bg-[#0b192c] text-white px-6 py-3 flex items-center justify-between border-b border-slate-700/50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-xs">CC</div>
+<span class="font-bold text-sm tracking-wide">Creative Corner <span class="text-xs font-normal text-slate-400">STUDIO OS</span></span>
+</div>
+<div class="text-xs bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">Studio Utama - Lantai 2</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-64 bg-slate-800/80 h-8 rounded-lg border border-slate-700"></div>
+<div class="w-8 h-8 rounded-full bg-slate-700"></div>
+</div>
+</header>
+<!-- Mock Workspace Layout -->
+<div class="flex h-[calc(100vh-53px)]">
+<!-- Mock Sidebar -->
+<aside class="w-60 bg-[#0f233d] p-4 border-r border-slate-800 flex flex-col gap-3">
+<div class="h-8 rounded-lg bg-blue-700/60 w-full"></div>
+<div class="h-8 rounded-lg bg-slate-800/40 w-full"></div>
+<div class="h-8 rounded-lg bg-slate-800/40 w-full"></div>
+<div class="h-8 rounded-lg bg-slate-800/40 w-full"></div>
+</aside>
+<!-- Mock Content Grid -->
+<main class="flex-1 bg-slate-100 p-8 space-y-6">
+<div class="flex justify-between items-center">
+<div class="space-y-1">
+<div class="h-6 w-64 bg-slate-300 rounded"></div>
+<div class="h-4 w-96 bg-slate-200 rounded"></div>
+</div>
+<div class="h-9 w-36 bg-blue-600 rounded-lg"></div>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="h-28 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-28 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-28 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-28 bg-white rounded-xl border border-slate-200"></div>
+</div>
+<div class="grid grid-cols-3 gap-5">
+<div class="h-72 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-72 bg-white rounded-xl border border-slate-200"></div>
+<div class="h-72 bg-white rounded-xl border border-slate-200"></div>
+</div>
+</main>
+</div>
+</div>
+<!-- END: DimmedDashboardBackground -->
+<!-- BEGIN: ModalBackdropAndContainer -->
+<!-- Darkened translucent backdrop container with center flex alignment -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0b192c]/65 backdrop-blur-sm overflow-y-auto">
+<!-- BEGIN: InspectionModalCard -->
+<!-- Primary inspection and sign-off dialog container -->
+<div aria-labelledby="modal-headline" aria-modal="true" class="bg-white w-full max-w-[780px] rounded-[14px] modal-shadow border border-[#CBD5E1] text-slate-800 flex flex-col my-auto relative animate-in fade-in zoom-in-95 duration-200" role="dialog">
+<!-- BEGIN: ModalHeaderSection -->
+<header class="p-5 pb-4 border-b border-slate-200">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<!-- Inspection Badge Icon -->
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-900 shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-lg font-bold text-slate-900 leading-snug" id="modal-headline">
+                Verifikasi Pengembalian Alat Studio
+              </h1>
+<p class="text-xs text-slate-500 mt-0.5">
+                Pemeriksaan fisik komparatif sebelum unit masuk kembali ke lemari aset.
+              </p>
+</div>
+</div>
+<!-- Close Modal Icon Button -->
+<button aria-label="Tutup Dialog" class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600/30" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<!-- Target Unit Banner Pill -->
+<div class="mt-4 bg-slate-50 border border-slate-200/80 rounded-lg p-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+<div class="flex items-center gap-2">
+<span class="font-mono font-semibold text-brand-900 bg-blue-100/70 border border-blue-200 px-2 py-0.5 rounded text-[11px]">
+              #EQ-LEN-012
+            </span>
+<span class="font-bold text-slate-800">
+              Sony FE 24–70mm f/2.8 GM II <span class="font-normal text-slate-500 font-mono text-[11px]">(Kode: LNS-002)</span>
+</span>
+</div>
+<div class="flex items-center gap-2 text-slate-600">
+<div class="w-5 h-5 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-[10px]">
+              AP
+            </div>
+<span>Peminjam: <strong class="text-slate-800 font-medium">Aditya Pratama</strong> (Divisi Dokumentasi)</span>
+<span class="bg-slate-200/70 text-slate-700 text-[10px] font-medium px-2 py-0.5 rounded-full border border-slate-300">
+              Liputan Acara Utama
+            </span>
+</div>
+</div>
+</header>
+<!-- END: ModalHeaderSection -->
+<!-- BEGIN: ModalBodySection -->
+<main class="p-5 grid grid-cols-1 md:grid-cols-2 gap-5 max-h-[calc(85vh-140px)] overflow-y-auto custom-scroll">
+<!-- BEGIN: LeftColumnComparison -->
+<!-- Comparison section between checkout photo and live return photo -->
+<section class="space-y-4" data-purpose="photo-evidence-comparison">
+<div class="flex items-center justify-between">
+<h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Komparasi Bukti Foto
+            </h2>
+<span class="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+              Elemen Optik Depan Bersih
+            </span>
+</div>
+<!-- Top: Checkout Archived Condition -->
+<div class="border border-slate-200 rounded-xl p-2.5 bg-slate-50/50">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                Foto Kondisi Awal (Saat Pengambilan)
+              </span>
+<span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium">
+                Kondisi: Mulus / Lengkap
+              </span>
+</div>
+<div class="flex items-center gap-3">
+<!-- Archive Photo Thumbnail -->
+<div class="w-20 h-16 rounded-lg bg-slate-200 border border-slate-300 overflow-hidden relative shrink-0">
+<img alt="Foto kondisi awal saat pengambilan peralatan lensa Sony" class="w-full h-full object-cover filter brightness-95" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxVyYS9aK2wYRUejj9Zh6_p9qwu1mz1tHez-3abJYjmbpnLNt5Gprzym7cZ2wAbuddntbCG6wfwkCz_s604_pn6r1o3z7uOZJwGI6zD1VfS63y0QN9YvIqb5V0RctG4R5AlsgIAtINij6Vk0KbSPbu6j9N7dw4AcniQ0nEgrmxla09lPGzq6lEVgpwAROyrG-HNWei8k-jplab8BMlIfsaGJyIVUqp4lKI_fqCed0A"/>
+<span class="absolute bottom-0 inset-x-0 bg-black/60 text-white font-mono text-[8px] text-center py-0.5">CHECKOUT</span>
+</div>
+<div class="text-[11px] space-y-0.5 text-slate-600">
+<p><span class="text-slate-400">Timestamp:</span> <span class="font-mono text-slate-700">12 Okt 2024, 08:30 WIB</span></p>
+<p><span class="text-slate-400">Inspektor:</span> Dimas Arya (QC Lab)</p>
+<p class="text-emerald-700 font-medium text-[10px]">Grade Fisik A+ (Bebas Dust/Fungus)</p>
+</div>
+</div>
+</div>
+<!-- Bottom: Live Return Evidence Photo -->
+<div class="border-2 border-dashed border-blue-300 rounded-xl p-2.5 bg-blue-50/20">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Foto Kondisi Akhir (Saat Ini)
+              </span>
+<span class="text-[10px] font-mono text-blue-700 bg-blue-100/70 border border-blue-200 px-1.5 py-0.5 rounded">
+                Hari ini, 17:42 WIB (Live Capture)
+              </span>
+</div>
+<!-- Provided High Resolution Inspection Image -->
+<div class="rounded-lg overflow-hidden border border-slate-300 relative shadow-inner aspect-[4/3] bg-black">
+<img alt="High-resolution close-up product photo of a Sony FE 24-70mm f/2.8 GM II camera lens resting on a clean studio check-in workbench, inspection lighting showing pristine glass element, professional equipment photography" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPb3dOA89tVNR6s9aRCfE5LpD129rDAHZG89RwJV0klpXAJUcG6ZldTiUWlxPTNTPPas-e5HY5zBC3czC2qN5p6P9AuscQLNF-CZRQ3U_TwwWBTpUOwQYULZTNWLRQqgdCeDQcbooKbfpj6ZNasjLssBCZFMrvOkMYk2OYIG9nqGdx3cVkgC4nu8R1QuN1g4Cdi7-uJOKbjl7AumrHDDQssW8hEQcL0sqTLYMTFHPz"/>
+<div class="absolute bottom-2 left-2 bg-black/75 backdrop-blur-md px-2 py-1 rounded text-white font-mono text-[10px] border border-white/20 flex items-center gap-1.5">
+<svg class="w-3 h-3 text-emerald-400" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+                Optik Depan: Bersih Terkalibrasi
+              </div>
+</div>
+<!-- Photo Action Buttons -->
+<div class="flex items-center gap-2 mt-2.5">
+<button class="flex-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-sm" type="button">
+<svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                Ambil via Kamera HP
+              </button>
+<button class="text-xs font-medium text-slate-600 hover:text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 py-1.5 px-3 rounded-lg transition-colors shadow-sm" type="button">
+                Ganti Foto
+              </button>
+</div>
+</div>
+</section>
+<!-- END: LeftColumnComparison -->
+<!-- BEGIN: RightColumnChecklistAndNotes -->
+<!-- Physical condition status, checklist of accessories, and reviewer notes -->
+<section class="space-y-4" data-purpose="checklist-and-condition-signoff">
+<!-- Physical Condition Radio Group -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              Status Kondisi Fisik
+            </label>
+<div class="space-y-2">
+<!-- Radio Card 1 (Checked / Good) -->
+<label class="flex items-start gap-3 p-2.5 rounded-lg border border-emerald-400 bg-emerald-50/50 cursor-pointer transition-colors">
+<input checked="" class="mt-0.5 text-emerald-600 focus:ring-emerald-500 h-4 w-4 border-slate-300" name="kondisi_fisik" type="radio"/>
+<div class="text-xs">
+<div class="flex items-center gap-1.5 font-bold text-slate-900">
+<span>Baik &amp; Berfungsi Normal</span>
+<span class="text-emerald-600 text-xs">✓</span>
+</div>
+<p class="text-slate-500 text-[11px] mt-0.5">Tidak ada goresan atau jamur, fungsi AF/MF normal</p>
+</div>
+</label>
+<!-- Radio Card 2 (Light wear) -->
+<label class="flex items-start gap-3 p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors">
+<input class="mt-0.5 text-blue-600 focus:ring-blue-500 h-4 w-4 border-slate-300" name="kondisi_fisik" type="radio"/>
+<div class="text-xs">
+<span class="font-bold text-slate-800">Lecet Pemakaian Ringan</span>
+<p class="text-slate-500 text-[11px] mt-0.5">Tanda pakai kosmetik wajar pada bodi/hood</p>
+</div>
+</label>
+<!-- Radio Card 3 (Damaged) -->
+<label class="flex items-start gap-3 p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors">
+<input class="mt-0.5 text-red-600 focus:ring-red-500 h-4 w-4 border-slate-300" name="kondisi_fisik" type="radio"/>
+<div class="text-xs">
+<span class="font-bold text-slate-800">Terdapat Kerusakan / Error</span>
+<p class="text-slate-500 text-[11px] mt-0.5">Optik baret, autofokus macet, atau jatuh</p>
+</div>
+</label>
+</div>
+</div>
+<!-- Accessories Completeness Checklist (2x2 Grid) -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Kelengkapan Aksesori
+              </label>
+<span class="text-[11px] font-semibold text-emerald-600">Lengkap 4/4 Item</span>
+</div>
+<div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200/90 text-xs">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-brand-900 focus:ring-brand-900 h-4 w-4" type="checkbox"/>
+<span class="text-slate-700 font-medium">Front &amp; Rear Cap</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-brand-900 focus:ring-brand-900 h-4 w-4" type="checkbox"/>
+<span class="text-slate-700 font-medium">Lens Hood <span class="text-[10px] text-slate-400">(ALC-SH168)</span></span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-brand-900 focus:ring-brand-900 h-4 w-4" type="checkbox"/>
+<span class="text-slate-700 font-medium">Pouch Kain Original</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-brand-900 focus:ring-brand-900 h-4 w-4" type="checkbox"/>
+<span class="text-slate-700 font-medium">UV Filter 82mm B+W</span>
+</label>
+</div>
+</div>
+<!-- QC Condition Notes -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-500" for="qc-notes">
+                Catatan Kondisi / Kelengkapan
+              </label>
+<span class="text-[10px] font-mono text-slate-400">184 / 500 karakter</span>
+</div>
+<textarea class="w-full text-xs text-slate-800 rounded-lg border-slate-300 focus:border-blue-600 focus:ring focus:ring-blue-600/20 leading-relaxed custom-scroll" id="qc-notes" placeholder="Tuliskan catatan detail jika ada kendala fisik atau fungsi..." rows="3">Kondisi optik depan dan belakang telah dibersihkan dengan blower &amp; lens pen. Seluruh switch AF/MF dan de-click aperture berfungsi sempurna. Unit siap dimasukkan ke Dry Cabinet 1 (Loker A-02).</textarea>
+</div>
+</section>
+<!-- END: RightColumnChecklistAndNotes -->
+</main>
+<!-- END: ModalBodySection -->
+<!-- BEGIN: ModalFooterSection -->
+<!-- Actions bar with dismissal, print receipt, and primary sign-off submission -->
+<footer class="border-t border-slate-200 py-3.5 px-6 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 rounded-b-[14px]">
+<!-- Left: Cancel / Dismiss -->
+<button class="text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 px-3.5 py-2 rounded-lg transition-colors focus:outline-none" type="button">
+          Batal / Periksa Nanti
+        </button>
+<!-- Right: Grouped Action Buttons -->
+<div class="flex items-center gap-2.5">
+<!-- Print Receipt Button -->
+<button class="text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-3.5 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm focus:outline-none" type="button">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Cetak Bukti Serah Terima
+          </button>
+<!-- Primary Confirmation Button -->
+<button class="text-xs font-bold text-white bg-[#1E3A8A] hover:bg-blue-900 px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-all hover:shadow active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-700/50" type="button">
+<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+            Simpan &amp; Setujui Pengembalian
+          </button>
+</div>
+</footer>
+<!-- END: ModalFooterSection -->
+</div>
+<!-- END: InspectionModalCard -->
+</div>
+<!-- END: ModalBackdropAndContainer -->
+</body></html>

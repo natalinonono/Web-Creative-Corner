@@ -116,26 +116,44 @@ export const TopNavbar = () => {
 
   return (
     <header className="top-navbar">
-      {/* Brand & Logo */}
-      <div 
-        className="brand-section" 
-        onClick={() => { setCurrentRole('public'); setPublicTab('form'); }}
-        style={{ cursor: 'pointer' }}
-        title="Kembali ke Beranda Peminjaman"
-      >
-        <div className="brand-logo-icon">
-          <img 
-            src="/logo-creative-corner.png" 
-            alt="Creative Corner Logo" 
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-          />
-        </div>
-        <div>
-          <div className="brand-title">Creative Corner</div>
-          <div className="brand-subtitle">
-            <span className="brand-status-dot"></span>
-            <span>Studio OS • Dispatch</span>
+      {/* Brand & Logo + Facility Indicator */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        <div 
+          className="brand-section" 
+          onClick={() => { setCurrentRole('public'); setPublicTab('form'); }}
+          style={{ cursor: 'pointer' }}
+          title="Kembali ke Beranda Peminjaman"
+        >
+          <div className="brand-logo-icon" style={{ background: '#1E3A8A', border: '1px solid rgba(255,255,255,0.15)' }}>
+            <span className="material-symbols-outlined" style={{ color: '#FFFFFF', fontSize: '20px' }}>photo_camera</span>
           </div>
+          <div>
+            <div className="brand-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, letterSpacing: '-0.02em' }}>Creative Corner</div>
+            <div className="brand-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span className="brand-status-dot"></span>
+              <span style={{ color: '#90A8FF' }}>Studio OS</span>
+              <span style={{ opacity: 0.5 }}>•</span>
+              <span style={{ color: '#85F8C4' }}>v4.2-LTS</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Studio Branch Indicator (Stitch Screen 2) */}
+        <div 
+          className="hidden lg:flex" 
+          style={{ 
+            alignItems: 'center', 
+            gap: '0.4rem', 
+            padding: '0.3rem 0.75rem', 
+            borderRadius: '8px', 
+            background: 'rgba(255, 255, 255, 0.06)', 
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            fontSize: '0.75rem',
+            color: '#D6E3FE'
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#90A8FF' }}>meeting_room</span>
+          <span style={{ fontWeight: 600 }}>Studio Utama - Lantai 2</span>
         </div>
       </div>
 
@@ -236,40 +254,47 @@ export const TopNavbar = () => {
       {/* Sisi Kanan: Status Akun & Tombol Masuk */}
       <div className="top-navbar-right">
         {currentUser ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div 
-              className="navbar-user-badge"
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '9999px',
-                padding: '0.3rem 0.65rem',
-                color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.785rem'
+                gap: '0.55rem',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '8px',
+                padding: '0.25rem 0.65rem'
               }}
             >
-              {isUserAdmin ? (
-                <ShieldCheck size={14} color="#93C5FD" style={{ flexShrink: 0 }} />
-              ) : (
-                <User size={14} color="#A7F3D0" style={{ flexShrink: 0 }} />
-              )}
-              <span className="navbar-user-name">
-                {currentUser.nama || currentUser.email}
-              </span>
-              <span style={{
-                fontSize: '0.65rem',
-                padding: '1px 5px',
-                borderRadius: '9999px',
-                fontWeight: 700,
-                background: isUserAdmin ? '#1E3A8A' : '#059669',
-                color: '#FFFFFF',
-                flexShrink: 0
-              }}>
-                {isUserAdmin ? 'Admin' : 'Anggota'}
-              </span>
+              <div 
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  background: isUserAdmin ? '#1E3A8A' : '#059669',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  fontSize: '0.75rem',
+                  flexShrink: 0
+                }}
+              >
+                {isUserAdmin ? (
+                  <ShieldCheck size={16} />
+                ) : (
+                  <User size={16} />
+                )}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.1 }}>
+                  {currentUser.nama || currentUser.email}
+                </span>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: isUserAdmin ? '#90A8FF' : '#85F8C4', lineHeight: 1 }}>
+                  {isUserAdmin ? 'Pengelola Studio' : 'Kru Studio'}
+                </span>
+              </div>
             </div>
 
             <button
@@ -280,8 +305,9 @@ export const TopNavbar = () => {
                 background: 'rgba(239, 68, 68, 0.15)',
                 borderColor: 'rgba(239, 68, 68, 0.3)',
                 color: '#FECACA',
-                padding: '0.3rem 0.6rem',
-                fontSize: '0.75rem'
+                padding: '0.35rem 0.65rem',
+                fontSize: '0.75rem',
+                borderRadius: '6px'
               }}
               title="Keluar dari sesi akun"
             >
@@ -304,7 +330,7 @@ export const TopNavbar = () => {
               color: '#FFFFFF',
               padding: '0.35rem 0.75rem',
               fontSize: '0.785rem',
-              borderRadius: '9999px',
+              borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
               gap: '0.4rem'

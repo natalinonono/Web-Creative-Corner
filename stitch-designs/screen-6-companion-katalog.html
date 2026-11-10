@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100%;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "outline": "#757682", "surface-tint": "#4059aa", "tertiary-fixed-dim": "#68dba9", "secondary": "#525f75", "tertiary-container": "#004a32", "primary": "#00236f", "on-tertiary-fixed": "#002114", "surface-container-highest": "#d3e4fe", "on-secondary-fixed": "#0e1c2f", "inverse-surface": "#213145", "surface-container": "#e5eeff", "on-primary-fixed-variant": "#264191", "primary-fixed-dim": "#b6c4ff", "surface-variant": "#d3e4fe", "surface-container-low": "#eff4ff", "inverse-primary": "#b6c4ff", "on-primary-container": "#90a8ff", "inverse-on-surface": "#eaf1ff", "surface-bright": "#f8f9ff", "error": "#ba1a1a", "on-secondary-fixed-variant": "#3a475c", "primary-container": "#1e3a8a", "on-primary": "#ffffff", "surface": "#f8f9ff", "tertiary": "#003120", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "secondary-fixed": "#d6e3fe", "on-error-container": "#93000a", "secondary-fixed-dim": "#bac7e1", "on-primary-fixed": "#00164e", "primary-fixed": "#dce1ff", "on-tertiary-container": "#4ac08f", "secondary-container": "#d6e3fe", "on-error": "#ffffff", "surface-dim": "#cbdbf5", "on-secondary": "#ffffff", "on-surface-variant": "#444651", "surface-container-high": "#dce9ff", "on-secondary-container": "#58657b", "background": "#f8f9ff", "on-surface": "#0b1c30", "outline-variant": "#c5c5d3", "tertiary-fixed": "#85f8c4", "on-tertiary-fixed-variant": "#005137", "on-background": "#0b1c30", "on-tertiary": "#ffffff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-compact": "1rem", "space-md": "0.75rem", "gutter": "1rem", "space-xl": "1.75rem", "space-lg": "1.25rem", "margin": "1.5rem", "space-sm": "0.5rem", "gutter-desktop": "1.25rem", "space-xs": "0.25rem" }, "fontFamily": { "headline-lg": ["Plus Jakarta Sans"], "label-code-lg": ["JetBrains Mono"], "headline-xl": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "label-code-sm": ["JetBrains Mono"], "label-code-xs": ["JetBrains Mono"], "body-sm": ["Plus Jakarta Sans"] }, "fontSize": { "headline-lg": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-code-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "-0.01em", "fontWeight": "500" }], "headline-xl": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.025em", "fontWeight": "700" }], "body-lg": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }], "body-md": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }], "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-sm": ["1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-code-sm": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0em", "fontWeight": "500" }], "label-code-xs": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-sm": ["0.75rem", { "lineHeight": "1rem", "fontWeight": "400" }] } } } }</script></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[20px]">view_in_ar</span></div><div><span class="block font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">Katalog Alat</span><span class="block font-label-code-xs text-label-code-xs text-secondary tracking-wider uppercase mt-0.5">Studio Companion</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Pencarian" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-secondary hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">search</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-surface"><div class="flex flex-col w-full">
+<!-- Top Compact Header & Crew Context -->
+<section class="px-margin pt-space-sm pb-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative w-11 h-11 rounded-full bg-surface-container-high flex-shrink-0 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[24px]">account_circle</span>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-tertiary-fixed-dim ring-2 ring-surface"></span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">Halo, Kevin!</h2>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-label-code-xs font-semibold uppercase tracking-wider">Crew</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<p class="font-body-sm text-body-sm text-secondary truncate">Creative Corner Studio • <span class="font-medium text-tertiary-container">Aktif</span></p>
+</div>
+</div>
+</div>
+<!-- Quick Actions (44px min tap targets) -->
+<div class="flex items-center gap-space-xs flex-shrink-0">
+<button aria-label="Cari Peralatan" class="w-11 h-11 flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+<button aria-label="Pindai QR Peminjaman Cepat" class="w-11 h-11 flex items-center justify-center rounded-xl bg-primary-container text-on-primary shadow-sm hover:opacity-95 active:scale-95 transition-all" id="qrScannerBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+</button>
+</div>
+</section>
+<!-- Active Loan Reminder Card -->
+<section class="px-margin mb-space-lg">
+<div class="w-full bg-surface-container-low rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<!-- Top Tag & Urgency Badge -->
+<div class="flex items-center justify-between gap-space-xs mb-space-sm">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-primary-container font-label-code-xs text-label-code-xs font-semibold tracking-wide">
+<span class="material-symbols-outlined text-[14px]">lock_clock</span>
+          PINJAMAN AKTIF KAMU
+        </span>
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium tracking-tight">Batas 16:30 WIB</span>
+</div>
+<!-- Gear Info -->
+<div class="flex items-start justify-between gap-space-sm mb-space-md">
+<div class="min-w-0 flex-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-snug">Sony Alpha 7 IV + FE 50mm f/1.8</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-block font-label-code-sm text-label-code-sm text-secondary bg-surface-container px-2 py-0.5 rounded font-medium">#EQ-CAM-004</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">location_on</span>
+              Studio Utama A
+            </span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">videocam</span>
+</div>
+</div>
+<!-- Urgency Countdown Strip -->
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-high/80 mb-space-md">
+<span class="material-symbols-outlined text-error text-[18px]">timer</span>
+<p class="font-body-sm text-body-sm text-on-surface font-medium">
+          Harus kembali dalam <span class="font-semibold text-error">3 jam 15 menit</span>
+</p>
+</div>
+<!-- CTA Buttons (Thumb Ergonomics) -->
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 min-h-[44px] px-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center text-center transition-colors" type="button">
+          Ajukan Perpanjangan
+        </button>
+<button class="h-11 min-h-[44px] px-2 rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-transform" type="button">
+<span>Mulai Kembali</span>
+<span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Horizontal Filter Strip -->
+<section class="mb-space-lg">
+<div class="px-margin flex items-center justify-between mb-space-xs">
+<span class="font-label-code-xs text-label-code-xs uppercase tracking-wider text-secondary font-semibold">Filter Kategori</span>
+<span class="font-label-code-xs text-label-code-xs text-primary-container font-semibold cursor-pointer">Reset</span>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto px-margin py-1 no-scrollbar scroll-smooth">
+<button class="min-h-[44px] px-4 rounded-full bg-primary-container text-on-primary font-body-sm text-body-sm font-medium flex-shrink-0 shadow-sm flex items-center justify-center" type="button">
+        Semua
+      </button>
+<button class="min-h-[44px] px-4 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-medium flex-shrink-0 flex items-center justify-center transition-colors" type="button">
+        Kamera
+      </button>
+<button class="min-h-[44px] px-4 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-medium flex-shrink-0 flex items-center justify-center transition-colors" type="button">
+        Lensa
+      </button>
+<button class="min-h-[44px] px-4 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-medium flex-shrink-0 flex items-center justify-center transition-colors" type="button">
+        Tripod &amp; Grip
+      </button>
+<button class="min-h-[44px] px-4 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-medium flex-shrink-0 flex items-center justify-center transition-colors" type="button">
+        Lighting
+      </button>
+<button class="min-h-[44px] px-4 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-medium flex-shrink-0 flex items-center justify-center transition-colors" type="button">
+        Audio &amp; Mic
+      </button>
+</div>
+</section>
+<!-- Fast Borrow Feed (2-Column Mobile Grid) -->
+<section class="px-margin pb-space-xl">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Peralatan Siap Pinjam</h3>
+<p class="font-body-sm text-body-sm text-secondary">Tersedia untuk checkout cepat via RFID/QR</p>
+</div>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container text-primary-container font-label-code-xs text-label-code-xs font-semibold">
+        42 Unit Siap
+      </span>
+</div>
+<!-- 2-Column Responsive Card Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Card 1: Sony FE 24-70mm f/2.8 GM II (Using Provided Asset) -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-space-sm justify-between">
+<div>
+<!-- Thumbnail Container -->
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-low mb-space-sm">
+<img alt="Sony FE 24-70mm f/2.8 GM II Lens" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ALJJyrDv-L52y8WuRYpB7AO_qFezOMG-oKYV3ocXxOoq37PaoJV-T445Ket-sT3WC4ZzPhBfuHDsAA6Gq24IBwISAZPKKnhUbqF_2B0LqDFXU_C59ngbfGhTIBcEaYtbU0QhAQPIWnaRg2w2sY2gahKqdO1nv6AGRCdY22Z-fjnkuhv3caVvHagVycWw_NoJBqjEMSnWK_8tDe16gt8lCq6ldtZoK2KAwDRnuaPokLmvkdyelQ"/>
+<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/90 backdrop-blur-xs text-on-tertiary-container font-label-code-xs text-label-code-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Tersedia
+            </div>
+</div>
+<!-- Meta & Title -->
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium">#EQ-LEN-012</span>
+<span class="font-label-code-xs text-label-code-xs text-on-surface-variant font-medium">Dry Cab 01</span>
+</div>
+<h4 class="font-headline-sm text-[0.95rem] text-on-surface font-semibold line-clamp-2 leading-tight mb-2">
+            Sony FE 24-70mm f/2.8 GM II
+          </h4>
+</div>
+<!-- Card Action -->
+<button class="w-full h-11 min-h-[44px] rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1 active:scale-[0.97] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Pinjam</span>
+</button>
+</article>
+<!-- Card 2: Sony Alpha 7 IV Body -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-space-sm justify-between">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-low mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Close up product photography of a modern Sony Alpha 7 IV mirrorless digital cinema camera body placed on an organized studio workstation with soft neutral high-key technical lighting and blue reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMSHvYU4OT3GYUBu6ltIxowFQqvxH94KgzlVgMYpulMA0BvomvUUiWklESVqj_BzZXDANV-fKfGUQ86Jsw7RkN0VaAoXk-JIGGDYSia3dNzpc-7XS2xh2M-xNkSrfki7AvX8vXnmcm68GsMb5z638vFrHp2kstuMdePgiUaBdWz_9NjcCwwODQFuWifrA2JfqZ6BSYmrE45YhN11iwVzcoq7I8KrDyetemxvbMUhYv"/>
+<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/90 backdrop-blur-xs text-on-tertiary-container font-label-code-xs text-label-code-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Tersedia
+            </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium">#EQ-CAM-005</span>
+<span class="font-label-code-xs text-label-code-xs text-on-surface-variant font-medium">Loker A-02</span>
+</div>
+<h4 class="font-headline-sm text-[0.95rem] text-on-surface font-semibold line-clamp-2 leading-tight mb-2">
+            Sony Alpha 7 IV Body Only
+          </h4>
+</div>
+<button class="w-full h-11 min-h-[44px] rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1 active:scale-[0.97] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Pinjam</span>
+</button>
+</article>
+<!-- Card 3: DJI Mic 2 Wireless Set -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-space-sm justify-between">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-low mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Studio studio packshot of DJI Mic 2 wireless transmitter and receiver charging case open on equipment bench with clean directional studio light and technical studio aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvpoNhWwV0TU0TgkFt6k-TeSEp-Mqw2QBLV932wcD40Yi-3Svpi8bH-pcQ1o1Po2KZid84FmNSqQqnrIHc-f7z_SWNUaJGMNFChvv0GjLpSojRM1JhDQ6CROl8OEJairUnvQvzJeKO5T4RkOOA8jsRd-YQHDpUIJn6lyQHGtFpSWJm5JAxIVbh7rk7kVAJMQQDJt-UXMswj6eCMVPVwKB4fqGTqhWL8qwH8jh5qUkb"/>
+<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/90 backdrop-blur-xs text-on-tertiary-container font-label-code-xs text-label-code-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Tersedia
+            </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium">#EQ-AUD-009</span>
+<span class="font-label-code-xs text-label-code-xs text-on-surface-variant font-medium">QC Meja 1</span>
+</div>
+<h4 class="font-headline-sm text-[0.95rem] text-on-surface font-semibold line-clamp-2 leading-tight mb-2">
+            DJI Mic 2 Set (2 TX + 1 RX)
+          </h4>
+</div>
+<button class="w-full h-11 min-h-[44px] rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1 active:scale-[0.97] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Pinjam</span>
+</button>
+</article>
+<!-- Card 4: Godox AD600Pro TTL Strobe -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-space-sm justify-between">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-low mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Professional studio flash head Godox AD600Pro battery strobe unit mounted on technical tabletop with matte black industrial finish under soft overhead studio inspection lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtDTZqTmiPo15lS0OBhthKmIz-YtPd4MUkwG_S1wwXhxPevYO5_U7tZN9PnEYa8IVe8zXDNYXMQMsPOz2zt6JygzGerfjoYHXb6kt_NhdaCj9oHfjFnWEIbFcVpVR6LWZznHti-xsIPRW-4ppyi2y4n4Urdx4NlCEXkrS7BVKR-tGQqeFxY4L4tE36TZmyJnrHMlIM5ImMbkGv2QknPEe4Htw9X5F5UpT9LsAW9_mb"/>
+<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/90 backdrop-blur-xs text-on-tertiary-container font-label-code-xs text-label-code-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Tersedia
+            </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium">#EQ-LGT-014</span>
+<span class="font-label-code-xs text-label-code-xs text-on-surface-variant font-medium">Rak Light B</span>
+</div>
+<h4 class="font-headline-sm text-[0.95rem] text-on-surface font-semibold line-clamp-2 leading-tight mb-2">
+            Godox AD600Pro TTL Strobe
+          </h4>
+</div>
+<button class="w-full h-11 min-h-[44px] rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1 active:scale-[0.97] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Pinjam</span>
+</button>
+</article>
+<!-- Card 5: Manfrotto 504HD Video Tripod -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-space-sm justify-between">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-low mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Clean product photo of Manfrotto professional video fluid head and carbon fiber tripod legs folded neatly against a modern bright studio backdrop with subtle blue accent glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClrK_qCvdO_PqSDwT3mplkSKWbtmgNR69a_UZpqje_wzZ2J1YijThtECRW789HFcYnwY9IkdL10-YKzgxka1CtpPsaNveqsuHavUB4ewMG8p8ALnM2xiSpwk_jUouFecdunnKYOJLjJcBxbNhUyU3GO0xun82Xh5jLLIKRZlS7KFRS1SoZrph4-IJQawVwsIvDuX2vSBWwaRKwxWu_2KAjAJPPgtdroec3W0Cm7fJv"/>
+<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/90 backdrop-blur-xs text-on-tertiary-container font-label-code-xs text-label-code-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Tersedia
+            </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium">#EQ-GRP-003</span>
+<span class="font-label-code-xs text-label-code-xs text-on-surface-variant font-medium">Loker C-04</span>
+</div>
+<h4 class="font-headline-sm text-[0.95rem] text-on-surface font-semibold line-clamp-2 leading-tight mb-2">
+            Manfrotto 504HD Video Tripod
+          </h4>
+</div>
+<button class="w-full h-11 min-h-[44px] rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1 active:scale-[0.97] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Pinjam</span>
+</button>
+</article>
+<!-- Card 6: Blackmagic Pocket Cinema 6K Pro -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden p-space-sm justify-between">
+<div>
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container-low mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="High-contrast studio product shot of Blackmagic Pocket Cinema Camera 6K Pro placed carefully inside equipment staging station with crisp details on the carbon fiber body" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9IfdCKWeHuLhEnhdgRGIzaXmsG20vw_hRtdzEg9BQBi8XBpxRY2pZnBWC129j0UmmAzb3nOArdjcPrGjki4OUONUSlK4lATiu4DOWS0lmiLMkkCuAdZboz0BZ8yTwjVTLCq2k8SWsu7lSBm8vOj1q4yxX7a9cbUUYRDyx3aE67BIIIQl4fQxuv27xWTo4CuQ_YbbFIVFRA9UhmaqGexW3nSe2jbvvceGCkoccmJnc"/>
+<div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/90 backdrop-blur-xs text-on-tertiary-container font-label-code-xs text-label-code-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+              Tersedia
+            </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code-xs text-label-code-xs text-secondary font-medium">#EQ-CAM-008</span>
+<span class="font-label-code-xs text-label-code-xs text-on-surface-variant font-medium">Dry Cab 02</span>
+</div>
+<h4 class="font-headline-sm text-[0.95rem] text-on-surface font-semibold line-clamp-2 leading-tight mb-2">
+            BMPCC 6K Pro Cinema Body
+          </h4>
+</div>
+<button class="w-full h-11 min-h-[44px] rounded-lg bg-primary-container hover:opacity-95 text-on-primary font-label-code-sm text-label-code-sm font-semibold flex items-center justify-center gap-1 active:scale-[0.97] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Pinjam</span>
+</button>
+</article>
+</div>
+</section>
+<!-- Quick Feedback Toast (Interaction Trigger) -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-sm font-medium opacity-0 pointer-events-none transition-all duration-300" id="toastNotification">
+<span class="material-symbols-outlined text-[18px] text-tertiary-fixed">check_circle</span>
+<span id="toastMessage">Peralatan ditambahkan ke antrian!</span>
+</div>
+</div>
+<script>
+  (function() {
+    const toast = document.getElementById('toastNotification');
+    const toastMsg = document.getElementById('toastMessage');
+    let toastTimeout;
+
+    function showToast(msg) {
+      if (!toast) return;
+      toastMsg.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+      }, 2400);
+    }
+
+    // Bind borrow button clicks
+    document.querySelectorAll('button').forEach(btn => {
+      if (btn.textContent.includes('Pinjam')) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const card = btn.closest('article');
+          const title = card ? card.querySelector('h4').textContent.trim() : 'Peralatan';
+          showToast(title + ' siap divalidasi!');
+        });
+      }
+    });
+
+    // Scanner interaction
+    const scannerBtn = document.getElementById('qrScannerBtn');
+    if (scannerBtn) {
+      scannerBtn.addEventListener('click', () => {
+        showToast('Membuka kamera pemindai barcode RFID...');
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary-container font-headline-sm"><div class="h-16 px-space-xs flex items-center justify-around"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 py-1 transition-colors group text-primary-container font-headline-sm" data-path="katalog-alat" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-active:scale-95">photo_camera</span><span class="font-label-code-xs text-label-code-xs mt-0.5 tracking-tight">Katalog</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 py-1 text-secondary transition-colors group" data-path="jadwal" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-active:scale-95">calendar_today</span><span class="font-label-code-xs text-label-code-xs mt-0.5 tracking-tight">Jadwal</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 py-1 text-secondary transition-colors group relative" data-path="peminjaman-saya" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[22px] transition-transform group-active:scale-95">fact_check</span><span class="absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></div><span class="font-label-code-xs text-label-code-xs mt-0.5 tracking-tight">Peminjaman</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] flex-1 py-1 text-secondary transition-colors group" data-path="profil" href="#"><span class="material-symbols-outlined text-[22px] transition-transform group-active:scale-95">badge</span><span class="font-label-code-xs text-label-code-xs mt-0.5 tracking-tight">Profil</span></a></div></nav></body></html>
