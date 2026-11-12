@@ -143,15 +143,17 @@ _Tim Pengelola Studio Creative Corner_`;
 
   // Trigger One-Click WA Giliran Piket Jaga Studio
   const handleSendDutyReminder = (duty) => {
+    const petugasList = Array.isArray(duty.petugas) ? duty.petugas : [];
     // Ambil nomor WA anggota pertama
-    const firstStaffName = duty.petugas[0]?.split('(')[0]?.trim();
-    const foundMember = members.find((m) => m.nama.toLowerCase().includes(firstStaffName?.toLowerCase() || ''));
+    const firstStaffName = petugasList[0]?.split('(')[0]?.trim();
+    const foundMember = members.find((m) => (m.nama || '').toLowerCase().includes(firstStaffName?.toLowerCase() || ''));
     const phone = foundMember?.nomorWa || '6281234567890';
+    const petugasDisplay = petugasList.join(', ') || 'Tim Piket Studio';
 
-    const rawMessage = `Halo rekan tim *Creative Corner*, pengingat giliran piket studio untuk hari *${duty.hari}, ${duty.tanggal}* pada pukul *${duty.jamOperasional} WIB*. Petugas: *${duty.petugas.join(', ')}*. Mohon hadir tepat waktu untuk menjalankan pemeliharaan inventaris studio dan pelayanan peminjaman alat. Terima kasih!`;
+    const rawMessage = `Halo rekan tim *Creative Corner*, pengingat giliran piket studio untuk hari *${duty.hari}, ${duty.tanggal}* pada pukul *${duty.jamOperasional} WIB*. Petugas: *${petugasDisplay}*. Mohon hadir tepat waktu untuk menjalankan pemeliharaan inventaris studio dan pelayanan peminjaman alat. Terima kasih!`;
 
     setWaModalData({
-      recipientName: duty.petugas.join(', '),
+      recipientName: petugasDisplay,
       phoneNumber: phone,
       messageText: rawMessage,
       title: `Pengingat Piket Jaga Studio: ${duty.hari}`
@@ -563,7 +565,7 @@ _Tim Pengelola Studio Creative Corner_`;
                     {d.jamOperasional} WIB
                   </td>
                   <td>
-                    <div style={{ fontSize: '0.825rem', fontWeight: 600 }}>{d.petugas.join(' • ')}</div>
+                    <div style={{ fontSize: '0.825rem', fontWeight: 600 }}>{(d.petugas || []).join(' • ') || '-'}</div>
                   </td>
                   <td style={{ fontSize: '0.8rem', color: '#475569' }}>
                     {d.tanggungJawab}

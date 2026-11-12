@@ -79,7 +79,7 @@ export const PCKioskClient = () => {
 
   // Ambil data PC yang sedang dilihat
   const currentPC = pcClients.find((pc) => pc.id === selectedPCId) || pcClients[0];
-  const isActive = currentPC.status === 'Aktif' && currentPC.penggunaAktif;
+  const isActive = Boolean(currentPC && currentPC.status === 'Aktif' && currentPC.penggunaAktif);
 
   // Window beforeunload lock protection simulation
   useEffect(() => {
@@ -137,7 +137,7 @@ export const PCKioskClient = () => {
     const finalKeperluan = keperluan.trim() || 'Editing Video & Produksi Kreatif';
 
     startPCSession({
-      pcId: selectedPCId,
+      pcId: currentPC?.id || selectedPCId,
       namaSiswa,
       kelas: kelas || 'Umum',
       keperluan: finalKeperluan,
@@ -156,6 +156,19 @@ export const PCKioskClient = () => {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
+  if (!currentPC) {
+    return (
+      <div className="kiosk-canvas" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', padding: '2rem' }}>
+        <div style={{ textAlign: 'center', color: '#E2E8F0', maxWidth: '420px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem' }}>Belum Ada Workstation PC Terdaftar</h2>
+          <p style={{ fontSize: '0.85rem', color: '#94A3B8' }}>
+            Admin perlu menambahkan unit PC melalui tab Pengawasan PC sebelum Mode Kios dapat diaktifkan.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Hitung persentase progress
   const totalDetik = (currentPC.penggunaAktif?.durasiMenit || 60) * 60;
   const sisaDetik = currentPC.penggunaAktif?.sisaDetik || 0;
@@ -170,8 +183,8 @@ export const PCKioskClient = () => {
         onClick={toggleFullscreen}
         style={{
           position: 'fixed',
-          top: '1rem',
-          right: '1rem',
+          bottom: '1.25rem',
+          right: '1.25rem',
           zIndex: 1000,
           background: 'rgba(15, 23, 42, 0.8)',
           backdropFilter: 'blur(8px)',
@@ -287,7 +300,7 @@ export const PCKioskClient = () => {
                 }}
               >
                 <Monitor size={15} />
-                <span>{pc.id}</span>
+                <span>{pc.namaUnit ? `${pc.id} • ${pc.namaUnit}` : pc.id}</span>
                 <span style={{
                   width: '8px',
                   height: '8px',
@@ -330,6 +343,11 @@ export const PCKioskClient = () => {
             <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>
               Formulir Sesi Masuk {currentPC.id}
             </h2>
+            {currentPC.namaUnit && (
+              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#93C5FD', marginTop: '0.15rem' }}>
+                {currentPC.namaUnit}
+              </div>
+            )}
             <p style={{ fontSize: '0.8rem', color: '#BFDBFE', marginTop: '0.25rem' }}>
               Workstation ini terkunci. Lengkapi identitas & pilih durasi pakai untuk membuka layar.
             </p>

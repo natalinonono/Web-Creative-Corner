@@ -148,11 +148,7 @@ export const getCameraRequirements = (cameraItem) => {
     name.includes('m6 2') ||
     name.includes('m6-ii');
 
-  const isM6IIBySpec = 
-    (name.includes('m6') || fullText.includes('m6')) && 
-    (fullText.includes('adapter') || fullText.includes('dslr') || fullText.includes('to ef') || fullText.includes('ke ef'));
-
-  if (isM6IIByName || isM6IIBySpec) {
+  if (isM6IIByName) {
     return {
       ...CAMERA_RULES.M6_II,
       cameraName: cameraItem.nama,
@@ -162,7 +158,7 @@ export const getCameraRequirements = (cameraItem) => {
 
   // 2. Canon EOS M6 Mark I (Lensa EF-M murni tanpa adapter)
   const isM6IByName = 
-    !name.includes('ii') && (
+    !name.includes('ii') && !name.includes('mk 2') && !name.includes('mark 2') && (
       name.includes('m6 i') || 
       name.includes('m6 mark i') || 
       name.includes('m6 mk i') ||
@@ -172,13 +168,36 @@ export const getCameraRequirements = (cameraItem) => {
       name.includes('m6-i')
     );
 
+  if (isM6IByName) {
+    return {
+      ...CAMERA_RULES.M6_I,
+      cameraName: cameraItem.nama,
+      cameraId: cameraItem.id
+    };
+  }
+
+  // Fallback analisa spesifikasi M6 jika nama tidak menyertakan generasi (hindari false-positive "tanpa adapter")
+  const hasWithoutAdapterPhrase = fullText.includes('tanpa adapter') || fullText.includes('no adapter');
+  const isM6IIBySpec = 
+    (name.includes('m6') || fullText.includes('m6')) && 
+    !hasWithoutAdapterPhrase &&
+    (fullText.includes('adapter') || fullText.includes('dslr') || fullText.includes('to ef') || fullText.includes('ke ef'));
+
+  if (isM6IIBySpec) {
+    return {
+      ...CAMERA_RULES.M6_II,
+      cameraName: cameraItem.nama,
+      cameraId: cameraItem.id
+    };
+  }
+
   const isM6IBySpec = 
     (name.includes('m6') || fullText.includes('m6')) && 
     !name.includes('ii') && 
-    !fullText.includes('adapter') && 
+    (hasWithoutAdapterPhrase || !fullText.includes('adapter')) && 
     (fullText.includes('ef-m') || fullText.includes('efm'));
 
-  if (isM6IByName || isM6IBySpec) {
+  if (isM6IBySpec) {
     return {
       ...CAMERA_RULES.M6_I,
       cameraName: cameraItem.nama,

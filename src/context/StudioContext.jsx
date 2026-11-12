@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   ADMIN_KEYWORD,
   ADMIN_EMAIL_SUFFIX,
@@ -18,10 +18,23 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const StudioContext = createContext();
 
-// Storage keys (Hanya untuk sesi login akun pengguna aktif, database data 100% di Supabase Cloud)
+// Storage keys (Sesi login & fallback piket lokal bila tabel duty_roster belum dibuat di Supabase)
 const STORAGE_KEYS = {
   CURRENT_USER: 'cc_current_user_v4',
-  CURRENT_ROLE: 'cc_current_role_v4'
+  CURRENT_ROLE: 'cc_current_role_v4',
+  DUTY_ROSTER_FALLBACK: 'cc_duty_roster_fallback_v1'
+};
+
+// Generator ID sekuensial aman terhadap penghapusan item agar tidak menimpa ID yang masih ada
+const getNextSequentialId = (list, prefix, padLength = 2) => {
+  const maxNum = (list || []).reduce((max, item) => {
+    const idStr = String(item?.id || '');
+    if (!idStr.startsWith(`${prefix}-`)) return max;
+    const m = idStr.match(/\d+$/);
+    const num = m ? parseInt(m[0], 10) : 0;
+    return !Number.isNaN(num) && num > max ? num : max;
+  }, 0);
+  return `${prefix}-${String(maxNum + 1).padStart(padLength, '0')}`;
 };
 
 export const StudioProvider = ({ children }) => {
@@ -63,7 +76,19 @@ export const StudioProvider = ({ children }) => {
       if (modeParam === 'public') return 'public';
     }
     const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_ROLE);
-    if (!saved || saved === 'admin') return 'public';
+    if (!saved) return 'public';
+    if (saved === 'admin') {
+      const cleanEmail = currentUser?.email?.toLowerCase().trim();
+      const hasAdminSession = Boolean(
+        currentUser &&
+        (currentUser.role === 'admin' ||
+          currentUser.divisi === 'Admin' ||
+          currentUser.peranUtama === 'Admin' ||
+          cleanEmail === 'admin1.creativecorner@gmail.com' ||
+          cleanEmail === 'creativecorner@gmail.com')
+      );
+      return hasAdminSession ? 'admin' : 'public';
+    }
     return saved;
   });
 
@@ -101,29 +126,20 @@ export const StudioProvider = ({ children }) => {
     try {
       setSupabaseStatus('connecting');
 
-      // 1. Data Inventaris Peralatan & Ruang
-      const { data: eq, error: eqErr } = await supabase.from('equipment').select('*').order('id', { ascending: true });
-      if (!eqErr && Array.isArray(eq)) {
-        const mappedEq = eq.map((item) => ({
-          id: item.id,
-          kode: item.id,
-          nama: item.nama,
-          kategori: item.kategori,
-          nomorSeri: item.nomor_seri || '',
-          lokasiRak: item.lokasi_rak || 'Ruang Studio Creative Corner',
-          spesifikasi: item.spesifikasi || '',
-          status: item.status || 'Tersedia',
-          kondisiFisik: item.kondisi_fisik || 'Baik & Terawat',
-          baterai: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera' || item.kategori === 'Memory Card')
-            ? null
-            : (item.baterai !== undefined && item.baterai !== null ? item.baterai : item.baterai_persen),
-          terkunciOlehEventId: null
-        }));
-        setEquipment(mappedEq);
-      }
+      // 1. Ambil Inventaris, Events, & Loan Records terlebih dahulu agar metadata peminjam & kunci event tersinkron lengkap
+      const [
+        { data: eq, error: eqErr },
+        { data: mems, error: memErr },
+        { data: evts, error: evErr },
+        { data: loans, error: loanErr }
+      ] = await Promise.all([
+        supabase.from('equipment').select('*').order('id', { ascending: true }),
+        supabase.from('members').select('*'),
+        supabase.from('events').select('*'),
+        supabase.from('loan_records').select('*').order('tanggal_pengajuan', { ascending: false })
+      ]);
 
-      // 2. Data Anggota Creative Corner
-      const { data: mems, error: memErr } = await supabase.from('members').select('*');
+      // 2. Proses Data Anggota Creative Corner
       if (!memErr && Array.isArray(mems)) {
         const formattedMems = mems.map((m) => ({
           id: m.id,
@@ -144,10 +160,10 @@ export const StudioProvider = ({ children }) => {
         setMembers(formattedMems);
       }
 
-      // 3. Agenda Liputan & Event Sekolah
-      const { data: evts, error: evErr } = await supabase.from('events').select('*');
+      // 3. Proses Agenda Liputan & Event Sekolah
+      let mappedEvts = [];
       if (!evErr && Array.isArray(evts)) {
-        const mappedEvts = evts.map((e) => ({
+        mappedEvts = evts.map((e) => ({
           id: e.id,
           judul: e.judul,
           lokasi: e.lokasi,
@@ -162,47 +178,127 @@ export const StudioProvider = ({ children }) => {
         setEvents(mappedEvts);
       }
 
-      // 4. Rekaman Peminjaman Alat (Loan Records)
-      const { data: loans, error: loanErr } = await supabase.from('loan_records').select('*').order('tanggal_pengajuan', { ascending: false });
+      // 4. Proses Rekaman Peminjaman Alat (Beserta unwrap metadata inspeksi Before/After dari JSONB bukti_surat)
+      let mappedLoans = [];
       if (!loanErr && Array.isArray(loans)) {
-        const mappedLoans = loans.map((l) => ({
-          id: l.id,
-          isGuest: l.tipe === 'Publik',
-          peminjamNama: l.peminjam,
-          peminjamKelas: l.kelas_instansi,
-          peminjamWa: l.kontak,
-          keperluan: l.keperluan,
-          tanggalPinjam: l.tanggal_pinjam,
-          batasWaktuKembali: l.target_kembali,
-          status: l.status,
-          peralatanIds: l.peralatan_ids || [],
-          peralatanNama: Array.isArray(l.peralatan_nama) ? l.peralatan_nama.join(', ') : (l.peralatan_nama || ''),
-          buktiSurat: l.bukti_surat,
-          inspeksiPengambilan: {
+        mappedLoans = loans.map((l) => {
+          const rawBukti = l.bukti_surat;
+          const isMetaObj = rawBukti && typeof rawBukti === 'object';
+          const hasProofFile = isMetaObj
+            ? Boolean(rawBukti.dataUrl || rawBukti.name || rawBukti.raw)
+            : Boolean(rawBukti);
+
+          const cleanBuktiSurat = !hasProofFile
+            ? null
+            : isMetaObj && rawBukti.raw !== undefined
+            ? rawBukti.raw
+            : isMetaObj
+            ? {
+                name: rawBukti.name,
+                size: rawBukti.size,
+                type: rawBukti.type,
+                isImage: rawBukti.isImage,
+                dataUrl: rawBukti.dataUrl,
+                uploadedAt: rawBukti.uploadedAt
+              }
+            : rawBukti;
+
+          const restoredPickup = (isMetaObj && rawBukti._inspeksiPengambilan) || {
             kondisiFisik: 'Baik',
             tanggalInspeksi: l.tanggal_pinjam || ''
-          },
-          inspeksiPengembalian: null
-        }));
+          };
+
+          return {
+            id: l.id,
+            isGuest: l.tipe === 'Publik',
+            anggotaId: (isMetaObj && rawBukti._anggotaId) || (l.tipe === 'Publik' ? 'GUEST' : null),
+            eventId: (isMetaObj && rawBukti._eventId) || null,
+            peminjamNama: l.peminjam,
+            peminjamKelas: l.kelas_instansi,
+            peminjamWa: l.kontak,
+            keperluan: l.keperluan,
+            tanggalPinjam: l.tanggal_pinjam,
+            jamPinjam: (isMetaObj && rawBukti._jamPinjam) || '',
+            batasWaktuKembali: l.target_kembali,
+            status: l.status,
+            peralatanIds: l.peralatan_ids || [],
+            peralatanNama: Array.isArray(l.peralatan_nama) ? l.peralatan_nama.join(', ') : (l.peralatan_nama || ''),
+            buktiSurat: cleanBuktiSurat,
+            fotoBefore: (isMetaObj && rawBukti._fotoBefore) || cleanBuktiSurat || null,
+            fotoAfter: (isMetaObj && rawBukti._fotoAfter) || null,
+            catatan: (isMetaObj && rawBukti._catatan) || '',
+            inspeksiPengambilan: restoredPickup,
+            inspeksiPengembalian: (isMetaObj && rawBukti._inspeksiPengembalian) || null,
+            verifikasiAdminSelesai: (isMetaObj && rawBukti._verifikasiAdminSelesai) || null
+          };
+        });
         setBorrowings(mappedLoans);
       }
 
-      // 5. Tugas Kreatif
+      // 5. Proses Data Inventaris Peralatan & Enrich Peminjam Aktif + Kunci Event
+      if (!eqErr && Array.isArray(eq)) {
+        const mappedEq = eq.map((item) => {
+          const activeLoanForEq = mappedLoans.find(
+            (b) => b.status === 'Dipinjam' && Array.isArray(b.peralatanIds) && b.peralatanIds.includes(item.id)
+          );
+          const lockingEventForEq = mappedEvts.find(
+            (ev) => ev.status !== 'Selesai' && ev.status !== 'Dibatalkan' && Array.isArray(ev.peralatanTerkunciIds) && ev.peralatanTerkunciIds.includes(item.id)
+          );
+
+          return {
+            id: item.id,
+            kode: item.id,
+            nama: item.nama,
+            kategori: item.kategori,
+            nomorSeri: item.nomor_seri || '',
+            lokasiRak: item.lokasi_rak || 'Ruang Studio Creative Corner',
+            spesifikasi: item.spesifikasi || '',
+            status: item.status || 'Tersedia',
+            kondisiFisik: item.kondisi_fisik || 'Baik & Terawat',
+            baterai: (item.kategori === 'Ruang Studio' || item.kategori === 'Lensa' || item.kategori === 'Kamera' || item.kategori === 'Memory Card')
+              ? null
+              : (item.baterai !== undefined && item.baterai !== null ? item.baterai : item.baterai_persen),
+            peminjamAktif: item.status === 'Dipinjam' && activeLoanForEq ? activeLoanForEq.peminjamNama : null,
+            terkunciOlehEventId: item.status === 'Terkunci Event' && lockingEventForEq ? lockingEventForEq.id : null
+          };
+        });
+        setEquipment(mappedEq);
+      }
+
+      // 6. Tugas Kreatif (beserta unwrap metadata deadline & PJ)
       const { data: tasks, error: taskErr } = await supabase.from('creative_tasks').select('*').order('created_at', { ascending: false });
       if (!taskErr && Array.isArray(tasks)) {
-        const mappedTasks = tasks.map((t) => ({
-          id: t.id,
-          judul: t.judul,
-          divisi: t.divisi,
-          penanggungJawabNama: t.penanggung_jawab,
-          tenggatWaktu: t.batas_waktu,
-          status: t.status || 'Belum Dimulai',
-          deskripsi: t.deskripsi
-        }));
+        const mappedTasks = tasks.map((t) => {
+          let meta = {};
+          let rawBatas = t.batas_waktu || '';
+          if (typeof rawBatas === 'string' && rawBatas.startsWith('JSON:')) {
+            try {
+              meta = JSON.parse(rawBatas.slice(5));
+            } catch {}
+          }
+          const parts = rawBatas.includes('|') ? rawBatas.split('|').map((s) => s.trim()) : [rawBatas, rawBatas];
+          return {
+            id: t.id,
+            judul: t.judul,
+            kategori: meta.kategori || t.divisi || 'Kreatif Umum',
+            divisi: t.divisi || meta.kategori || 'Kreatif Umum',
+            penanggungJawabNama: t.penanggung_jawab || meta.penanggungJawabNama || 'Anggota Studio',
+            penanggungJawabKelas: meta.penanggungJawabKelas || 'Tim Studio',
+            penanggungJawabWa: meta.penanggungJawabWa || '',
+            penanggungJawabId: meta.penanggungJawabId || '',
+            tenggatDraf: meta.tenggatDraf || parts[0] || '-',
+            tenggatKaryaAkhir: meta.tenggatKaryaAkhir || parts[1] || parts[0] || '-',
+            tenggatWaktu: t.batas_waktu,
+            catatanRevisi: meta.catatanRevisi || null,
+            pcTerhubungId: meta.pcTerhubungId || null,
+            status: t.status || 'Belum Dimulai',
+            deskripsi: t.deskripsi
+          };
+        });
         setCreativeTasks(mappedTasks);
       }
 
-      // 6. Workstation PC Kiosk
+      // 7. Workstation PC Kiosk
       const { data: pcs, error: pcErr } = await supabase.from('pc_clients').select('*').order('id', { ascending: true });
       if (!pcErr && Array.isArray(pcs) && pcs.length > 0) {
         const mappedPCs = pcs.map((pc) => ({
@@ -215,7 +311,7 @@ export const StudioProvider = ({ children }) => {
         setPcClients(mappedPCs);
       }
 
-      // 7. Log Pemakaian PC
+      // 8. Log Pemakaian PC
       const { data: logs, error: logErr } = await supabase.from('pc_logs').select('*').order('created_at', { ascending: false });
       if (!logErr && Array.isArray(logs)) {
         const mappedLogs = logs.map((lg) => ({
@@ -232,13 +328,35 @@ export const StudioProvider = ({ children }) => {
         setPcLogs(mappedLogs);
       }
 
-      // 8. Roster Piket (Jika tabel ada di Supabase)
+      // 9. Roster Piket (Jika tabel ada di Supabase, fallback ke localStorage bila belum dibuat)
+      let loadedDuties = false;
       try {
         const { data: duties, error: dutyErr } = await supabase.from('duty_roster').select('*');
-        if (!dutyErr && Array.isArray(duties) && duties.length > 0) {
-          setDutyRoster(duties);
+        if (!dutyErr && Array.isArray(duties)) {
+          loadedDuties = true;
+          const mappedDuties = duties.map((d) => {
+            const parts = typeof d.jam_piket === 'string' && d.jam_piket.includes('|')
+              ? d.jam_piket.split('|').map((s) => s.trim())
+              : [];
+            return {
+              id: d.id,
+              hari: d.hari,
+              tanggal: parts[1] || 'Mingguan',
+              jamOperasional: parts[0] || d.jam_piket || '14:00 - 17:00',
+              tanggungJawab: parts[2] || 'Pemeliharaan kebersihan dan inventarisasi studio',
+              petugas: Array.isArray(d.petugas) ? d.petugas : [],
+              status: d.status || 'Terjadwal'
+            };
+          });
+          setDutyRoster(mappedDuties);
         }
       } catch {}
+      if (!loadedDuties) {
+        try {
+          const savedDuties = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
+          if (savedDuties) setDutyRoster(JSON.parse(savedDuties));
+        } catch {}
+      }
 
       // 9. Dokumen Resmi (Jika tabel ada di Supabase)
       try {
@@ -306,6 +424,27 @@ export const StudioProvider = ({ children }) => {
   // -------------------------------------------------------------
   const syncLoanToSupabase = (loan) => {
     if (!isSupabaseConfigured || !supabase) return;
+    const baseBukti = loan.buktiSurat && typeof loan.buktiSurat === 'object'
+      ? { ...loan.buktiSurat }
+      : (loan.buktiSurat ? { raw: loan.buktiSurat } : {});
+
+    const packedBukti = {
+      ...baseBukti,
+      _anggotaId: loan.anggotaId || (loan.isGuest ? 'GUEST' : null),
+      _eventId: loan.eventId || null,
+      _jamPinjam: loan.jamPinjam || '',
+      _catatan: loan.catatan || '',
+      _inspeksiPengambilan: loan.inspeksiPengambilan || null,
+      _inspeksiPengembalian: loan.inspeksiPengembalian || null,
+      _verifikasiAdminSelesai: loan.verifikasiAdminSelesai || null,
+      _fotoBefore: loan.fotoBefore || null,
+      _fotoAfter: loan.fotoAfter || null
+    };
+
+    const namaArray = Array.isArray(loan.peralatanNama)
+      ? loan.peralatanNama
+      : (loan.peralatanNama ? [loan.peralatanNama] : []);
+
     supabase.from('loan_records').upsert([{
       id: loan.id,
       tipe: loan.isGuest ? 'Publik' : 'Anggota',
@@ -316,9 +455,9 @@ export const StudioProvider = ({ children }) => {
       tanggal_pinjam: loan.tanggalPinjam,
       target_kembali: loan.batasWaktuKembali,
       status: loan.status,
-      peralatan_ids: loan.peralatanIds,
-      peralatan_nama: [loan.peralatanNama],
-      bukti_surat: loan.buktiSurat
+      peralatan_ids: loan.peralatanIds || [],
+      peralatan_nama: namaArray,
+      bukti_surat: packedBukti
     }]).then(() => {}).catch((err) => console.warn('Supabase loan sync error:', err));
   };
 
@@ -391,18 +530,29 @@ export const StudioProvider = ({ children }) => {
       durasi_menit: log.durasiMenit,
       waktu_mulai: log.waktuMulai,
       waktu_selesai: log.waktuSelesai,
-      status: log.status
+      status: log.status || log.statusSesi || 'Berjalan'
     }]).then(() => {}).catch((err) => console.warn('Supabase PC log sync error:', err));
   };
 
   const syncTaskToSupabase = (task) => {
     if (!isSupabaseConfigured || !supabase) return;
+    const taskMeta = {
+      kategori: task.kategori || task.divisi || 'Kreatif Umum',
+      penanggungJawabNama: task.penanggungJawabNama || task.penanggung_jawab || 'Anggota Studio',
+      penanggungJawabKelas: task.penanggungJawabKelas || 'Tim Studio',
+      penanggungJawabWa: task.penanggungJawabWa || '',
+      penanggungJawabId: task.penanggungJawabId || '',
+      tenggatDraf: task.tenggatDraf || '',
+      tenggatKaryaAkhir: task.tenggatKaryaAkhir || '',
+      catatanRevisi: task.catatanRevisi || null,
+      pcTerhubungId: task.pcTerhubungId || null
+    };
     supabase.from('creative_tasks').upsert([{
       id: task.id,
       judul: task.judul,
-      divisi: task.divisi,
+      divisi: task.divisi || task.kategori || 'Kreatif Umum',
       penanggung_jawab: task.penanggungJawabNama || task.penanggung_jawab || '',
-      batas_waktu: task.tenggatWaktu || task.batas_waktu || '',
+      batas_waktu: `JSON:${JSON.stringify(taskMeta)}`,
       status: task.status || 'Belum Dimulai',
       deskripsi: task.deskripsi || ''
     }]).then(() => {}).catch((err) => console.warn('Supabase task sync error:', err));
@@ -410,9 +560,16 @@ export const StudioProvider = ({ children }) => {
 
   // Toast Notification
   const [toast, setToast] = useState(null);
+  const toastTimerRef = useRef(null);
   const showToast = (message, type = 'success') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
     setToast({ message, type, id: Date.now() });
-    setTimeout(() => setToast(null), 4500);
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 4500);
   };
 
   // Simpan Sesi Login Akun Pengguna Aktif (Bukan data tabel database)
@@ -470,7 +627,7 @@ export const StudioProvider = ({ children }) => {
       targetUser = existing;
     } else {
       targetUser = {
-        id: isTargetAdmin ? `ADM-${Date.now().toString().slice(-4)}` : `MEM-${Date.now().toString().slice(-4)}`,
+        id: getNextSequentialId(members, isTargetAdmin ? 'ADM' : 'MEM', 2),
         nama: nama || (isTargetAdmin ? 'Admin Studio' : 'Anggota Studio'),
         email: cleanEmail,
         kelas: kelas || (isTargetAdmin ? 'Pengelola Studio' : 'Anggota Tim Studio'),
@@ -515,7 +672,7 @@ export const StudioProvider = ({ children }) => {
     const userDivisi = isTargetAdmin ? 'Admin' : (divisi || 'Public Relation');
 
     const newMember = {
-      id: isTargetAdmin ? `ADM-${Date.now().toString().slice(-4)}` : `MEM-${Date.now().toString().slice(-4)}`,
+      id: getNextSequentialId(members, isTargetAdmin ? 'ADM' : 'MEM', 2),
       nama: nama.trim() || 'Anggota Creative Corner',
       email: cleanEmail,
       kelas: finalAngkatan,
@@ -553,6 +710,7 @@ export const StudioProvider = ({ children }) => {
     peminjamWa,
     peralatanIds,
     keperluan,
+    tanggalPinjam,
     batasWaktuKembali,
     catatan,
     buktiSurat
@@ -581,7 +739,7 @@ export const StudioProvider = ({ children }) => {
       .map((e) => e.nama)
       .join(', ') || 'Peralatan Studio';
 
-    const borrowingId = `PINJAM-TAMU-${Date.now().toString().slice(-4)}`;
+    const borrowingId = getNextSequentialId(borrowings, 'PINJAM-TAMU', 3);
     const newBorrowing = {
       id: borrowingId,
       eventId: null,
@@ -591,7 +749,7 @@ export const StudioProvider = ({ children }) => {
       peminjamWa,
       peralatanIds,
       peralatanNama: namaAlatList,
-      tanggalPinjam: new Date().toISOString().split('T')[0],
+      tanggalPinjam: tanggalPinjam || new Date().toISOString().split('T')[0],
       jamPinjam: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       batasWaktuKembali: batasWaktuKembali || '16:00',
       keperluan: keperluan || 'Peminjaman Mandiri Siswa/Guru (Bukan Anggota)',
@@ -624,7 +782,7 @@ export const StudioProvider = ({ children }) => {
 
   // TRIGGER 1: Penguncian Kuota Otomatis saat Penjadwalan Event
   const scheduleEvent = (newEventData) => {
-    const eventId = `EVT-${String(events.length + 1).padStart(2, '0')}`;
+    const eventId = getNextSequentialId(events, 'EVT', 2);
     const newEvent = {
       ...newEventData,
       id: eventId,
@@ -888,7 +1046,7 @@ export const StudioProvider = ({ children }) => {
       setEvents((prev) =>
         prev.map((ev) => {
           if (ev.id === eventId) {
-            const updatedPersonil = ev.personil.map((p) => {
+            const updatedPersonil = (ev.personil || []).map((p) => {
               if (p.anggotaId === anggotaId || p.nama === peminjamNama) {
                 return { ...p, statusTugas: 'Sedang Melaksanakan Tugas' };
               }
@@ -911,7 +1069,7 @@ export const StudioProvider = ({ children }) => {
     const actualFotoBefore = fotoBefore || buktiSurat || null;
 
     // 3. Catat peminjaman aktif
-    const borrowingId = `BORR-${String(borrowings.length + 1).padStart(2, '0')}`;
+    const borrowingId = getNextSequentialId(borrowings, 'BORR', 2);
     const newBorrowing = {
       id: borrowingId,
       eventId: eventId || null,
@@ -982,18 +1140,17 @@ export const StudioProvider = ({ children }) => {
       setCreativeTasks((prev) =>
         prev.map((task) => {
           if (task.id === tugasTerkaitId) {
-            return {
+            const updatedTask = {
               ...task,
               status: 'Dalam Proses',
               pcTerhubungId: pcId
             };
+            syncTaskToSupabase(updatedTask);
+            return updatedTask;
           }
           return task;
         })
       );
-      if (isSupabaseConfigured && supabase) {
-        supabase.from('creative_tasks').update({ status: 'Dalam Proses' }).eq('id', tugasTerkaitId).then(() => {}).catch(() => {});
-      }
     }
 
     showToast(`Workstation ${pcId} aktif untuk ${namaSiswa}! Tugas kreatif otomatis "Dalam Proses".`, 'success');
@@ -1055,7 +1212,8 @@ export const StudioProvider = ({ children }) => {
       durasiMenit: sessionData.durasiMenit,
       waktuMulai: sessionData.waktuMulai,
       waktuSelesai: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-      status: catatan
+      status: catatan,
+      statusSesi: catatan
     };
 
     setPcLogs((prev) => [newLog, ...prev]);
@@ -1086,10 +1244,12 @@ export const StudioProvider = ({ children }) => {
       setCreativeTasks((prev) =>
         prev.map((task) => {
           if (task.id === sessionData.tugasTerkaitId) {
-            return {
+            const updatedTask = {
               ...task,
               pcTerhubungId: null
             };
+            syncTaskToSupabase(updatedTask);
+            return updatedTask;
           }
           return task;
         })
@@ -1111,7 +1271,7 @@ export const StudioProvider = ({ children }) => {
   };
 
   const addPCClient = ({ id, namaUnit, spesifikasi }) => {
-    const newId = id?.trim() || `PC-0${pcClients.length + 1}`;
+    const newId = id?.trim() || getNextSequentialId(pcClients, 'PC', 2);
     if (pcClients.some((p) => p.id.toLowerCase() === newId.toLowerCase())) {
       alert(`Unit ${newId} sudah terdaftar.`);
       return;
@@ -1199,19 +1359,18 @@ export const StudioProvider = ({ children }) => {
       prev.map((b) => (b.id === borrowingId ? updatedBorrowing : b))
     );
 
-    // Sinkronkan rekaman pinjaman ke Supabase Cloud
-    if (isSupabaseConfigured && supabase) {
-      supabase.from('loan_records').update({ status: 'Selesai' }).eq('id', borrowingId).then(() => {}).catch(() => {});
-    }
+    // Sinkronkan rekaman pinjaman lengkap (termasuk inspeksiPengembalian & fotoAfter) ke Supabase Cloud
+    syncLoanToSupabase(updatedBorrowing);
 
     // 3. Update status personil di jadwal event jika terkait
     setEvents((prev) =>
       prev.map((ev) => {
-        const hasMember = ev.personil.some(
+        const personilList = Array.isArray(ev.personil) ? ev.personil : [];
+        const hasMember = personilList.some(
           (p) => p.anggotaId === borrowing.anggotaId || p.nama === borrowing.peminjamNama
         );
         if (hasMember) {
-          const updatedPersonil = ev.personil.map((p) => {
+          const updatedPersonil = personilList.map((p) => {
             if (p.anggotaId === borrowing.anggotaId || p.nama === borrowing.peminjamNama) {
               return { ...p, statusTugas: 'Sudah Melaksanakan Tugas' };
             }
@@ -1230,20 +1389,24 @@ export const StudioProvider = ({ children }) => {
 
   // Validasi Inspeksi Pengembalian oleh Admin
   const verifyReturnInspection = (borrowingId, verifiedBy = 'Administrator Studio') => {
+    const target = borrowings.find((b) => b.id === borrowingId);
+    if (!target) return;
+
+    const updatedTarget = {
+      ...target,
+      verifikasiAdminSelesai: true,
+      inspeksiPengembalian: {
+        ...(target.inspeksiPengembalian || {}),
+        verifikasiAdminSelesai: true,
+        diverifikasiOleh: verifiedBy,
+        tanggalVerifikasiAdmin: new Date().toLocaleString('id-ID')
+      }
+    };
+
     setBorrowings((prev) =>
-      prev.map((b) => {
-        if (b.id !== borrowingId) return b;
-        return {
-          ...b,
-          inspeksiPengembalian: {
-            ...(b.inspeksiPengembalian || {}),
-            verifikasiAdminSelesai: true,
-            diverifikasiOleh: verifiedBy,
-            tanggalVerifikasiAdmin: new Date().toLocaleString('id-ID')
-          }
-        };
-      })
+      prev.map((b) => (b.id === borrowingId ? updatedTarget : b))
     );
+    syncLoanToSupabase(updatedTarget);
     showToast(`Laporan fisik peminjaman ${borrowingId} berhasil divalidasi oleh Admin.`, 'success');
   };
 
@@ -1293,7 +1456,7 @@ export const StudioProvider = ({ children }) => {
   // CRUD Anggota / Siswa
   const addMember = (newMem) => {
     const isTargetAdmin = newMem.divisi === 'Admin' || newMem.role === 'admin' || (newMem.email?.toLowerCase().trim() === 'admin1.creativecorner@gmail.com');
-    const id = isTargetAdmin ? `ADM-${String(members.length + 1).padStart(2, '0')}` : `MEM-${String(members.length + 1).padStart(2, '0')}`;
+    const id = getNextSequentialId(members, isTargetAdmin ? 'ADM' : 'MEM', 2);
     const memDivisi = isTargetAdmin ? 'Admin' : (newMem.divisi || newMem.peranUtama || 'Public Relation');
     const mem = {
       ...newMem,
@@ -1322,7 +1485,7 @@ export const StudioProvider = ({ children }) => {
 
   // CRUD Tugas Kreatif
   const addCreativeTask = (newTask) => {
-    const id = `TSK-${String(creativeTasks.length + 1).padStart(2, '0')}`;
+    const id = getNextSequentialId(creativeTasks, 'TSK', 2);
     const task = {
       ...newTask,
       id,
@@ -1356,26 +1519,45 @@ export const StudioProvider = ({ children }) => {
     showToast(`Tugas kreatif berhasil dihapus.`, 'warning');
   };
 
+  const syncDutyToSupabase = (duty) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    supabase.from('duty_roster').upsert([{
+      id: duty.id,
+      hari: duty.hari,
+      jam_piket: `${duty.jamOperasional || '14:00 - 17:00'} | ${duty.tanggal || 'Mingguan'} | ${duty.tanggungJawab || 'Pemeliharaan kebersihan dan inventarisasi studio'}`,
+      petugas: Array.isArray(duty.petugas) ? duty.petugas : [],
+      status: duty.status || 'Terjadwal'
+    }]).then(() => {}).catch(() => {});
+  };
+
   // CRUD Roster Piket
   const addDutyRoster = (newDuty) => {
-    const id = `DUTY-${String(dutyRoster.length + 1).padStart(2, '0')}`;
+    const id = getNextSequentialId(dutyRoster, 'DUTY', 2);
     const dutyItem = { ...newDuty, id, status: 'Terjadwal' };
-    setDutyRoster((prev) => [...prev, dutyItem]);
-    if (isSupabaseConfigured && supabase) {
-      supabase.from('duty_roster').upsert([dutyItem]).then(() => {}).catch(() => {});
-    }
+    const nextRoster = [...dutyRoster, dutyItem];
+    setDutyRoster(nextRoster);
+    try {
+      localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(nextRoster));
+    } catch {}
+    syncDutyToSupabase(dutyItem);
     showToast(`Jadwal piket baru berhasil ditambahkan.`, 'success');
   };
 
   const updateDutyRoster = (dutyId, updatedRoster) => {
-    setDutyRoster((prev) =>
-      prev.map((item) => (item.id === dutyId ? { ...item, ...updatedRoster } : item))
-    );
-    if (isSupabaseConfigured && supabase) {
-      const target = dutyRoster.find((d) => d.id === dutyId);
-      if (target) {
-        supabase.from('duty_roster').upsert([{ ...target, ...updatedRoster }]).then(() => {}).catch(() => {});
+    let updatedTarget = null;
+    const nextRoster = dutyRoster.map((item) => {
+      if (item.id === dutyId) {
+        updatedTarget = { ...item, ...updatedRoster };
+        return updatedTarget;
       }
+      return item;
+    });
+    setDutyRoster(nextRoster);
+    try {
+      localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(nextRoster));
+    } catch {}
+    if (updatedTarget) {
+      syncDutyToSupabase(updatedTarget);
     }
     showToast(`Jadwal piket studio berhasil diperbarui.`, 'success');
   };
@@ -1391,7 +1573,7 @@ export const StudioProvider = ({ children }) => {
   };
 
   const addDocumentTemplate = (newDoc) => {
-    const id = `DOC-${String(documents.length + 1).padStart(2, '0')}`;
+    const id = getNextSequentialId(documents, 'DOC', 2);
     const doc = {
       ...newDoc,
       id,

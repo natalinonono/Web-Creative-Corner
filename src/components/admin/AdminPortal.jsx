@@ -167,11 +167,7 @@ export const AdminPortal = () => {
                 padding: '0.4rem 0.75rem',
                 borderRadius: '8px'
               }}
-              onClick={() => {
-                if (window.confirm('PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh data studio agar dapat mengisi inventaris dan agenda dari awal? Tindakan ini tidak dapat dibatalkan.')) {
-                  clearAllData();
-                }
-              }}
+              onClick={() => clearAllData()}
               title="Kosongkan data studio agar admin dapat mengisi dari awal"
             >
               <RotateCcw size={12} />

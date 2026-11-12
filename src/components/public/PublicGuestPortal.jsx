@@ -153,6 +153,7 @@ export const PublicGuestPortal = () => {
       peminjamWa: nomorWa.replace(/[^0-9]/g, ''),
       peralatanIds: selectedEquipmentIds,
       keperluan: keperluan.trim() || 'Peminjaman Tugas Siswa / Kegiatan Sekolah',
+      tanggalPinjam,
       batasWaktuKembali: batasKembali,
       catatan: catatan.trim(),
       buktiSurat: buktiSuratFile
@@ -1418,7 +1419,21 @@ export const PublicGuestPortal = () => {
                         <button
                           type="button"
                           className="btn btn-secondary btn-sm"
-                          onClick={() => setPreviewBuktiModal(b.buktiSurat)}
+                          onClick={() =>
+                            setPreviewBuktiModal(
+                              typeof b.buktiSurat === 'string'
+                                ? {
+                                    name: 'Lampiran Bukti Surat',
+                                    size: '-',
+                                    type: 'image/*',
+                                    isImage:
+                                      b.buktiSurat.startsWith('data:image') ||
+                                      /\.(png|jpe?g|webp|gif)(\?|$)/i.test(b.buktiSurat),
+                                    dataUrl: b.buktiSurat
+                                  }
+                                : b.buktiSurat
+                            )
+                          }
                           style={{ fontSize: '0.75rem' }}
                         >
                           <Eye size={13} />

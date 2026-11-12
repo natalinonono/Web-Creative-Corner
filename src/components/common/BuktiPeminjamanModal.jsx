@@ -36,8 +36,32 @@ Status : ${loanData.status || 'Diajukan'}
 ---------------------------------------------
 Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
 
-    navigator.clipboard.writeText(text);
-    alert('Ringkasan Lembar Bukti Peminjaman berhasil disalin! Anda dapat mengirimkannya ke WhatsApp Guru Pembimbing atau Pembina OSIS.');
+    const notifyCopied = () => {
+      alert('Ringkasan Lembar Bukti Peminjaman berhasil disalin! Anda dapat mengirimkannya ke WhatsApp Guru Pembimbing atau Pembina OSIS.');
+    };
+
+    const fallbackCopy = () => {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        notifyCopied();
+      } catch {
+        alert('Gagal menyalin otomatis. Silakan cetak/simpan PDF atau salin ringkasan secara manual.');
+      }
+    };
+
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(notifyCopied).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
   };
 
   return (

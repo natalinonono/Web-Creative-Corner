@@ -536,7 +536,7 @@ _Tim Pengelola Studio Creative Corner_`;
   let totalSudahSelesai = 0;
 
   events.forEach((ev) => {
-    ev.personil.forEach((p) => {
+    (ev.personil || []).forEach((p) => {
       if (p.statusTugas === 'Belum Mengambil Alat') totalBelumAmbil++;
       else if (p.statusTugas === 'Sedang Melaksanakan Tugas') totalSedangTugas++;
       else if (p.statusTugas === 'Sudah Melaksanakan Tugas') totalSudahSelesai++;
@@ -726,7 +726,7 @@ _Tim Pengelola Studio Creative Corner_`;
                                 <div style={{ fontSize: '0.7rem', color: '#0369A1', background: '#E0F2FE', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, width: 'fit-content' }}>
                                   Ditugaskan manual: creativecorner@gmail.com
                                 </div>
-                                {ev.personil.map((p, idx) => {
+                                {(ev.personil || []).map((p, idx) => {
                                   const getRoleBadge = (role) => {
                                     if (role === 'Kamera Foto 1') return { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE', Icon: Camera };
                                     if (role === 'Foto 2') return { bg: '#F0F9FF', text: '#0369A1', border: '#BAE6FD', Icon: Camera };

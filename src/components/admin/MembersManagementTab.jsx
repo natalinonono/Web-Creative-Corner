@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useStudio } from '../../context/StudioContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { Modal } from '../common/Modal';
-import { 
-  Users, 
-  Plus, 
-  Trash2, 
-  ShieldCheck, 
-  User, 
-  KeyRound, 
-  Mail, 
+import {
+  Users,
+  Plus,
+  Trash2,
+  ShieldCheck,
+  User,
+  KeyRound,
+  Mail,
   Phone,
   Search,
   CheckCircle2
@@ -61,11 +61,11 @@ export const MembersManagementTab = () => {
   const filteredMembers = members.filter((m) => {
     const q = searchQuery.toLowerCase();
     return (
-      m.nama.toLowerCase().includes(q) ||
-      m.email.toLowerCase().includes(q) ||
+      (m.nama || '').toLowerCase().includes(q) ||
+      (m.email || '').toLowerCase().includes(q) ||
       (m.divisi && m.divisi.toLowerCase().includes(q)) ||
       (m.peranUtama && m.peranUtama.toLowerCase().includes(q)) ||
-      m.kelas.toLowerCase().includes(q)
+      (m.kelas || '').toLowerCase().includes(q)
     );
   });
 
@@ -212,11 +212,11 @@ export const MembersManagementTab = () => {
                         gap: '0.35rem',
                         background:
                           memberDivisi === 'Admin' ? '#1E3A8A' :
-                          memberDivisi === 'Public Relation' ? '#0284C7' :
-                          memberDivisi === 'Editor' ? '#7C3AED' :
-                          memberDivisi === 'Desain Grafis' ? '#DB2777' :
-                          memberDivisi === 'Content Creator' ? '#059669' :
-                          memberDivisi === 'Dokumentasi' ? '#D97706' : '#475569',
+                            memberDivisi === 'Public Relation' ? '#0284C7' :
+                              memberDivisi === 'Editor' ? '#7C3AED' :
+                                memberDivisi === 'Desain Grafis' ? '#DB2777' :
+                                  memberDivisi === 'Content Creator' ? '#059669' :
+                                    memberDivisi === 'Dokumentasi' ? '#D97706' : '#475569',
                         color: '#FFFFFF'
                       }}>
                         {memberDivisi}
