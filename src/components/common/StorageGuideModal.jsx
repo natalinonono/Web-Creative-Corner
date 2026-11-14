@@ -374,12 +374,19 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
 
               {/* Foto Acuan Tata Letak Box Coklat */}
               <div className="card" style={{ padding: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <div style={{ fontSize: '0.825rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Camera size={16} color="#B45309" />
-                    <span>Foto Acuan Posisi Tata Letak Box Coklat</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <Camera size={18} color="#B45309" />
+                      <span>Foto Acuan Posisi Tata Letak Box Coklat (Label No. 1 - 6)</span>
+                    </div>
+                    <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.15rem' }}>
+                      Setiap kamera & kit perawatan wajib dikembalikan pada posisi nomor aslinya seperti foto di bawah.
+                    </div>
                   </div>
-                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Klik gambar untuk memperbesar</span>
+                  <span style={{ fontSize: '0.725rem', color: '#2563EB', fontWeight: 600, background: '#EFF6FF', padding: '3px 8px', borderRadius: '6px' }}>
+                    🔍 Klik gambar untuk memperbesar
+                  </span>
                 </div>
 
                 <div 
@@ -387,35 +394,39 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                     position: 'relative', 
                     borderRadius: '12px', 
                     overflow: 'hidden', 
-                    maxHeight: '260px',
+                    maxHeight: '340px',
                     cursor: 'pointer',
-                    background: '#0F172A'
+                    background: '#0F172A',
+                    border: '2px solid #FDE68A'
                   }}
-                  onClick={() => setSelectedPhoto('/storage-photos/storage-layout-3.jpeg')}
+                  onClick={() => setSelectedPhoto(STUDIO_STORAGE_SYSTEM.boxCoklat.fotoUrl || '/storage-photos/box-coklat-annotated.jpg')}
+                  title="Klik untuk melihat foto beresolusi penuh"
                 >
                   <img 
-                    src="/storage-photos/storage-layout-3.jpeg" 
-                    alt="Tata Letak Box Coklat Kamera" 
-                    style={{ width: '100%', height: '260px', objectFit: 'cover' }}
+                    src={STUDIO_STORAGE_SYSTEM.boxCoklat.fotoUrl || '/storage-photos/box-coklat-annotated.jpg'} 
+                    alt="Tata Letak Box Coklat Kamera Resmi" 
+                    style={{ width: '100%', height: '340px', objectFit: 'contain', background: '#0F172A' }}
                   />
                   <div 
                     style={{
                       position: 'absolute',
-                      bottom: '8px',
-                      right: '8px',
-                      background: 'rgba(15, 23, 42, 0.75)',
-                      backdropFilter: 'blur(4px)',
+                      bottom: '10px',
+                      right: '10px',
+                      background: 'rgba(15, 23, 42, 0.85)',
+                      backdropFilter: 'blur(6px)',
                       color: '#FFFFFF',
-                      padding: '4px 8px',
-                      borderRadius: '6px',
-                      fontSize: '0.7rem',
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      fontSize: '0.725rem',
+                      fontWeight: 600,
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.35rem'
+                      gap: '0.4rem',
+                      border: '1px solid rgba(255,255,255,0.2)'
                     }}
                   >
-                    <Maximize2 size={12} />
-                    <span>Perbesar Foto</span>
+                    <Maximize2 size={13} />
+                    <span>Perbesar Foto Layout</span>
                   </div>
                 </div>
               </div>
@@ -425,17 +436,34 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                 <table className="custom-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '60px' }}>No</th>
+                      <th style={{ width: '60px', textAlign: 'center' }}>No</th>
                       <th>Nama Barang / Alat</th>
                       <th>Kategori</th>
                       <th>Kode Inventaris</th>
-                      <th>Keterangan / Panduan</th>
+                      <th>Keterangan & Posisi Sesuai Foto</th>
                     </tr>
                   </thead>
                   <tbody>
                     {STUDIO_STORAGE_SYSTEM.boxCoklat.daftarBarang.map((item) => (
                       <tr key={item.nomor}>
-                        <td style={{ fontWeight: 700, fontFamily: 'var(--font-mono)' }}>#{item.nomor}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '26px',
+                            height: '26px',
+                            borderRadius: '50%',
+                            background: item.warnaLabel || '#B45309',
+                            color: item.warnaLabel === '#EAB308' ? '#000000' : '#FFFFFF',
+                            fontWeight: 800,
+                            fontSize: '0.75rem',
+                            fontFamily: 'var(--font-mono)',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                          }}>
+                            {item.nomor}
+                          </span>
+                        </td>
                         <td style={{ fontWeight: 700, color: '#0F172A' }}>{item.nama}</td>
                         <td>
                           <span className="badge badge-amber">{item.kategori}</span>

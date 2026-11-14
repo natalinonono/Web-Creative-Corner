@@ -536,14 +536,14 @@ export const STUDIO_STORAGE_SYSTEM = {
     warnaTema: '#B45309',
     badgeBg: '#FEF3C7',
     badgeBorder: '#FDE68A',
-    fotoUrl: '/storage-photos/storage-layout-3.jpeg',
+    fotoUrl: '/storage-photos/box-coklat-annotated.jpg',
     daftarBarang: [
-      { nomor: 1, nama: 'Cleaning Kit', kategori: 'Perawatan', keterangan: 'Kuas lensa, blower debu, cairan pembersih, kain microfiber' },
-      { nomor: 2, nama: 'Strap Camera', kategori: 'Aksesori', keterangan: 'Tali strap leher kamera studio' },
-      { nomor: 3, nama: 'Canon 250D', kategori: 'Kamera', keterangan: 'Kamera DSLR Canon EOS 250D Body' },
-      { nomor: 4, nama: 'Canon EOS M6 Mark I', kodeAlat: 'EQ-01', kategori: 'Kamera', keterangan: 'Mirrorless Body (Lensa EF-M)' },
-      { nomor: 5, nama: 'Canon EOS 1500D (WKS)', kodeAlat: 'EQ-03', kategori: 'Kamera', keterangan: 'DSLR Body Studio (Lensa EF/EF-S)' },
-      { nomor: 6, nama: 'Canon EOS M6 Mark II', kodeAlat: 'EQ-02', kategori: 'Kamera', keterangan: 'Mirrorless Body (Wajib Adapter EF-M)' }
+      { nomor: 1, warnaLabel: '#06B6D4', nama: 'Cleaning Kit (Pouch TaffSTUDIO)', kategori: 'Perawatan', keterangan: 'Pouch abu-abu: kuas lensa, blower debu, cairan pembersih, kain microfiber' },
+      { nomor: 2, warnaLabel: '#D946EF', nama: 'Strap Camera', kategori: 'Aksesori', keterangan: 'Tali strap leher kamera studio' },
+      { nomor: 3, warnaLabel: '#3B82F6', nama: 'Canon EOS 250D', kategori: 'Kamera', keterangan: 'DSLR Body Canon EOS 250D (Bawah kiri)' },
+      { nomor: 4, warnaLabel: '#22C55E', nama: 'Canon EOS M6 Mark I', kodeAlat: 'EQ-01', kategori: 'Kamera', keterangan: 'Mirrorless Body Silver (Atas kanan)' },
+      { nomor: 5, warnaLabel: '#EAB308', nama: 'Canon EOS 1500D (WKS)', kodeAlat: 'EQ-03', kategori: 'Kamera', keterangan: 'DSLR Body Studio (Tengah kanan)' },
+      { nomor: 6, warnaLabel: '#F472B6', nama: 'Canon EOS M6 Mark II', kodeAlat: 'EQ-02', kategori: 'Kamera', keterangan: 'Mirrorless Body Hitam (Bawah kanan)' }
     ]
   },
   boxBiru: {
