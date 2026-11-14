@@ -28,8 +28,8 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
 
   return (
     <div style={{ maxWidth: '520px', margin: '3rem auto', textAlign: 'center', padding: '2rem', background: '#FFFFFF', borderRadius: '10px', border: '1px solid #CBD5E1', boxShadow: 'var(--shadow-md)' }}>
-      <div style={{ width: '48px', height: '48px', background: '#FAF5FF', borderRadius: '8px', border: '1px solid #E9D5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-        <ShieldCheck size={28} color="#9333EA" />
+      <div style={{ width: '48px', height: '48px', background: '#EFF6FF', borderRadius: '8px', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+        <ShieldCheck size={28} color="#1E3A8A" />
       </div>
       <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
         Akses Khusus Administrator Studio
@@ -152,7 +152,7 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
             padding: '0.55rem',
             borderRadius: '8px',
             border: 'none',
-            background: memberAction === 'login' ? '#9333EA' : 'transparent',
+            background: memberAction === 'login' ? '#1E3A8A' : 'transparent',
             color: memberAction === 'login' ? '#FFFFFF' : '#64748B',
             fontWeight: memberAction === 'login' ? 700 : 500,
             fontSize: '0.825rem',
@@ -195,18 +195,18 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
 
       {/* Banner Penjelasan Khusus Anggota */}
       <div style={{
-        background: memberAction === 'register' ? '#F0FDF4' : '#FAF5FF',
-        border: `1px solid ${memberAction === 'register' ? '#BBF7D0' : '#E9D5FF'}`,
+        background: memberAction === 'register' ? '#F0FDF4' : '#EFF6FF',
+        border: `1px solid ${memberAction === 'register' ? '#BBF7D0' : '#BFDBFE'}`,
         borderRadius: '10px',
         padding: '0.85rem 1rem',
         marginBottom: '1.5rem',
         fontSize: '0.8rem',
-        color: memberAction === 'register' ? '#166534' : '#9333EA',
+        color: memberAction === 'register' ? '#166534' : '#1E3A8A',
         textAlign: 'left',
         lineHeight: '1.5'
       }}>
         <div style={{ fontWeight: 700, marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Sparkles size={15} color={memberAction === 'register' ? '#059669' : '#9333EA'} />
+          <Sparkles size={15} color={memberAction === 'register' ? '#059669' : '#1E3A8A'} />
           <span>Khusus Anggota Creative Corner:</span>
         </div>
         {memberAction === 'register'
@@ -334,7 +334,7 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
               <button
                 type="button"
                 onClick={() => setMemberAction('login')}
-                style={{ background: 'none', border: 'none', color: '#9333EA', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#1E3A8A', fontWeight: 700, cursor: 'pointer', padding: 0 }}
               >
                 Masuk Akun di Sini
               </button>

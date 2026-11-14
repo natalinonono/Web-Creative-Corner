@@ -244,7 +244,7 @@ export const PublicGuestPortal = () => {
           <div style={{
             fontSize: '0.7rem',
             fontWeight: 800,
-            color: '#9333EA',
+            color: '#1E3A8A',
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
             fontFamily: 'var(--font-mono)',
@@ -274,16 +274,16 @@ export const PublicGuestPortal = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
-                background: '#FAF5FF',
-                borderColor: '#E9D5FF',
-                color: '#9333EA',
+                background: '#EFF6FF',
+                borderColor: '#BFDBFE',
+                color: '#1E3A8A',
                 borderRadius: '10px',
                 fontWeight: 700,
                 fontSize: '0.775rem',
                 padding: '0.35rem 0.75rem'
               }}
             >
-              <Camera size={14} color="#9333EA" />
+              <Camera size={14} color="#1E3A8A" />
               <span>Lihat Panduan Lokasi Lemari, Box & 4 SOP Kamera</span>
             </button>
           </div>
@@ -300,7 +300,7 @@ export const PublicGuestPortal = () => {
 
           <div className="portal-hero-stat-card">
             <div style={{ fontSize: '0.65rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Total Aset</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#9333EA', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {equipment.length}
             </div>
           </div>
@@ -386,7 +386,7 @@ export const PublicGuestPortal = () => {
               type="button"
               className="btn btn-primary btn-sm"
               onClick={() => setBuktiPeminjamanModalData(submittedLoan)}
-              style={{ background: '#9333EA' }}
+              style={{ background: '#1E3A8A' }}
               id="btn-open-bukti-submitted"
             >
               <FileText size={14} />
@@ -427,7 +427,7 @@ export const PublicGuestPortal = () => {
           <div className="card" style={{ padding: '1.75rem' }}>
             <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #E2E8F0' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                <CheckSquare size={20} color="#9333EA" />
+                <CheckSquare size={20} color="#1E3A8A" />
                 <span>Formulir Permohonan Peminjaman</span>
               </h2>
               <p style={{ fontSize: '0.825rem', color: '#64748B', marginTop: '4px', margin: 0 }}>
@@ -439,7 +439,7 @@ export const PublicGuestPortal = () => {
               {/* BAGIAN 1: IDENTITAS */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.75rem' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#9333EA', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>01</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>01</span>
                   <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Identitas Lengkap Peminjam</span>
                 </div>
 
@@ -487,10 +487,10 @@ export const PublicGuestPortal = () => {
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#9333EA', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>02</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>02</span>
                     <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Alokasi Unit Peralatan & Fasilitas *</span>
                   </div>
-                  <span style={{ fontSize: '0.775rem', fontWeight: 700, color: '#9333EA' }}>
+                  <span style={{ fontSize: '0.775rem', fontWeight: 700, color: '#1E3A8A' }}>
                     {selectedEquipmentIds.length} Unit Dipilih
                   </span>
                 </div>
@@ -516,9 +516,9 @@ export const PublicGuestPortal = () => {
                         style={{
                           padding: '0.35rem 0.65rem',
                           borderRadius: '6px',
-                          border: selectedCategory === cat ? '1px solid #9333EA' : '1px solid #CBD5E1',
-                          background: selectedCategory === cat ? '#FAF5FF' : '#FFFFFF',
-                          color: selectedCategory === cat ? '#9333EA' : '#475569',
+                          border: selectedCategory === cat ? '1px solid #1E3A8A' : '1px solid #CBD5E1',
+                          background: selectedCategory === cat ? '#EFF6FF' : '#FFFFFF',
+                          color: selectedCategory === cat ? '#1E3A8A' : '#475569',
                           fontSize: '0.75rem',
                           fontWeight: selectedCategory === cat ? 700 : 500,
                           cursor: 'pointer'
@@ -535,7 +535,7 @@ export const PublicGuestPortal = () => {
                   <div style={{
                     marginBottom: '0.75rem',
                     padding: '0.65rem 0.85rem',
-                    background: '#FAF5FF',
+                    background: '#EFF6FF',
                     border: '1.5px solid #3B82F6',
                     borderRadius: '8px',
                     display: 'flex',
@@ -546,7 +546,7 @@ export const PublicGuestPortal = () => {
                   }}>
                     <Sparkles size={16} color="#2563EB" style={{ flexShrink: 0 }} />
                     <div style={{ flex: 1, lineHeight: 1.45 }}>
-                      <div style={{ fontWeight: 800, color: '#9333EA' }}>
+                      <div style={{ fontWeight: 800, color: '#1E3A8A' }}>
                         Filter Kompatibilitas Otomatis Aktif ({selectedCamera.nama}):
                       </div>
                       <div style={{ marginTop: '2px', color: '#1E40AF' }}>
@@ -606,7 +606,7 @@ export const PublicGuestPortal = () => {
                             alignItems: 'flex-start',
                             gap: '0.65rem',
                             padding: '0.65rem',
-                            background: !isAvailable ? '#F1F5F9' : isSelected ? '#FAF5FF' : '#FFFFFF',
+                            background: !isAvailable ? '#F1F5F9' : isSelected ? '#EFF6FF' : '#FFFFFF',
                             border: isSelected ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
                             borderRadius: '8px',
                             cursor: isAvailable ? 'pointer' : 'not-allowed',
@@ -619,7 +619,7 @@ export const PublicGuestPortal = () => {
                             checked={isSelected}
                             disabled={!isAvailable}
                             onChange={() => {}}
-                            style={{ marginTop: '3px', accentColor: '#9333EA' }}
+                            style={{ marginTop: '3px', accentColor: '#1E3A8A' }}
                           />
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{
@@ -634,7 +634,7 @@ export const PublicGuestPortal = () => {
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '2px', flexWrap: 'wrap' }}>
                               <span style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori}</span>
-                              <span style={{ fontSize: '0.675rem', fontWeight: 600, color: '#9333EA', background: '#FAF5FF', padding: '1px 5px', borderRadius: '4px' }}>
+                              <span style={{ fontSize: '0.675rem', fontWeight: 600, color: '#1E3A8A', background: '#EFF6FF', padding: '1px 5px', borderRadius: '4px' }}>
                                 📍 {item.lokasiRak}
                               </span>
                             </div>
@@ -646,7 +646,7 @@ export const PublicGuestPortal = () => {
                                   fontSize: '0.685rem',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  background: itemReq.needsAdapter ? '#FEF3C7' : '#FAF5FF',
+                                  background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
                                   color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
                                   fontWeight: 700,
                                   display: 'inline-flex',
@@ -666,9 +666,9 @@ export const PublicGuestPortal = () => {
                                   fontSize: '0.685rem',
                                   padding: '1px 6px',
                                   borderRadius: '4px',
-                                  background: lensMount.includes('EF-M') ? '#F3E8FF' : '#E0E7FF',
-                                  color: lensMount.includes('EF-M') ? '#6B21A8' : '#3730A3',
-                                  border: `1px solid ${lensMount.includes('EF-M') ? '#D8B4FE' : '#C7D2FE'}`,
+                                  background: lensMount.includes('EF-M') ? '#DBEAFE' : '#E0E7FF',
+                                  color: lensMount.includes('EF-M') ? '#0B192C' : '#3730A3',
+                                  border: `1px solid ${lensMount.includes('EF-M') ? '#93C5FD' : '#C7D2FE'}`,
                                   fontWeight: 700,
                                   display: 'inline-flex',
                                   alignItems: 'center',
@@ -746,9 +746,9 @@ export const PublicGuestPortal = () => {
                       <span
                         key={eq.id}
                         style={{
-                          background: '#FAF5FF',
-                          border: '1px solid #E9D5FF',
-                          color: '#9333EA',
+                          background: '#EFF6FF',
+                          border: '1px solid #BFDBFE',
+                          color: '#1E3A8A',
                           borderRadius: '9999px',
                           padding: '2px 8px',
                           fontSize: '0.725rem',
@@ -776,7 +776,7 @@ export const PublicGuestPortal = () => {
               {/* BAGIAN 3: WAKTU & KEPERLUAN */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.75rem' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#9333EA', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>03</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>03</span>
                   <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Jadwal Penggunaan & Keperluan *</span>
                 </div>
 
@@ -838,7 +838,7 @@ export const PublicGuestPortal = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#9333EA', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>04</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.725rem', fontWeight: 800, background: '#1E3A8A', color: '#FFFFFF', padding: '1px 5px', borderRadius: '3px' }}>04</span>
                     <span style={{ fontSize: '0.785rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', letterSpacing: '0.04em' }}>Lampiran Surat Izin Peminjaman Resmi *</span>
                   </div>
                   <span className="badge badge-rose" style={{ fontSize: '0.7rem' }}>
@@ -868,7 +868,7 @@ export const PublicGuestPortal = () => {
                       Format Foto (JPG, PNG, WebP) atau Berkas (PDF, DOCX) maksimal 10MB
                     </p>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-                      <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#9333EA' }}>
+                      <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#1E3A8A' }}>
                         <Camera size={14} />
                         <span>Buka Kamera HP</span>
                         <input
@@ -992,7 +992,7 @@ export const PublicGuestPortal = () => {
             {/* Box Ringkasan Peminjaman */}
             <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0F172A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <CheckSquare size={16} color="#9333EA" />
+                <CheckSquare size={16} color="#1E3A8A" />
                 <span>Ringkasan Pengajuan</span>
               </div>
 
@@ -1007,7 +1007,7 @@ export const PublicGuestPortal = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px dashed #E2E8F0' }}>
                   <span>Batas Waktu Kembali:</span>
-                  <strong style={{ color: '#9333EA' }}>{batasKembali} WIB</strong>
+                  <strong style={{ color: '#1E3A8A' }}>{batasKembali} WIB</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px dashed #E2E8F0' }}>
                   <span>Surat Izin:</span>
@@ -1017,7 +1017,7 @@ export const PublicGuestPortal = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0' }}>
                   <span>Unit Fasilitas:</span>
-                  <strong style={{ color: selectedEquipmentIds.length > 0 ? '#9333EA' : '#64748B' }}>
+                  <strong style={{ color: selectedEquipmentIds.length > 0 ? '#1E3A8A' : '#64748B' }}>
                     {selectedEquipmentIds.length} Unit Dipilih
                   </strong>
                 </div>
@@ -1044,7 +1044,7 @@ export const PublicGuestPortal = () => {
             {/* SOP Alur Peminjaman */}
             <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0F172A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <HelpCircle size={16} color="#9333EA" />
+                <HelpCircle size={16} color="#1E3A8A" />
                 <span>Alur Pengambilan & Pengembalian</span>
               </div>
 
@@ -1120,9 +1120,9 @@ export const PublicGuestPortal = () => {
                 style={{
                   padding: '0.4rem 0.85rem',
                   borderRadius: '6px',
-                  border: selectedCategory === cat ? '1px solid #9333EA' : '1px solid #CBD5E1',
-                  background: selectedCategory === cat ? '#FAF5FF' : '#FFFFFF',
-                  color: selectedCategory === cat ? '#9333EA' : '#475569',
+                  border: selectedCategory === cat ? '1px solid #1E3A8A' : '1px solid #CBD5E1',
+                  background: selectedCategory === cat ? '#EFF6FF' : '#FFFFFF',
+                  color: selectedCategory === cat ? '#1E3A8A' : '#475569',
                   fontSize: '0.785rem',
                   fontWeight: selectedCategory === cat ? 700 : 500,
                   cursor: 'pointer'
@@ -1193,7 +1193,7 @@ export const PublicGuestPortal = () => {
                         if (cat.includes('light')) return <Sun size={34} color="#D97706" />;
                         if (cat.includes('tripod') || cat.includes('aksesori')) return <Video size={34} color="#0284C7" />;
                         if (cat.includes('ruang')) return <Layers size={34} color="#DC2626" />;
-                        return <Camera size={34} color="#9333EA" />;
+                        return <Camera size={34} color="#1E3A8A" />;
                       })()}
 
                       <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
@@ -1211,9 +1211,9 @@ export const PublicGuestPortal = () => {
                           fontWeight: 700,
                           padding: '2px 7px',
                           borderRadius: '6px',
-                          background: (eq.lokasiRak || '').includes('Coklat') ? '#FEF3C7' : (eq.lokasiRak || '').includes('Biru') ? '#EFF6FF' : '#FAF5FF',
-                          color: (eq.lokasiRak || '').includes('Coklat') ? '#B45309' : (eq.lokasiRak || '').includes('Biru') ? '#1D4ED8' : '#9333EA',
-                          border: `1px solid ${(eq.lokasiRak || '').includes('Coklat') ? '#FDE68A' : (eq.lokasiRak || '').includes('Biru') ? '#BFDBFE' : '#E9D5FF'}`
+                          background: (eq.lokasiRak || '').includes('Coklat') ? '#FEF3C7' : (eq.lokasiRak || '').includes('Biru') ? '#EFF6FF' : '#EFF6FF',
+                          color: (eq.lokasiRak || '').includes('Coklat') ? '#B45309' : (eq.lokasiRak || '').includes('Biru') ? '#1D4ED8' : '#1E3A8A',
+                          border: `1px solid ${(eq.lokasiRak || '').includes('Coklat') ? '#FDE68A' : (eq.lokasiRak || '').includes('Biru') ? '#BFDBFE' : '#BFDBFE'}`
                         }}
                         title={`Lokasi Penyimpanan: ${eq.lokasiRak}`}
                       >
@@ -1242,7 +1242,7 @@ export const PublicGuestPortal = () => {
                           fontSize: '0.675rem',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          background: itemReq.needsAdapter ? '#FEF3C7' : '#FAF5FF',
+                          background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
                           color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
                           fontWeight: 700,
                           width: 'fit-content'
@@ -1259,9 +1259,9 @@ export const PublicGuestPortal = () => {
                           fontSize: '0.675rem',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          background: lensMount.includes('EF-M') ? '#F3E8FF' : '#E0E7FF',
-                          color: lensMount.includes('EF-M') ? '#6B21A8' : '#3730A3',
-                          border: `1px solid ${lensMount.includes('EF-M') ? '#D8B4FE' : '#C7D2FE'}`,
+                          background: lensMount.includes('EF-M') ? '#DBEAFE' : '#E0E7FF',
+                          color: lensMount.includes('EF-M') ? '#0B192C' : '#3730A3',
+                          border: `1px solid ${lensMount.includes('EF-M') ? '#93C5FD' : '#C7D2FE'}`,
                           fontWeight: 700,
                           width: 'fit-content'
                         }}>
@@ -1403,7 +1403,7 @@ export const PublicGuestPortal = () => {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#9333EA' }}>{b.id}</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E3A8A' }}>{b.id}</span>
                         <StatusBadge 
                           status={b.status} 
                           isOverdue={overdueInfo.isOverdue} 
@@ -1450,7 +1450,7 @@ export const PublicGuestPortal = () => {
                         type="button"
                         className="btn btn-primary btn-sm"
                         onClick={() => setBuktiPeminjamanModalData(b)}
-                        style={{ fontSize: '0.75rem', background: '#9333EA' }}
+                        style={{ fontSize: '0.75rem', background: '#1E3A8A' }}
                       >
                         <FileText size={13} />
                         <span>Buka Lembar Bukti Peminjaman Resmi</span>
@@ -1531,7 +1531,7 @@ export const PublicGuestPortal = () => {
             </div>
           ) : (
             <div style={{ padding: '2rem', textAlign: 'center', background: '#F8FAFC', borderRadius: '8px' }}>
-              <FileText size={48} color="#9333EA" style={{ margin: '0 auto 1rem' }} />
+              <FileText size={48} color="#1E3A8A" style={{ margin: '0 auto 1rem' }} />
               <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0F172A' }}>
                 {previewBuktiModal.name}
               </div>

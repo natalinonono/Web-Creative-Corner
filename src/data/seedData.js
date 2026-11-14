@@ -569,9 +569,9 @@ export const STUDIO_STORAGE_SYSTEM = {
     id: 'lemari-studio',
     nama: 'Lemari Penyimpanan Utama Studio (Lantai 2)',
     lokasiLemari: 'Studio Utama Creative Corner Lantai 2',
-    warnaTema: '#9333EA',
-    badgeBg: '#FAF5FF',
-    badgeBorder: '#E9D5FF',
+    warnaTema: '#1E3A8A',
+    badgeBg: '#EFF6FF',
+    badgeBorder: '#BFDBFE',
     fotoUrl: '/storage-photos/storage-layout-9.jpeg',
     daftarRak: [
       { rak: 1, namaRak: 'Rak 1 (Atas)', isi: 'Box Dus Canon EOS 1500D', kategori: 'Kardus & Kemasan' },

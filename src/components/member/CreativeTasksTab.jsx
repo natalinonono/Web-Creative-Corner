@@ -50,7 +50,7 @@ export const CreativeTasksTab = () => {
   const getCategoryIcon = (cat) => {
     switch (cat) {
       case 'Pembuatan Naskah/Konsep':
-        return <FileText size={16} color="#9333EA" />;
+        return <FileText size={16} color="#1E3A8A" />;
       case 'Desain Grafis':
         return <Palette size={16} color="#059669" />;
       case 'Editing Video':
@@ -121,7 +121,7 @@ export const CreativeTasksTab = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Palette size={22} color="#9333EA" />
+            <Palette size={22} color="#1E3A8A" />
             <span>Manajemen Proyek & Tugas Kreatif</span>
           </h2>
           <p style={{ fontSize: '0.85rem', color: '#475569' }}>
@@ -223,8 +223,8 @@ export const CreativeTasksTab = () => {
                         gap: '0.35rem',
                         fontSize: '0.725rem',
                         fontWeight: 700,
-                        color: '#9333EA',
-                        background: '#FAF5FF',
+                        color: '#1E3A8A',
+                        background: '#EFF6FF',
                         padding: '0.2rem 0.5rem',
                         borderRadius: '4px'
                       }}>

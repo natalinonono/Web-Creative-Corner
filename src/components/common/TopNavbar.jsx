@@ -135,15 +135,15 @@ export const TopNavbar = () => {
           <div className="brand-title" style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, letterSpacing: '-0.02em' }}>Creative Corner</div>
           <div className="brand-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span className="brand-status-dot"></span>
-            <span style={{ color: '#9333EA', fontWeight: 700 }}>Studio OS</span>
-            <span style={{ opacity: 0.4 }}>•</span>
-            <span style={{ color: '#059669', fontWeight: 600 }}>v4.2-LTS</span>
+            <span style={{ color: '#90A8FF' }}>Studio OS</span>
+            <span style={{ opacity: 0.5 }}>•</span>
+            <span style={{ color: '#85F8C4' }}>v4.2-LTS</span>
           </div>
         </div>
 
         {/* Studio Branch Indicator (Hanya tampil di layar lebar) */}
         <div className="studio-branch-pill" style={{ marginLeft: '0.5rem' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#9333EA' }}>meeting_room</span>
+          <span className="material-symbols-outlined" style={{ fontSize: '15px', color: '#90A8FF' }}>meeting_room</span>
           <span style={{ fontWeight: 600 }}>Studio Utama - Lantai 2</span>
         </div>
       </div>
@@ -253,18 +253,18 @@ export const TopNavbar = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
-            background: '#FAF5FF',
-            borderColor: '#E9D5FF',
-            color: '#9333EA',
-            borderRadius: '10px',
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            color: '#FFFFFF',
+            borderRadius: '8px',
             padding: '0.35rem 0.75rem',
-            fontWeight: 700,
+            fontWeight: 600,
             fontSize: '0.775rem'
           }}
           id="btn-open-storage-sop"
           title="Buka SOP Kamera, Lokasi Lemari, Box Coklat & Box Biru"
         >
-          <Camera size={14} color="#9333EA" />
+          <Camera size={14} color="#90A8FF" />
           <span className="nav-login-label-desktop">SOP & Lokasi Lemari</span>
           <span className="nav-login-label-mobile">SOP</span>
         </button>
@@ -275,19 +275,18 @@ export const TopNavbar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.55rem',
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: '10px',
-                padding: '0.3rem 0.75rem',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '8px',
+                padding: '0.25rem 0.65rem'
               }}
             >
               <div 
                 style={{
                   width: '28px',
                   height: '28px',
-                  borderRadius: '8px',
-                  background: isUserAdmin ? '#9333EA' : '#15803D',
+                  borderRadius: '6px',
+                  background: isUserAdmin ? '#1E3A8A' : '#059669',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -304,10 +303,10 @@ export const TopNavbar = () => {
                 )}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', lineHeight: 1.1 }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.1 }}>
                   {currentUser.nama || currentUser.email}
                 </span>
-                <span style={{ fontSize: '0.675rem', fontWeight: 600, color: isUserAdmin ? '#9333EA' : '#15803D', lineHeight: 1 }}>
+                <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: isUserAdmin ? '#90A8FF' : '#85F8C4', lineHeight: 1 }}>
                   {isUserAdmin ? 'Pengelola Studio' : 'Kru Studio'}
                 </span>
               </div>
@@ -318,13 +317,12 @@ export const TopNavbar = () => {
               onClick={logoutUser}
               className="btn btn-secondary btn-sm"
               style={{
-                background: '#FEE2E2',
-                borderColor: 'rgba(239, 68, 68, 0.2)',
-                color: '#DC2626',
+                background: 'rgba(239, 68, 68, 0.15)',
+                borderColor: 'rgba(239, 68, 68, 0.3)',
+                color: '#FECACA',
                 padding: '0.35rem 0.65rem',
                 fontSize: '0.75rem',
-                borderRadius: '8px',
-                fontWeight: 600
+                borderRadius: '6px'
               }}
               title="Keluar dari sesi akun"
             >
@@ -340,15 +338,17 @@ export const TopNavbar = () => {
               setMemberAction('login');
               setIsLoginModalOpen(true);
             }}
-            className="btn btn-primary btn-sm"
+            className="btn btn-secondary btn-sm"
             style={{
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.8rem',
-              borderRadius: '10px',
+              background: 'rgba(255, 255, 255, 0.12)',
+              borderColor: 'rgba(255, 255, 255, 0.25)',
+              color: '#FFFFFF',
+              padding: '0.35rem 0.75rem',
+              fontSize: '0.785rem',
+              borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.45rem',
-              boxShadow: '0 2px 8px rgba(147, 51, 234, 0.25)'
+              gap: '0.4rem'
             }}
             id="btn-open-member-login"
             title="Masuk atau Daftar Akun Anggota Creative Corner / Admin"

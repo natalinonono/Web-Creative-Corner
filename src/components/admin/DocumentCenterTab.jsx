@@ -89,7 +89,7 @@ export const DocumentCenterTab = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FileText size={22} color="#9333EA" />
+              <FileText size={22} color="#1E3A8A" />
               <span>Pusat Berkas Administrasi Resmi Creative Corner</span>
             </h2>
             <p style={{ fontSize: '0.85rem', color: '#475569' }}>
@@ -118,8 +118,8 @@ export const DocumentCenterTab = () => {
                 <span style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.75rem',
-                  color: '#9333EA',
-                  background: '#FAF5FF',
+                  color: '#1E3A8A',
+                  background: '#EFF6FF',
                   padding: '0.2rem 0.5rem',
                   borderRadius: '4px',
                   fontWeight: 700
@@ -195,7 +195,7 @@ export const DocumentCenterTab = () => {
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  style={{ flex: 1, fontSize: '0.75rem', borderColor: '#3B82F6', color: '#9333EA', background: '#F8FAFC', fontWeight: 600 }}
+                  style={{ flex: 1, fontSize: '0.75rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#F8FAFC', fontWeight: 600 }}
                   onClick={() => downloadLoanLetterDocx({ keperluan: doc.judul })}
                 >
                   <Download size={13} color="#2563EB" />
@@ -205,7 +205,7 @@ export const DocumentCenterTab = () => {
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  style={{ flex: 1, fontSize: '0.75rem', borderColor: '#3B82F6', color: '#9333EA', background: '#F0F9FF', fontWeight: 600 }}
+                  style={{ flex: 1, fontSize: '0.75rem', borderColor: '#3B82F6', color: '#1E3A8A', background: '#F0F9FF', fontWeight: 600 }}
                   onClick={() => downloadLoanLetterPdf({ keperluan: doc.judul })}
                 >
                   <Download size={13} color="#2563EB" />

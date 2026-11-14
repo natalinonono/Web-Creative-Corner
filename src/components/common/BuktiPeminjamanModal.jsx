@@ -124,7 +124,7 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '3px double #9333EA',
+          borderBottom: '3px double #1E3A8A',
           paddingBottom: '1.25rem',
           marginBottom: '1.5rem',
           flexWrap: 'wrap',
@@ -154,7 +154,7 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
               <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
                 CREATIVE CORNER STUDIO
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#9333EA', fontWeight: 700, marginTop: '2px' }}>
+              <div style={{ fontSize: '0.8rem', color: '#1E3A8A', fontWeight: 700, marginTop: '2px' }}>
                 Unit Multimedia, Dokumentasi & Penyiaran Sekolah
               </div>
               <div style={{ fontSize: '0.725rem', color: '#64748B' }}>
@@ -191,7 +191,7 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
             fontSize: '1.25rem',
             fontWeight: 800,
             textTransform: 'uppercase',
-            color: '#9333EA',
+            color: '#1E3A8A',
             letterSpacing: '0.02em',
             margin: '0 0 0.25rem 0'
           }}>
@@ -223,7 +223,7 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
 
             <div>
               <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem' }}>Nomor WhatsApp Aktif:</span>
-              <strong style={{ color: '#9333EA' }}>+{loanData.peminjamWa}</strong>
+              <strong style={{ color: '#1E3A8A' }}>+{loanData.peminjamWa}</strong>
             </div>
 
             <div>
@@ -245,7 +245,7 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
 
         {/* 4. DAFTAR PERALATAN / FASILITAS */}
         <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#9333EA', marginBottom: '0.65rem' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: '#1E3A8A', marginBottom: '0.65rem' }}>
             Daftar Unit Peralatan / Fasilitas yang Dipinjam:
           </div>
 
@@ -336,12 +336,12 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
 
           {/* Stempel Cap Digital Studio */}
           <div style={{
-            border: '2px solid #9333EA',
+            border: '2px solid #1E3A8A',
             borderRadius: '8px',
             padding: '0.5rem 1rem',
             textAlign: 'center',
-            background: '#FAF5FF',
-            color: '#9333EA'
+            background: '#EFF6FF',
+            color: '#1E3A8A'
           }}>
             <div style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               CREATIVE CORNER STUDIO

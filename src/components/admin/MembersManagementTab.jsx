@@ -75,7 +75,7 @@ export const MembersManagementTab = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Users size={22} color="#9333EA" />
+              <Users size={22} color="#1E3A8A" />
               <span>Manajemen Anggota & Penetapan Hak Akses Akun</span>
             </h2>
             <p style={{ fontSize: '0.85rem', color: '#475569' }}>
@@ -97,8 +97,8 @@ export const MembersManagementTab = () => {
 
       {/* Ketentuan Email Admin & Anggota */}
       <div style={{
-        background: '#FAF5FF',
-        border: '1px solid #E9D5FF',
+        background: '#EFF6FF',
+        border: '1px solid #BFDBFE',
         borderRadius: '10px',
         padding: '1rem 1.25rem',
         marginBottom: '1.75rem',
@@ -106,9 +106,9 @@ export const MembersManagementTab = () => {
         alignItems: 'flex-start',
         gap: '0.75rem'
       }}>
-        <KeyRound size={22} color="#9333EA" style={{ marginTop: '2px', flexShrink: 0 }} />
+        <KeyRound size={22} color="#1E3A8A" style={{ marginTop: '2px', flexShrink: 0 }} />
         <div>
-          <h4 style={{ fontSize: '0.925rem', fontWeight: 700, color: '#9333EA', marginBottom: '0.25rem' }}>
+          <h4 style={{ fontSize: '0.925rem', fontWeight: 700, color: '#1E3A8A', marginBottom: '0.25rem' }}>
             Ketentuan Hak Akses & Pembagian 2 Versi Sistem:
           </h4>
           <p style={{ fontSize: '0.825rem', color: '#334155', lineHeight: '1.5' }}>
@@ -124,7 +124,7 @@ export const MembersManagementTab = () => {
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Users size={20} color="#9333EA" />
+              <Users size={20} color="#1E3A8A" />
               <span>Daftar Akun Terdaftar ({members.length} Akun)</span>
             </h3>
           </div>
@@ -167,7 +167,7 @@ export const MembersManagementTab = () => {
                           width: '32px',
                           height: '32px',
                           borderRadius: '50%',
-                          background: isAdmin ? '#9333EA' : '#E2E8F0',
+                          background: isAdmin ? '#1E3A8A' : '#E2E8F0',
                           color: isAdmin ? '#FFFFFF' : '#0F172A',
                           display: 'flex',
                           alignItems: 'center',
@@ -184,7 +184,7 @@ export const MembersManagementTab = () => {
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.825rem', color: isAdmin ? '#9333EA' : '#334155', fontWeight: isAdmin ? 700 : 400 }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.825rem', color: isAdmin ? '#1E3A8A' : '#334155', fontWeight: isAdmin ? 700 : 400 }}>
                         {m.email}
                       </span>
                     </td>
@@ -211,7 +211,7 @@ export const MembersManagementTab = () => {
                         alignItems: 'center',
                         gap: '0.35rem',
                         background:
-                          memberDivisi === 'Admin' ? '#9333EA' :
+                          memberDivisi === 'Admin' ? '#1E3A8A' :
                             memberDivisi === 'Public Relation' ? '#0284C7' :
                               memberDivisi === 'Editor' ? '#7C3AED' :
                                 memberDivisi === 'Desain Grafis' ? '#DB2777' :

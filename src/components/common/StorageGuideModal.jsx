@@ -87,8 +87,8 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
         <div 
           className="modal-header" 
           style={{ 
-            background: 'linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 100%)',
-            borderBottom: '1px solid #F1F5F9',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%)',
+            borderBottom: '1px solid #E2E8F0',
             padding: '1.25rem 1.65rem'
           }}
         >
@@ -113,7 +113,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                 Panduan Tata Letak & SOP Sarana Prasarana Kamera
               </h2>
               <div style={{ fontSize: '0.775rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.2rem' }}>
-                <span style={{ color: '#9333EA', fontWeight: 700 }}>Creative Corner Studio OS</span>
+                <span style={{ color: '#1E3A8A', fontWeight: 700 }}>Creative Corner Studio OS</span>
                 <span>•</span>
                 <span>Lemari Utama, Box Coklat & Box Biru (Lantai 2)</span>
               </div>
@@ -180,7 +180,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
             onClick={() => setActiveTab('lemariStudio')}
             style={{ padding: '0.6rem 0.95rem', fontSize: '0.825rem' }}
           >
-            <Layers size={16} color="#9333EA" />
+            <Layers size={16} color="#1E3A8A" />
             <span>Lemari Studio (Rak 1-8)</span>
           </button>
 
@@ -210,13 +210,13 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div 
                 style={{ 
-                  background: 'linear-gradient(135deg, #FAF5FF 0%, #EFF6FF 100%)', 
-                  border: '1px solid #E9D5FF', 
+                  background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)', 
+                  border: '1px solid #BFDBFE', 
                   borderRadius: '16px', 
                   padding: '1.25rem 1.5rem' 
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#9333EA', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#1E3A8A', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
                   <Sparkles size={16} />
                   <span>Pedoman Standar Operasional Prosedur Studio (SOP)</span>
                 </div>
@@ -238,7 +238,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                       className="card"
                       style={{
                         padding: '1.25rem',
-                        borderLeft: isCritical ? '4px solid #DC2626' : '4px solid #9333EA',
+                        borderLeft: isCritical ? '4px solid #DC2626' : '4px solid #1E3A8A',
                         background: isCritical ? '#FFF1F2' : '#FFFFFF',
                         borderColor: isCritical ? '#FECDD3' : '#F1F5F9'
                       }}
@@ -250,9 +250,9 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                             fontWeight: 800,
                             padding: '3px 8px',
                             borderRadius: '9999px',
-                            background: isCritical ? '#FEE2E2' : '#FAF5FF',
-                            color: isCritical ? '#DC2626' : '#9333EA',
-                            border: `1px solid ${isCritical ? '#FCA5A5' : '#E9D5FF'}`
+                            background: isCritical ? '#FEE2E2' : '#EFF6FF',
+                            color: isCritical ? '#DC2626' : '#1E3A8A',
+                            border: `1px solid ${isCritical ? '#FCA5A5' : '#BFDBFE'}`
                           }}
                         >
                           ATURAN #{rule.nomor} • {rule.badge}
@@ -612,8 +612,8 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div 
                 style={{ 
-                  background: '#FAF5FF', 
-                  border: '1px solid #E9D5FF', 
+                  background: '#EFF6FF', 
+                  border: '1px solid #BFDBFE', 
                   borderRadius: '16px', 
                   padding: '1.15rem 1.35rem',
                   display: 'flex',
@@ -624,13 +624,13 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '0.725rem', fontWeight: 800, color: '#9333EA', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.725rem', fontWeight: 800, color: '#1E3A8A', textTransform: 'uppercase' }}>
                     Lemari Fasilitas Studio Utama // Lantai 2
                   </div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#581C87', margin: '0.2rem 0 0' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#172554', margin: '0.2rem 0 0' }}>
                     {STUDIO_STORAGE_SYSTEM.lemariStudio.nama}
                   </h3>
-                  <div style={{ fontSize: '0.8rem', color: '#6B21A8', marginTop: '0.25rem' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#1E40AF', marginTop: '0.25rem' }}>
                     📍 <strong>Lokasi:</strong> {STUDIO_STORAGE_SYSTEM.lemariStudio.lokasiLemari}
                   </div>
                 </div>
@@ -639,9 +639,9 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                   style={{
                     padding: '0.35rem 0.85rem',
                     borderRadius: '9999px',
-                    background: '#F3E8FF',
-                    border: '1px solid #C084FC',
-                    color: '#9333EA',
+                    background: '#DBEAFE',
+                    border: '1px solid #93C5FD',
+                    color: '#1E3A8A',
                     fontSize: '0.75rem',
                     fontWeight: 700
                   }}
@@ -654,7 +654,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
               <div className="card" style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                   <div style={{ fontSize: '0.825rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Layers size={16} color="#9333EA" />
+                    <Layers size={16} color="#1E3A8A" />
                     <span>Foto Acuan Lemari Studio & Penempatan Rak</span>
                   </div>
                   <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Klik gambar untuk memperbesar</span>
@@ -706,12 +706,12 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
                     className="card"
                     style={{ 
                       padding: '1.15rem',
-                      borderLeft: rak.rak === 6 ? '4px solid #9333EA' : '4px solid #64748B',
-                      background: rak.rak === 6 ? '#FAF5FF' : '#FFFFFF'
+                      borderLeft: rak.rak === 6 ? '4px solid #1E3A8A' : '4px solid #64748B',
+                      background: rak.rak === 6 ? '#EFF6FF' : '#FFFFFF'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.85rem', color: rak.rak === 6 ? '#9333EA' : '#0F172A' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.85rem', color: rak.rak === 6 ? '#1E3A8A' : '#0F172A' }}>
                         {rak.namaRak}
                       </span>
                       <span className="badge badge-blue" style={{ fontSize: '0.675rem' }}>
@@ -756,7 +756,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
               {/* Form Mulai Cas Baterai Baru */}
               <div className="card" style={{ padding: '1.25rem' }}>
                 <h4 style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0F172A', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Plus size={16} color="#9333EA" />
+                  <Plus size={16} color="#1E3A8A" />
                   <span>Catat Baterai yang Mulai Dicas Sekarang</span>
                 </h4>
 
@@ -846,7 +846,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
               {/* Daftar Rekaman Cas Baterai */}
               <div className="card" style={{ padding: '1rem' }}>
                 <h4 style={{ fontSize: '0.925rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Clock size={16} color="#9333EA" />
+                  <Clock size={16} color="#1E3A8A" />
                   <span>Daftar Baterai yang Sedang Dicas & Riwayat Pencabutan</span>
                 </h4>
 

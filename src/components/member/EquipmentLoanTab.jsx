@@ -107,11 +107,11 @@ export const EquipmentLoanTab = () => {
             width: '46px',
             height: '46px',
             borderRadius: '50%',
-            background: '#FAF5FF',
+            background: '#EFF6FF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#9333EA',
+            color: '#1E3A8A',
             border: '2px solid #DBEAFE',
             flexShrink: 0
           }}>
@@ -186,7 +186,7 @@ export const EquipmentLoanTab = () => {
                   key={b.id}
                   style={{
                     background: '#FFFFFF',
-                    border: `1.5px solid ${isOverdue ? '#FDA4AF' : '#E9D5FF'}`,
+                    border: `1.5px solid ${isOverdue ? '#FDA4AF' : '#BFDBFE'}`,
                     borderRadius: '12px',
                     padding: '1.25rem',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
@@ -206,8 +206,8 @@ export const EquipmentLoanTab = () => {
                         gap: '0.35rem',
                         padding: '0.2rem 0.6rem',
                         borderRadius: '9999px',
-                        background: '#FAF5FF',
-                        color: '#9333EA',
+                        background: '#EFF6FF',
+                        color: '#1E3A8A',
                         fontSize: '0.7rem',
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 700
@@ -232,7 +232,7 @@ export const EquipmentLoanTab = () => {
                             fontSize: '0.7rem',
                             fontFamily: 'var(--font-mono)',
                             color: '#1E40AF',
-                            background: '#FAF5FF',
+                            background: '#EFF6FF',
                             padding: '1px 6px',
                             borderRadius: '4px',
                             fontWeight: 600
@@ -254,11 +254,11 @@ export const EquipmentLoanTab = () => {
                         width: '40px',
                         height: '40px',
                         borderRadius: '8px',
-                        background: '#FAF5FF',
+                        background: '#EFF6FF',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#9333EA',
+                        color: '#1E3A8A',
                         flexShrink: 0
                       }}>
                         <Camera size={20} />
@@ -276,7 +276,7 @@ export const EquipmentLoanTab = () => {
                         fontSize: '0.75rem',
                         color: '#334155'
                       }}>
-                        <div style={{ fontWeight: 700, color: '#9333EA', marginBottom: '0.2rem' }}>
+                        <div style={{ fontWeight: 700, color: '#1E3A8A', marginBottom: '0.2rem' }}>
                           Catatan Inspeksi Awal (BEFORE):
                         </div>
                         <div>• Fisik: {b.inspeksiPengambilan.kondisiFisik || 'Baik'}</div>
@@ -291,7 +291,7 @@ export const EquipmentLoanTab = () => {
                       gap: '0.45rem',
                       padding: '0.55rem 0.75rem',
                       borderRadius: '8px',
-                      background: isOverdue ? '#FFF1F2' : '#FAF5FF',
+                      background: isOverdue ? '#FFF1F2' : '#EFF6FF',
                       border: `1px solid ${isOverdue ? '#FECDD3' : '#DBEAFE'}`,
                       marginBottom: '1rem',
                       fontSize: '0.8rem',
@@ -501,7 +501,7 @@ export const EquipmentLoanTab = () => {
                         if (cat.includes('light')) return <Sun size={36} color="#D97706" />;
                         if (cat.includes('tripod') || cat.includes('aksesori')) return <Video size={36} color="#0284C7" />;
                         if (cat.includes('ruang')) return <Layers size={36} color="#DC2626" />;
-                        return <Camera size={36} color="#9333EA" />;
+                        return <Camera size={36} color="#1E3A8A" />;
                       })()}
 
                       {/* Status Tag on Top-Left */}
@@ -555,7 +555,7 @@ export const EquipmentLoanTab = () => {
                           fontSize: '0.675rem',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          background: toolReq.needsAdapter ? '#FEF3C7' : '#FAF5FF',
+                          background: toolReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
                           color: toolReq.needsAdapter ? '#92400E' : '#1E40AF',
                           fontWeight: 700,
                           display: 'inline-block'
@@ -571,9 +571,9 @@ export const EquipmentLoanTab = () => {
                           fontSize: '0.675rem',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          background: lensMount === 'EF-M' ? '#FAF5FF' : '#EEF2FF',
-                          color: lensMount === 'EF-M' ? '#7E22CE' : '#4338CA',
-                          border: `1px solid ${lensMount === 'EF-M' ? '#E9D5FF' : '#C7D2FE'}`,
+                          background: lensMount === 'EF-M' ? '#EFF6FF' : '#EEF2FF',
+                          color: lensMount === 'EF-M' ? '#172554' : '#4338CA',
+                          border: `1px solid ${lensMount === 'EF-M' ? '#BFDBFE' : '#C7D2FE'}`,
                           fontWeight: 700,
                           display: 'inline-block'
                         }}>

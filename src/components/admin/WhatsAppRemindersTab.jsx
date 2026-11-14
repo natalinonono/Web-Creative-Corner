@@ -196,7 +196,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Camera size={20} color="#9333EA" />
+              <Camera size={20} color="#1E3A8A" />
               <span>Pengingat Penugasan Dokumentasi Lapangan (Liputan Event)</span>
             </h3>
             <div className="card-subtitle">
@@ -247,8 +247,8 @@ _Tim Pengelola Studio Creative Corner_`;
                           fontFamily: 'var(--font-mono)',
                           fontSize: '0.8rem',
                           fontWeight: 700,
-                          color: '#9333EA',
-                          background: '#FAF5FF',
+                          color: '#1E3A8A',
+                          background: '#EFF6FF',
                           padding: '2px 6px',
                           borderRadius: '4px',
                           display: 'inline-block',
@@ -266,7 +266,7 @@ _Tim Pengelola Studio Creative Corner_`;
                             {lockedList.map((tool) => (
                               <span key={tool.id} style={{
                                 fontSize: '0.75rem',
-                                color: '#9333EA',
+                                color: '#1E3A8A',
                                 fontWeight: 600,
                                 background: '#F0F9FF',
                                 border: '1px solid #BAE6FD',
@@ -289,7 +289,7 @@ _Tim Pengelola Studio Creative Corner_`;
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                             {ev.personil.map((p, idx) => {
                               const getRoleBadge = (role) => {
-                                if (role === 'Kamera Foto 1') return { bg: '#FAF5FF', text: '#1E40AF', border: '#E9D5FF', Icon: Camera };
+                                if (role === 'Kamera Foto 1') return { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE', Icon: Camera };
                                 if (role === 'Foto 2') return { bg: '#F0F9FF', text: '#0369A1', border: '#BAE6FD', Icon: Camera };
                                 if (role === 'Video') return { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A', Icon: Video };
                                 if (role?.includes('Live Report')) return { bg: '#F0FDF4', text: '#166534', border: '#BBF7D0', Icon: Smartphone };
@@ -372,7 +372,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Camera size={20} color="#9333EA" />
+              <Camera size={20} color="#1E3A8A" />
               <span>Pengingat Pengembalian Alat Aktif</span>
             </h3>
             <div className="card-subtitle">
@@ -414,7 +414,7 @@ _Tim Pengelola Studio Creative Corner_`;
                         <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{b.peminjamKelas}</div>
                       </td>
                       <td>
-                        <code style={{ fontSize: '0.8rem', color: '#9333EA' }}>+{b.peminjamWa}</code>
+                        <code style={{ fontSize: '0.8rem', color: '#1E3A8A' }}>+{b.peminjamWa}</code>
                       </td>
                       <td style={{ maxWidth: '260px' }}>
                         <strong style={{ color: '#0F172A' }}>{b.peralatanNama}</strong>
@@ -466,7 +466,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Layers size={20} color="#9333EA" />
+              <Layers size={20} color="#1E3A8A" />
               <span>Pengingat Tenggat Tugas Kreatif (Draf & Final)</span>
             </h3>
             <div className="card-subtitle">
@@ -495,7 +495,7 @@ _Tim Pengelola Studio Creative Corner_`;
                     <strong>{t.judul}</strong>
                   </td>
                   <td>
-                    <span style={{ fontSize: '0.8rem', color: '#9333EA', fontWeight: 600 }}>{t.kategori}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#1E3A8A', fontWeight: 600 }}>{t.kategori}</span>
                   </td>
                   <td>
                     <strong>{t.penanggungJawabNama}</strong>
@@ -537,7 +537,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Clock size={20} color="#9333EA" />
+              <Clock size={20} color="#1E3A8A" />
               <span>Pengingat Giliran Jaga Piket Studio</span>
             </h3>
             <div className="card-subtitle">

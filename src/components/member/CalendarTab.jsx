@@ -200,7 +200,7 @@ export const CalendarTab = () => {
 
   const categories = [
     { label: 'Semua', count: events.length + dutyRoster.length + activeLoans.length, dotColor: null },
-    { label: 'Event Sekolah', count: events.length, dotColor: '#9333EA' },
+    { label: 'Event Sekolah', count: events.length, dotColor: '#1E3A8A' },
     { label: 'Piket Studio', count: dutyRoster.length, dotColor: '#059669' },
     { label: 'Peminjaman Aktif', count: activeLoans.length, dotColor: '#D97706' }
   ];
@@ -227,7 +227,7 @@ export const CalendarTab = () => {
           <span>/</span>
           <span>JADWAL PEMINJAMAN & EVENT</span>
           <span>/</span>
-          <span style={{ color: '#9333EA', fontWeight: 700 }}>{formatMonthYear(referenceDate)}</span>
+          <span style={{ color: '#1E3A8A', fontWeight: 700 }}>{formatMonthYear(referenceDate)}</span>
         </div>
 
         <div style={{
@@ -290,7 +290,7 @@ export const CalendarTab = () => {
                 fontSize: '0.785rem',
                 padding: '0.45rem 0.95rem',
                 fontWeight: 700,
-                background: '#9333EA'
+                background: '#1E3A8A'
               }}
             >
               <PlusCircle size={14} />
@@ -390,16 +390,16 @@ export const CalendarTab = () => {
               gap: '0.5rem',
               padding: '0.35rem 0.75rem',
               borderRadius: '8px',
-              background: '#FAF5FF',
-              color: '#9333EA'
+              background: '#EFF6FF',
+              color: '#1E3A8A'
             }}>
-              <CalendarIcon size={15} color="#9333EA" />
+              <CalendarIcon size={15} color="#1E3A8A" />
               <strong style={{ fontSize: '0.875rem' }}>{formatMonthYear(referenceDate)}</strong>
               {selectedDateFilter && (
                 <span style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.685rem',
-                  background: '#9333EA',
+                  background: '#1E3A8A',
                   color: '#FFFFFF',
                   padding: '1px 6px',
                   borderRadius: '4px',
@@ -427,7 +427,7 @@ export const CalendarTab = () => {
               onClick={() => setActiveViewMode('timeline')}
               style={{
                 border: 'none',
-                background: activeViewMode === 'timeline' ? '#9333EA' : 'transparent',
+                background: activeViewMode === 'timeline' ? '#1E3A8A' : 'transparent',
                 color: activeViewMode === 'timeline' ? '#FFFFFF' : '#475569',
                 padding: '0.35rem 0.75rem',
                 borderRadius: '6px',
@@ -449,7 +449,7 @@ export const CalendarTab = () => {
               onClick={() => setActiveViewMode('calendar')}
               style={{
                 border: 'none',
-                background: activeViewMode === 'calendar' ? '#9333EA' : 'transparent',
+                background: activeViewMode === 'calendar' ? '#1E3A8A' : 'transparent',
                 color: activeViewMode === 'calendar' ? '#FFFFFF' : '#475569',
                 padding: '0.35rem 0.75rem',
                 borderRadius: '6px',
@@ -471,7 +471,7 @@ export const CalendarTab = () => {
               onClick={() => setActiveViewMode('my-tasks')}
               style={{
                 border: 'none',
-                background: activeViewMode === 'my-tasks' ? '#9333EA' : 'transparent',
+                background: activeViewMode === 'my-tasks' ? '#1E3A8A' : 'transparent',
                 color: activeViewMode === 'my-tasks' ? '#FFFFFF' : '#475569',
                 padding: '0.35rem 0.75rem',
                 borderRadius: '6px',
@@ -505,7 +505,7 @@ export const CalendarTab = () => {
                   onClick={() => setActiveCategoryFilter(cat.label)}
                   style={{
                     border: 'none',
-                    background: isSelected ? '#9333EA' : '#F1F5F9',
+                    background: isSelected ? '#1E3A8A' : '#F1F5F9',
                     color: isSelected ? '#FFFFFF' : '#334155',
                     padding: '0.3rem 0.75rem',
                     borderRadius: '9999px',
@@ -540,7 +540,7 @@ export const CalendarTab = () => {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <UserCheck size={20} color="#9333EA" />
+                <UserCheck size={20} color="#1E3A8A" />
                 <span>Jadwal Dokumentasi Pribadi ({currentMember.nama})</span>
               </h2>
               <p style={{ fontSize: '0.825rem', color: '#475569', margin: '2px 0 0 0' }}>
@@ -562,15 +562,15 @@ export const CalendarTab = () => {
               {myPersonalAssignments.map(({ event, personnel }) => {
                 const lockedTools = equipment.filter((eq) => event.peralatanTerkunciIds?.includes(eq.id));
                 return (
-                  <div key={event.id} className="card" style={{ borderLeft: '4px solid #9333EA', margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div key={event.id} className="card" style={{ borderLeft: '4px solid #1E3A8A', margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                         <div style={{
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.4rem',
-                          background: '#FAF5FF',
-                          color: '#9333EA',
+                          background: '#EFF6FF',
+                          color: '#1E3A8A',
                           padding: '0.25rem 0.65rem',
                           borderRadius: '6px',
                           fontSize: '0.75rem',
@@ -609,15 +609,15 @@ export const CalendarTab = () => {
                           display: 'flex',
                           alignItems: 'center',
                           gap: '0.45rem',
-                          background: '#FAF5FF',
-                          border: '1px solid #E9D5FF',
+                          background: '#EFF6FF',
+                          border: '1px solid #BFDBFE',
                           padding: '0.35rem 0.65rem',
                           borderRadius: '6px',
                           fontSize: '0.75rem',
-                          color: '#9333EA',
+                          color: '#1E3A8A',
                           marginTop: '0.25rem'
                         }}>
-                          <ShieldCheck size={14} color="#9333EA" />
+                          <ShieldCheck size={14} color="#1E3A8A" />
                           <span>Ditetapkan oleh: <strong>{event.ditugaskanOleh || 'Admin Studio'}</strong></span>
                         </div>
                       </div>
@@ -706,8 +706,8 @@ export const CalendarTab = () => {
                     minHeight: '95px',
                     padding: '0.5rem',
                     borderRadius: '8px',
-                    background: cell.isToday ? '#FAF5FF' : '#FFFFFF',
-                    border: cell.isToday ? '1.5px solid #9333EA' : '1px solid #E2E8F0',
+                    background: cell.isToday ? '#EFF6FF' : '#FFFFFF',
+                    border: cell.isToday ? '1.5px solid #1E3A8A' : '1px solid #E2E8F0',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
@@ -721,12 +721,12 @@ export const CalendarTab = () => {
                     <span style={{
                       fontSize: '0.8rem',
                       fontWeight: cell.isToday ? 800 : 600,
-                      color: cell.isToday ? '#9333EA' : '#0F172A'
+                      color: cell.isToday ? '#1E3A8A' : '#0F172A'
                     }}>
                       {cell.day}
                     </span>
                     {totalCount > 0 && (
-                      <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', background: '#9333EA', color: '#FFFFFF', padding: '0 5px', borderRadius: '9999px' }}>
+                      <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', background: '#1E3A8A', color: '#FFFFFF', padding: '0 5px', borderRadius: '9999px' }}>
                         {totalCount}
                       </span>
                     )}
@@ -736,7 +736,7 @@ export const CalendarTab = () => {
                     <div key={ev.id} style={{
                       fontSize: '0.675rem',
                       background: '#DBEAFE',
-                      color: '#9333EA',
+                      color: '#1E3A8A',
                       padding: '2px 5px',
                       borderRadius: '4px',
                       fontWeight: 600,
@@ -794,8 +794,8 @@ export const CalendarTab = () => {
                         padding: '0.45rem 0.25rem',
                         borderRadius: '8px',
                         cursor: 'pointer',
-                        background: isSelected ? '#9333EA' : item.isToday ? '#FAF5FF' : 'transparent',
-                        border: isSelected ? '1px solid #9333EA' : item.isToday ? '1px solid #93C5FD' : '1px solid transparent',
+                        background: isSelected ? '#1E3A8A' : item.isToday ? '#EFF6FF' : 'transparent',
+                        border: isSelected ? '1px solid #1E3A8A' : item.isToday ? '1px solid #93C5FD' : '1px solid transparent',
                         transition: 'all 0.15s ease'
                       }}
                       title={isSelected ? 'Klik untuk menampilkan semua tanggal' : `Filter agenda tanggal ${item.iso}`}
@@ -805,14 +805,14 @@ export const CalendarTab = () => {
                         fontSize: '0.675rem',
                         fontWeight: 700,
                         textTransform: 'uppercase',
-                        color: isSelected ? '#DBEAFE' : item.isToday ? '#9333EA' : '#64748B'
+                        color: isSelected ? '#DBEAFE' : item.isToday ? '#1E3A8A' : '#64748B'
                       }}>
                         {item.dayName}
                       </div>
                       <div style={{
                         fontSize: '1.15rem',
                         fontWeight: 800,
-                        color: isSelected ? '#FFFFFF' : item.isToday ? '#9333EA' : '#0F172A',
+                        color: isSelected ? '#FFFFFF' : item.isToday ? '#1E3A8A' : '#0F172A',
                         lineHeight: 1.2
                       }}>
                         {item.dateNum}
@@ -853,7 +853,7 @@ export const CalendarTab = () => {
                 gap: '0.5rem'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Clock size={16} color="#9333EA" />
+                  <Clock size={16} color="#1E3A8A" />
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
                     {selectedDateFilter
                       ? `Agenda Operasional — ${formatReadableDate(selectedDateFilter)}`
@@ -909,7 +909,7 @@ export const CalendarTab = () => {
                           borderRadius: '10px',
                           padding: '1rem',
                           border: isFeaturedNavy ? 'none' : '1px solid #E2E8F0',
-                          borderLeft: `4px solid ${ev.status === 'Selesai' ? '#059669' : ev.status === 'Dibatalkan' ? '#E11D48' : '#9333EA'}`,
+                          borderLeft: `4px solid ${ev.status === 'Selesai' ? '#059669' : ev.status === 'Dibatalkan' ? '#E11D48' : '#1E3A8A'}`,
                           boxShadow: isFeaturedNavy ? '0 4px 6px -1px rgba(11, 25, 44, 0.2)' : 'none'
                         }}
                       >
@@ -917,7 +917,7 @@ export const CalendarTab = () => {
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
                               <span style={{
-                                background: isFeaturedNavy ? '#9333EA' : '#DBEAFE',
+                                background: isFeaturedNavy ? '#1E3A8A' : '#DBEAFE',
                                 color: isFeaturedNavy ? '#FFFFFF' : '#1E40AF',
                                 fontSize: '0.675rem',
                                 fontWeight: 700,
@@ -989,8 +989,8 @@ export const CalendarTab = () => {
                                     style={{
                                       padding: '1px 7px',
                                       borderRadius: '9999px',
-                                      background: isFeaturedNavy ? '#9333EA' : '#FAF5FF',
-                                      color: isFeaturedNavy ? '#FFFFFF' : '#9333EA',
+                                      background: isFeaturedNavy ? '#1E3A8A' : '#EFF6FF',
+                                      color: isFeaturedNavy ? '#FFFFFF' : '#1E3A8A',
                                       fontSize: '0.7rem',
                                       fontWeight: 600
                                     }}
@@ -1108,7 +1108,7 @@ export const CalendarTab = () => {
               <div className="card-header" style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #E2E8F0', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div>
                   <h3 className="card-title" style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Sparkles size={17} color="#9333EA" />
+                    <Sparkles size={17} color="#1E3A8A" />
                     <span>Peta Ketersediaan Unit Studio Real-Time</span>
                   </h3>
                   <div className="card-subtitle" style={{ fontSize: '0.775rem' }}>
@@ -1176,7 +1176,7 @@ export const CalendarTab = () => {
                     width: '42px',
                     height: '42px',
                     borderRadius: '10px',
-                    background: '#9333EA',
+                    background: '#1E3A8A',
                     color: '#FFFFFF',
                     display: 'flex',
                     alignItems: 'center',
@@ -1200,9 +1200,9 @@ export const CalendarTab = () => {
                 <span style={{
                   fontSize: '0.7rem',
                   fontWeight: 700,
-                  color: '#9333EA',
-                  background: '#FAF5FF',
-                  border: '1px solid #E9D5FF',
+                  color: '#1E3A8A',
+                  background: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
                   padding: '2px 8px',
                   borderRadius: '9999px',
                   flexShrink: 0
@@ -1225,7 +1225,7 @@ export const CalendarTab = () => {
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '4px' }}>
                       <span style={{
-                        background: '#9333EA',
+                        background: '#1E3A8A',
                         color: '#FFFFFF',
                         fontSize: '0.675rem',
                         fontWeight: 700,
@@ -1247,7 +1247,7 @@ export const CalendarTab = () => {
                       {event.judul}
                     </h5>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.75rem' }}>
-                      <MapPin size={12} color="#9333EA" />
+                      <MapPin size={12} color="#1E3A8A" />
                       <span>{event.lokasi || 'Lokasi Studio'}</span>
                     </div>
 
@@ -1264,7 +1264,7 @@ export const CalendarTab = () => {
                           <span style={{ fontSize: '0.685rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B' }}>
                             Checklist Gear Terkunci:
                           </span>
-                          <span style={{ fontSize: '0.685rem', fontWeight: 700, color: '#9333EA' }}>
+                          <span style={{ fontSize: '0.685rem', fontWeight: 700, color: '#1E3A8A' }}>
                             {checkedCount} / {lockedTools.length} Dicek
                           </span>
                         </div>
@@ -1277,7 +1277,7 @@ export const CalendarTab = () => {
                                   type="checkbox"
                                   checked={Boolean(checkedToolIds[tool.id])}
                                   onChange={() => toggleToolCheck(tool.id)}
-                                  style={{ accentColor: '#9333EA' }}
+                                  style={{ accentColor: '#1E3A8A' }}
                                 />
                                 <span style={{ color: '#0F172A', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                   {tool.nama}
@@ -1313,7 +1313,7 @@ export const CalendarTab = () => {
                           fontSize: '0.785rem',
                           padding: '0.55rem',
                           fontWeight: 700,
-                          background: '#9333EA'
+                          background: '#1E3A8A'
                         }}
                       >
                         <ClipboardCheck size={15} />

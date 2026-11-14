@@ -218,15 +218,15 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   width: '42px',
                   height: '42px',
                   borderRadius: '10px',
-                  background: '#FAF5FF',
-                  border: '1px solid #E9D5FF',
+                  background: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#9333EA',
+                  color: '#1E3A8A',
                   flexShrink: 0
                 }}>
-                  <ShieldCheck size={22} color="#9333EA" />
+                  <ShieldCheck size={22} color="#1E3A8A" />
                 </div>
                 <div>
                   <h1 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.25 }}>
@@ -276,9 +276,9 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                 <span style={{
                   fontFamily: 'var(--font-mono)',
                   fontWeight: 700,
-                  color: '#9333EA',
-                  background: '#FAF5FF',
-                  border: '1px solid #E9D5FF',
+                  color: '#1E3A8A',
+                  background: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
                   padding: '2px 8px',
                   borderRadius: '6px',
                   fontSize: '0.725rem'
@@ -295,7 +295,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   width: '22px',
                   height: '22px',
                   borderRadius: '50%',
-                  background: '#9333EA',
+                  background: '#1E3A8A',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
@@ -429,7 +429,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   border: fotoAfterFile ? '1.5px solid #10B981' : '2px dashed #93C5FD',
                   borderRadius: '10px',
                   padding: '0.75rem',
-                  background: fotoAfterFile ? '#F0FDF4' : '#FAF5FF'
+                  background: fotoAfterFile ? '#F0FDF4' : '#EFF6FF'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -441,7 +441,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                       fontSize: '0.675rem',
                       color: fotoAfterFile ? '#047857' : '#1E40AF',
                       background: fotoAfterFile ? '#DCFCE7' : '#DBEAFE',
-                      border: `1px solid ${fotoAfterFile ? '#A7F3D0' : '#E9D5FF'}`,
+                      border: `1px solid ${fotoAfterFile ? '#A7F3D0' : '#BFDBFE'}`,
                       padding: '1px 6px',
                       borderRadius: '4px'
                     }}>
@@ -498,7 +498,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                       textAlign: 'center',
                       color: '#475569'
                     }}>
-                      <Camera size={32} color="#9333EA" style={{ margin: '0 auto 0.5rem' }} />
+                      <Camera size={32} color="#1E3A8A" style={{ margin: '0 auto 0.5rem' }} />
                       <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A' }}>
                         Ambil Foto Kondisi Alat Saat Ini
                       </div>
@@ -620,7 +620,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                       padding: '0.65rem 0.75rem',
                       borderRadius: '8px',
                       border: kondisiFisikAkhir.includes('Lecet') ? '1.5px solid #3B82F6' : '1px solid #E2E8F0',
-                      background: kondisiFisikAkhir.includes('Lecet') ? '#FAF5FF' : '#FFFFFF',
+                      background: kondisiFisikAkhir.includes('Lecet') ? '#EFF6FF' : '#FFFFFF',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}>
@@ -704,7 +704,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                           type="checkbox"
                           checked={accessories[item.key]}
                           onChange={() => toggleAccessory(item.key)}
-                          style={{ accentColor: '#9333EA' }}
+                          style={{ accentColor: '#1E3A8A' }}
                         />
                         <span style={{ color: '#334155', fontWeight: 500 }}>{item.label}</span>
                       </label>
@@ -817,7 +817,7 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                   alignItems: 'center',
                   gap: '0.45rem',
                   fontWeight: 700,
-                  background: kondisiFisikAkhir.includes('Kerusakan') ? '#E11D48' : '#9333EA'
+                  background: kondisiFisikAkhir.includes('Kerusakan') ? '#E11D48' : '#1E3A8A'
                 }}
               >
                 <CheckCircle size={15} color="#34D399" />

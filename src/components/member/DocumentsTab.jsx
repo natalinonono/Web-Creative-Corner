@@ -55,7 +55,7 @@ export const DocumentsTab = () => {
     <div>
       <div style={{ marginBottom: '1.75rem' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FileText size={22} color="#9333EA" />
+          <FileText size={22} color="#1E3A8A" />
           <span>Pusat Dokumen & Format Surat Resmi Creative Corner</span>
         </h2>
         <p style={{ fontSize: '0.85rem', color: '#475569' }}>
@@ -71,8 +71,8 @@ export const DocumentsTab = () => {
                 <span style={{
                   fontSize: '0.75rem',
                   fontFamily: 'var(--font-mono)',
-                  color: '#9333EA',
-                  background: '#FAF5FF',
+                  color: '#1E3A8A',
+                  background: '#EFF6FF',
                   padding: '0.2rem 0.5rem',
                   borderRadius: '4px',
                   fontWeight: 700

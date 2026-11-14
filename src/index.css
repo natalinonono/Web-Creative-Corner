@@ -1,41 +1,34 @@
 /* ====================================================================
    CREATIVE CORNER - BESPOKE STUDIO OPERATING SYSTEM (STUDIO OS)
-   Theme: Creative Corner Purple Studio Interface (Matching cc-system-delta.vercel.app)
-   Palette:
-     - Primary Purple: #9333EA (purple-600) / Hover: #7E22CE / Dark: #6B21A8
-     - Canvas Background: #F8FAFC (Slate Canvas) with gradient to #FAF5FF
-     - Surfaces: #FFFFFF (Crisp White Panels) / #F8FAFC (Subtle Slate)
-     - Borders: #F1F5F9 (Subtle Slate-100) / #E2E8F0 (Structural Slate-200)
+   Theme: High-End Architectural Studio Interface
+   Palette (Preserved 100%):
+     - Dark Navy: #0B192C / #0F172A
+     - Primary Navy: #1E3A8A / Hover: #172554 / Light: #EFF6FF
+     - Canvas Background: #F8FAFC (Slate Canvas)
+     - Surfaces: #FFFFFF (Crisp White Panels) / #F1F5F9 (Subtle Slate)
+     - Architectural Borders: #E2E8F0 (Subtle) / #CBD5E1 (Structural)
      - Text Primary: #0F172A / Secondary: #475569 / Muted: #94A3B8
-     - Status Indicators: Emerald (#15803D), Amber (#B45309), Crimson (#DC2626), Purple (#9333EA)
+     - Status Indicators: Emerald (#059669), Amber (#D97706), Crimson (#E11D48), Cobalt (#1E3A8A)
 ==================================================================== */
 
 :root {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Plus Jakarta Sans', var(--font-sans);
+  --font-display: 'Outfit', var(--font-sans);
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Color Tokens */
   --bg-canvas: #F8FAFC;
-  --bg-gradient: linear-gradient(135deg, #F8FAFC 0%, #FAF5FF 60%, #F1F5F9 100%);
   --surface-card: #FFFFFF;
-  --surface-subtle: #F8FAFC;
-  --border-light: #F1F5F9;
-  --border-medium: #E2E8F0;
-  --border-focus: #9333EA;
+  --surface-subtle: #F1F5F9;
+  --border-light: #E2E8F0;
+  --border-medium: #CBD5E1;
+  --border-focus: #1E3A8A;
 
-  --primary: #9333EA;
-  --primary-hover: #7E22CE;
-  --primary-dark: #6B21A8;
-  --primary-light: #FAF5FF;
-  --primary-border: #E9D5FF;
-  --primary-shadow: rgba(147, 51, 234, 0.28);
-
-  --navy-dark: #0F172A;
-  --navy-surface: #1E293B;
-  --navy-brand: #9333EA;
-  --navy-hover: #7E22CE;
-  --navy-light: #FAF5FF;
+  --navy-dark: #0B192C;
+  --navy-surface: #111E30;
+  --navy-brand: #1E3A8A;
+  --navy-hover: #172554;
+  --navy-light: #EFF6FF;
 
   --text-primary: #0F172A;
   --text-secondary: #475569;
@@ -43,46 +36,45 @@
   --text-white: #FFFFFF;
 
   /* Status Tokens */
-  --emerald-text: #15803D;
-  --emerald-bg: #DCFCE7;
-  --emerald-border: rgba(22, 163, 74, 0.25);
+  --emerald-text: #059669;
+  --emerald-bg: #ECFDF5;
+  --emerald-border: #A7F3D0;
 
-  --amber-text: #B45309;
-  --amber-bg: #FEF3C7;
-  --amber-border: rgba(217, 119, 6, 0.25);
+  --amber-text: #D97706;
+  --amber-bg: #FFFBEB;
+  --amber-border: #FDE68A;
 
-  --crimson-text: #DC2626;
-  --crimson-bg: #FEE2E2;
-  --crimson-border: rgba(220, 38, 38, 0.25);
+  --crimson-text: #E11D48;
+  --crimson-bg: #FFF1F2;
+  --crimson-border: #FECDD3;
 
-  --blue-badge-text: #9333EA;
-  --blue-badge-bg: #FAF5FF;
-  --blue-badge-border: #E9D5FF;
+  --blue-badge-text: #1E3A8A;
+  --blue-badge-bg: #EFF6FF;
+  --blue-badge-border: #BFDBFE;
 
-  /* Crisp Micro-Shadows */
+  /* Crisp Micro-Shadows (Non-AI Slop, Structured & Physical) */
   --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
   --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
   --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
   --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  --shadow-purple: 0 4px 14px 0 rgba(147, 51, 234, 0.28);
 
-  /* Modern Rounded Radii */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  /* Architectural Radii (Tight & Engineered, Never Oversized Bubbles) */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
 
   /* Google Stitch Enterprise Design Tokens */
-  --surface-container-low: #FAF5FF;
-  --surface-container: #F3E8FF;
-  --surface-container-high: #E9D5FF;
-  --surface-container-highest: #D8B4FE;
-  --on-surface: #0F172A;
-  --on-surface-variant: #475569;
-  --primary-container: #9333EA;
-  --secondary-container: #F3E8FF;
+  --surface-container-low: #EFF4FF;
+  --surface-container: #E5EEFF;
+  --surface-container-high: #DCE9FF;
+  --surface-container-highest: #D3E4FE;
+  --on-surface: #0B1C30;
+  --on-surface-variant: #444651;
+  --primary-container: #1E3A8A;
+  --secondary-container: #D6E3FE;
   --tertiary-container: #004A32;
 }
 
@@ -184,11 +176,11 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.3rem 0.75rem;
-  border-radius: 9999px;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.75rem;
-  color: #475569;
+  color: #D6E3FE;
   white-space: nowrap;
 }
 
@@ -222,7 +214,6 @@
 
 body {
   font-family: var(--font-sans);
-  background: var(--bg-gradient);
   background-color: var(--bg-canvas);
   color: var(--text-primary);
   line-height: 1.5;
@@ -234,7 +225,7 @@ body {
 h1, h2, h3, h4, .brand-font {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
 }
 
@@ -243,7 +234,7 @@ code, .font-mono {
 }
 
 /* ====================================================================
-   TOP NAVBAR (MODERN CLEAN STUDIO HEADER)
+   TOP NAVBAR (STUDIO COMMAND BAR)
 ==================================================================== */
 .app-container {
   min-height: 100vh;
@@ -252,19 +243,17 @@ code, .font-mono {
 }
 
 .top-navbar {
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-primary);
-  padding: 0.65rem 1.75rem;
+  background: var(--navy-dark);
+  border-bottom: 1px solid #1E293B;
+  color: var(--text-white);
+  padding: 0.55rem 1.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .brand-section {
@@ -274,32 +263,32 @@ code, .font-mono {
 }
 
 .brand-logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  background: #FFFFFF;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+  padding: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .brand-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  color: #0F172A;
-  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  letter-spacing: -0.015em;
   line-height: 1.15;
 }
 
 .brand-subtitle {
-  font-size: 0.725rem;
-  color: #9333EA;
-  font-family: var(--font-sans);
+  font-size: 0.685rem;
+  color: #93C5FD;
+  font-family: var(--font-mono);
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -319,28 +308,28 @@ code, .font-mono {
   50% { opacity: 0.6; transform: scale(0.9); }
 }
 
-/* Modern Segmented Navigation in Top Nav */
+/* Tactile Segmented Navigation in Top Nav */
 .role-switcher-container {
   display: flex;
   align-items: center;
-  background: #F1F5F9;
-  padding: 4px;
-  border-radius: 14px;
-  border: 1px solid #E2E8F0;
-  gap: 3px;
+  background: var(--navy-surface);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 2px;
 }
 
 .role-switcher-btn {
   padding: 0.45rem 0.95rem;
   border: none;
   background: transparent;
-  color: #64748B;
+  color: #94A3B8;
   font-family: var(--font-sans);
-  font-size: 0.825rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 0.45rem;
@@ -348,14 +337,14 @@ code, .font-mono {
 }
 
 .role-switcher-btn:hover {
-  color: #0F172A;
-  background: rgba(255, 255, 255, 0.7);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .role-switcher-btn.active {
-  background: #9333EA;
+  background: var(--navy-brand);
   color: #FFFFFF;
-  box-shadow: 0 3px 10px rgba(147, 51, 234, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   font-weight: 700;
 }
 
@@ -412,16 +401,16 @@ code, .font-mono {
 }
 
 .btn-primary {
-  background-color: #9333EA;
+  background-color: var(--navy-brand);
   color: #FFFFFF;
-  border-color: #7E22CE;
-  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.28);
+  border-color: #172554;
+  box-shadow: var(--shadow-xs);
 }
 
 .btn-primary:hover {
-  background-color: #7E22CE;
-  border-color: #6B21A8;
-  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.38);
+  background-color: var(--navy-hover);
+  border-color: #0F172A;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary {
@@ -432,20 +421,20 @@ code, .font-mono {
 }
 
 .btn-secondary:hover {
-  background-color: #F8FAFC;
-  border-color: #CBD5E1;
+  background-color: var(--surface-subtle);
+  border-color: #94A3B8;
 }
 
 .btn-whatsapp {
-  background-color: #10B981;
+  background-color: #059669;
   color: #FFFFFF;
-  border-color: #059669;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  border-color: #047857;
+  box-shadow: var(--shadow-xs);
 }
 
 .btn-whatsapp:hover {
-  background-color: #059669;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  background-color: #047857;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-danger {
@@ -492,8 +481,7 @@ code, .font-mono {
 }
 
 .card:hover {
-  border-color: #E9D5FF;
-  box-shadow: 0 8px 24px -4px rgba(147, 51, 234, 0.08);
+  border-color: var(--border-medium);
 }
 
 .card-header {
@@ -639,26 +627,26 @@ code, .font-mono {
 }
 
 .tab-btn:hover {
-  color: #9333EA;
-  background-color: #FAF5FF;
+  color: var(--navy-brand);
+  background-color: rgba(30, 58, 138, 0.03);
 }
 
 .tab-btn.active {
-  color: #9333EA;
-  border-bottom-color: #9333EA;
+  color: var(--navy-brand);
+  border-bottom-color: var(--navy-brand);
   font-weight: 700;
   background-color: #FFFFFF;
 }
 
 .tab-pill-count {
-  background-color: #FAF5FF;
-  color: #9333EA;
-  border: 1px solid #E9D5FF;
+  background-color: #EFF6FF;
+  color: var(--navy-brand);
+  border: 1px solid #BFDBFE;
   font-size: 0.7rem;
   font-family: var(--font-mono);
   font-weight: 700;
   padding: 1px 6px;
-  border-radius: 9999px;
+  border-radius: var(--radius-xs);
   margin-left: 0.25rem;
 }
 
@@ -751,8 +739,8 @@ code, .font-mono {
 
 .form-input:focus, .form-select:focus, .form-textarea:focus {
   outline: none;
-  border-color: #9333EA;
-  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.15);
+  border-color: var(--navy-brand);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
 }
 
 .form-hint {
@@ -768,9 +756,8 @@ code, .font-mono {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -828,7 +815,7 @@ code, .font-mono {
    KIOSK MODE SPECIFIC STYLES
 ==================================================================== */
 .kiosk-canvas {
-  background: radial-gradient(circle at 50% 15%, #3B0764 0%, #0F172A 70%, #020617 100%);
+  background: radial-gradient(circle at 50% 10%, #1E293B 0%, #0F172A 100%);
   color: #FFFFFF;
   min-height: calc(100vh - 60px);
   padding: 2.5rem 1.5rem;
@@ -843,11 +830,11 @@ code, .font-mono {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(147, 51, 234, 0.2);
-  border: 1px solid rgba(192, 132, 252, 0.4);
-  color: #E9D5FF;
+  background: rgba(30, 58, 138, 0.4);
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  color: #93C5FD;
   padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-xs);
   font-size: 0.75rem;
   font-weight: 700;
   font-family: var(--font-mono);
@@ -859,8 +846,8 @@ code, .font-mono {
 .kiosk-card {
   background: #FFFFFF;
   color: var(--text-primary);
-  border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
   width: 100%;
   max-width: 580px;
   overflow: hidden;
@@ -868,8 +855,8 @@ code, .font-mono {
 }
 
 .kiosk-card-header {
-  background: #0F172A;
-  border-bottom: 2px solid #9333EA;
+  background: var(--navy-dark);
+  border-bottom: 2px solid var(--navy-brand);
   color: #FFFFFF;
   padding: 1.5rem 1.75rem;
   text-align: center;
@@ -892,7 +879,7 @@ code, .font-mono {
   font-size: 3.5rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #9333EA;
+  color: var(--navy-brand);
   line-height: 1;
 }
 
@@ -985,11 +972,11 @@ code, .font-mono {
 ==================================================================== */
 .portal-hero-banner {
   background: #FFFFFF;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem 1.65rem;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.5rem;
   margin-bottom: 1.25rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-xs);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1021,10 +1008,10 @@ code, .font-mono {
 }
 
 .portal-hero-stat-card {
-  background: #FAF5FF;
-  border: 1px solid #E9D5FF;
-  border-radius: var(--radius-md);
-  padding: 0.5rem 0.95rem;
+  background: #F8FAFC;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.85rem;
   text-align: center;
   min-width: 95px;
 }
