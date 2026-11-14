@@ -30,7 +30,8 @@ export const TopNavbar = () => {
     logoutUser,
     pcClients,
     isAdminEmail,
-    members
+    members,
+    openStorageGuide
   } = useStudio();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -243,6 +244,30 @@ export const TopNavbar = () => {
 
       {/* Sisi Kanan: Status Akun & Tombol Masuk */}
       <div className="top-navbar-right">
+        {/* Tombol Akses Cepat SOP & Lokasi Lemari */}
+        <button
+          type="button"
+          onClick={() => openStorageGuide('sop')}
+          className="btn btn-secondary btn-sm"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            background: '#FAF5FF',
+            borderColor: '#E9D5FF',
+            color: '#9333EA',
+            borderRadius: '10px',
+            padding: '0.35rem 0.75rem',
+            fontWeight: 700,
+            fontSize: '0.775rem'
+          }}
+          id="btn-open-storage-sop"
+          title="Buka SOP Kamera, Lokasi Lemari, Box Coklat & Box Biru"
+        >
+          <Camera size={14} color="#9333EA" />
+          <span className="nav-login-label-desktop">SOP & Lokasi Lemari</span>
+          <span className="nav-login-label-mobile">SOP</span>
+        </button>
         {currentUser ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div 

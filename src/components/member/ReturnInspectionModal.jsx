@@ -743,6 +743,26 @@ export const ReturnInspectionModal = ({ isOpen, onClose, targetBorrowing }) => {
                     }}
                   />
                 </div>
+
+                {/* SOP PENGEMBALIAN & PERAWATAN */}
+                <div style={{
+                  background: '#FFFBEB',
+                  border: '1px solid #FDE68A',
+                  borderRadius: '10px',
+                  padding: '0.85rem 1rem',
+                  fontSize: '0.75rem',
+                  color: '#92400E',
+                  lineHeight: 1.45
+                }}>
+                  <strong style={{ display: 'block', color: '#78350F', marginBottom: '0.3rem', fontSize: '0.785rem' }}>
+                    📸 SOP Pengembalian ke Lemari & Box:
+                  </strong>
+                  <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
+                    <li>Bersihkan lensa/bodi jika kotor menggunakan <strong>Cleaning Kit</strong> di Box Coklat.</li>
+                    <li>Kembalikan ke posisi awal di Box Coklat, Box Biru, atau Lemari Rak 5/7/8.</li>
+                    <li><strong>⚠️ JANGAN TINGGALKAN BOX TERBUKA!</strong> Pastikan box ditutup rapat dan dimasukkan kembali ke Rak 6 Lemari Studio.</li>
+                  </ul>
+                </div>
               </section>
             </div>
           </main>

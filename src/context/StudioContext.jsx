@@ -12,7 +12,10 @@ import {
   SEED_DUTY_ROSTER,
   SEED_PC_CLIENTS,
   SEED_PC_LOGS,
-  SEED_OFFICIAL_DOCUMENTS
+  SEED_OFFICIAL_DOCUMENTS,
+  STUDIO_SOP_RULES,
+  STUDIO_STORAGE_SYSTEM,
+  SEED_BATTERY_CHARGES
 } from '../data/seedData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { normalizePhoneNumber } from '../utils/phoneUtils';
@@ -108,6 +111,71 @@ export const StudioProvider = ({ children }) => {
   const [pcClients, setPcClients] = useState(SEED_PC_CLIENTS);
   const [pcLogs, setPcLogs] = useState(SEED_PC_LOGS);
   const [documents, setDocuments] = useState(SEED_OFFICIAL_DOCUMENTS);
+
+  // Storage Guide Modal & SOP State
+  const [isStorageGuideOpen, setIsStorageGuideOpen] = useState(false);
+  const [storageGuideTab, setStorageGuideTab] = useState('sop');
+
+  const openStorageGuide = (tab = 'sop') => {
+    setStorageGuideTab(tab);
+    setIsStorageGuideOpen(true);
+  };
+  const closeStorageGuide = () => {
+    setIsStorageGuideOpen(false);
+  };
+
+  // Battery Charging Tracking (SOP Aturan #1: Rekam waktu cas baterai)
+  const [batteryCharges, setBatteryCharges] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cc_battery_charges_v1');
+      if (saved) return JSON.parse(saved);
+      return SEED_BATTERY_CHARGES;
+    } catch {
+      return SEED_BATTERY_CHARGES;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('cc_battery_charges_v1', JSON.stringify(batteryCharges));
+    } catch {}
+  }, [batteryCharges]);
+
+  const startBatteryCharge = ({ batteryName, chargerName, petugas, lokasiColokan, catatan }) => {
+    const newCharge = {
+      id: `CHG-${Date.now().toString().slice(-4)}`,
+      batteryName: batteryName || 'Baterai Studio',
+      chargerName: chargerName || 'Charger Studio',
+      waktuMulai: new Date().toISOString(),
+      waktuSelesai: null,
+      status: 'Sedang Cas',
+      petugas: petugas || currentUser?.nama || 'Kru Studio',
+      lokasiColokan: lokasiColokan || 'Stopkontak Studio Utama Lt. 2',
+      catatan: catatan || ''
+    };
+    setBatteryCharges(prev => [newCharge, ...prev]);
+    showToast(`⚡ Rekam cas dimulai untuk ${newCharge.batteryName}`, 'success');
+  };
+
+  const stopBatteryCharge = (chargeId, { persentase, catatan } = {}) => {
+    setBatteryCharges(prev => prev.map(c => {
+      if (c.id === chargeId) {
+        return {
+          ...c,
+          waktuSelesai: new Date().toISOString(),
+          status: 'Selesai',
+          catatan: catatan ? `${c.catatan ? c.catatan + ' | ' : ''}${catatan}` : c.catatan
+        };
+      }
+      return c;
+    }));
+    showToast('✓ Charger dicabut: Baterai telah selesai dicas & siap digunakan.', 'success');
+  };
+
+  const deleteBatteryCharge = (chargeId) => {
+    setBatteryCharges(prev => prev.filter(c => c.id !== chargeId));
+    showToast('Riwayat cas baterai dihapus.', 'info');
+  };
 
   // Active Member ID untuk Portal Anggota
   const [activeMemberId, setActiveMemberId] = useState(() => {
@@ -1685,7 +1753,20 @@ export const StudioProvider = ({ children }) => {
         updatePCClient,
         addPCClient,
         deletePCClient,
-        clearAllData
+        clearAllData,
+        // SOP, Storage Guide & Battery Tracker
+        STUDIO_SOP_RULES,
+        STUDIO_STORAGE_SYSTEM,
+        isStorageGuideOpen,
+        setIsStorageGuideOpen,
+        storageGuideTab,
+        setStorageGuideTab,
+        openStorageGuide,
+        closeStorageGuide,
+        batteryCharges,
+        startBatteryCharge,
+        stopBatteryCharge,
+        deleteBatteryCharge
       }}
     >
       {children}

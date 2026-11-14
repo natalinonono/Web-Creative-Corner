@@ -47,7 +47,8 @@ export const PublicGuestPortal = () => {
     submitPublicLoan, 
     setCurrentRole, 
     publicTab, 
-    setPublicTab 
+    setPublicTab,
+    openStorageGuide
   } = useStudio();
 
   // Form State Peminjaman Mandiri (Tanpa Login Email)
@@ -263,6 +264,29 @@ export const PublicGuestPortal = () => {
           <p className="portal-hero-subtitle">
             Layanan mandiri bagi siswa, guru, perwakilan kelas, dan pengurus OSIS. Tanpa perlu login akun email.
           </p>
+
+          <div style={{ marginTop: '0.65rem' }}>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => openStorageGuide('sop')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                background: '#FAF5FF',
+                borderColor: '#E9D5FF',
+                color: '#9333EA',
+                borderRadius: '10px',
+                fontWeight: 700,
+                fontSize: '0.775rem',
+                padding: '0.35rem 0.75rem'
+              }}
+            >
+              <Camera size={14} color="#9333EA" />
+              <span>Lihat Panduan Lokasi Lemari, Box & 4 SOP Kamera</span>
+            </button>
+          </div>
         </div>
 
         {/* Quick Operational Metrics */}
@@ -608,8 +632,11 @@ export const PublicGuestPortal = () => {
                             }}>
                               {item.nama}
                             </div>
-                            <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '2px' }}>
-                              {item.kategori}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '2px', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori}</span>
+                              <span style={{ fontSize: '0.675rem', fontWeight: 600, color: '#9333EA', background: '#FAF5FF', padding: '1px 5px', borderRadius: '4px' }}>
+                                📍 {item.lokasiRak}
+                              </span>
                             </div>
 
                             {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
@@ -1178,8 +1205,19 @@ export const PublicGuestPortal = () => {
                       <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', background: '#F1F5F9', color: '#475569', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
                         {eq.kode || `#EQ-${eq.id}`}
                       </span>
-                      <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 500 }}>
-                        {eq.lokasiRak || 'Dry Cab 01'}
+                      <span 
+                        style={{ 
+                          fontSize: '0.675rem', 
+                          fontWeight: 700,
+                          padding: '2px 7px',
+                          borderRadius: '6px',
+                          background: (eq.lokasiRak || '').includes('Coklat') ? '#FEF3C7' : (eq.lokasiRak || '').includes('Biru') ? '#EFF6FF' : '#FAF5FF',
+                          color: (eq.lokasiRak || '').includes('Coklat') ? '#B45309' : (eq.lokasiRak || '').includes('Biru') ? '#1D4ED8' : '#9333EA',
+                          border: `1px solid ${(eq.lokasiRak || '').includes('Coklat') ? '#FDE68A' : (eq.lokasiRak || '').includes('Biru') ? '#BFDBFE' : '#E9D5FF'}`
+                        }}
+                        title={`Lokasi Penyimpanan: ${eq.lokasiRak}`}
+                      >
+                        📍 {eq.lokasiRak || 'Lemari Studio'}
                       </span>
                     </div>
 

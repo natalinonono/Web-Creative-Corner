@@ -5,6 +5,7 @@ import { PublicGuestPortal } from './components/public/PublicGuestPortal';
 import { MemberPortal } from './components/member/MemberPortal';
 import { PCKioskClient } from './components/kiosk/PCKioskClient';
 import { AdminPortal } from './components/admin/AdminPortal';
+import { StorageGuideModal } from './components/common/StorageGuideModal';
 import { CheckCircle2, AlertTriangle, ShieldCheck, User, LogIn, ArrowRight, KeyRound, UserPlus, Sparkles } from 'lucide-react';
 
 // Tampilan Saat Akses Admin Belum Terverifikasi Email 'creativecorner'
@@ -356,7 +357,16 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
 };
 
 const AppContent = () => {
-  const { currentRole, setCurrentRole, currentUser, isAdminEmail, toast } = useStudio();
+  const { 
+    currentRole, 
+    setCurrentRole, 
+    currentUser, 
+    isAdminEmail, 
+    toast,
+    isStorageGuideOpen,
+    closeStorageGuide,
+    storageGuideTab
+  } = useStudio();
   const [isLoginModalTrigger, setIsLoginModalTrigger] = useState(false);
 
   return (
@@ -384,6 +394,13 @@ const AppContent = () => {
           )
         )}
       </main>
+
+      {/* Modal Panduan Tata Letak & SOP Sarana Prasarana Kamera */}
+      <StorageGuideModal 
+        isOpen={isStorageGuideOpen} 
+        onClose={closeStorageGuide} 
+        initialTab={storageGuideTab} 
+      />
 
       {/* Toast Notification Pop-up */}
       {toast && (

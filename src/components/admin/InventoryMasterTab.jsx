@@ -33,7 +33,8 @@ import {
   QrCode,
   ShieldCheck,
   Check,
-  RotateCcw
+  RotateCcw,
+  MapPin
 } from 'lucide-react';
 import { getCameraRequirements, CAMERA_RULES, isCameraItem, isLensItem, getLensMountType } from '../../utils/cameraCompatibility';
 import { checkLoanOverdue } from '../../utils/loanOverdue';
@@ -59,12 +60,14 @@ export const InventoryMasterTab = () => {
     borrowings,
     verifyReturnInspection,
     isSupabaseConfigured,
-    currentUser
+    currentUser,
+    openStorageGuide
   } = useStudio();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('Semua');
   const [statusFilter, setStatusFilter] = useState('Semua');
+  const [locationFilter, setLocationFilter] = useState('Semua');
   const [viewMode, setViewMode] = useState('matrix'); // 'matrix' | 'grouped' | 'flat'
   const [showAllInspections, setShowAllInspections] = useState(false);
   const searchInputRef = useRef(null);
@@ -158,7 +161,11 @@ export const InventoryMasterTab = () => {
     );
     const matchesCategory = activeCategoryFilter === 'Semua' || eq.kategori === activeCategoryFilter;
     const matchesStatus = statusFilter === 'Semua' || eq.status === statusFilter;
-    return matchesSearch && matchesCategory && matchesStatus;
+    const matchesLocation = locationFilter === 'Semua' ||
+      (locationFilter === 'Box Coklat' && (eq.lokasiRak || '').includes('Box Coklat')) ||
+      (locationFilter === 'Box Biru' && (eq.lokasiRak || '').includes('Box Biru')) ||
+      (locationFilter === 'Lemari Studio' && (eq.lokasiRak || '').includes('Lemari Studio'));
+    return matchesSearch && matchesCategory && matchesStatus && matchesLocation;
   });
 
   // Kategori-kategori yang tersedia dalam sistem
@@ -661,6 +668,44 @@ export const InventoryMasterTab = () => {
                 <option value="Maintenance">Maintenance / Perbaikan</option>
               </select>
 
+              {/* Filter Lokasi Penyimpanan */}
+              <select
+                className="form-select"
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem', height: '36px', width: 'auto', background: '#F8FAFC' }}
+                title="Filter berdasarkan Lokasi Penyimpanan"
+              >
+                <option value="Semua">Lokasi: Semua</option>
+                <option value="Box Coklat">📦 Box Coklat (Kamera)</option>
+                <option value="Box Biru">🔷 Box Biru (Lensa & Baterai)</option>
+                <option value="Lemari Studio">🗄️ Lemari Studio (Rak 1-8)</option>
+              </select>
+
+              {/* Tombol Cepat Buka Panduan SOP & Lokasi Lemari */}
+              <button
+                type="button"
+                onClick={() => openStorageGuide && openStorageGuide('lemariStudio')}
+                className="btn btn-outline btn-sm"
+                id="btn-admin-open-sop"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontSize: '0.75rem',
+                  padding: '0.35rem 0.65rem',
+                  height: '36px',
+                  borderColor: '#93C5FD',
+                  color: '#2563EB',
+                  background: '#EFF6FF',
+                  borderRadius: '6px'
+                }}
+                title="Buka Denah Lemari, Box Coklat/Biru, & Rekam Cas Baterai"
+              >
+                <MapPin size={14} />
+                <span>Denah & SOP</span>
+              </button>
+
               {/* View Mode Switcher: Matrix Grid vs Grouped per Kategori vs Tabel Rata */}
               <div style={{
                 display: 'inline-flex',
@@ -1011,9 +1056,12 @@ export const InventoryMasterTab = () => {
                       fontSize: '0.725rem',
                       color: '#64748B'
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <FolderTree size={12} color="#94A3B8" />
-                        <span>{item.lokasiRak || 'Loker A-01 (Dry Cabinet 1)'}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap' }}>
+                        <MapPin size={12} color="#2563EB" />
+                        <span style={{ fontWeight: 600, color: '#1E40AF' }}>{item.lokasiRak || 'Lemari Studio'}</span>
+                        {item.wadah && (
+                          <span style={{ fontSize: '0.675rem', color: '#64748B' }}>({item.wadah})</span>
+                        )}
                       </div>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.675rem', color: '#94A3B8' }}>
                         Verifikasi QC
@@ -1191,8 +1239,22 @@ export const InventoryMasterTab = () => {
                               <td style={{ maxWidth: '300px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.4 }}>
                                 {item.spesifikasi || '-'}
                               </td>
-                              <td style={{ fontSize: '0.8rem', color: '#475569' }}>
-                                {item.lokasiRak || 'Dry Cabinet 1'}
+                              <td>
+                                <span style={{
+                                  fontSize: '0.75rem',
+                                  fontWeight: 600,
+                                  color: '#1E40AF',
+                                  background: '#EFF6FF',
+                                  border: '1px solid #DBEAFE',
+                                  padding: '2px 8px',
+                                  borderRadius: '6px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem'
+                                }}>
+                                  <MapPin size={12} color="#2563EB" />
+                                  <span>{item.lokasiRak || 'Lemari Studio'}</span>
+                                </span>
                               </td>
                               <td>
                                 <StatusBadge status={item.status} />
@@ -1315,8 +1377,22 @@ export const InventoryMasterTab = () => {
                       <td style={{ maxWidth: '300px', fontSize: '0.825rem', color: '#475569', lineHeight: 1.4 }}>
                         {item.spesifikasi || '-'}
                       </td>
-                      <td style={{ fontSize: '0.8rem', color: '#475569' }}>
-                        {item.lokasiRak || 'Dry Cabinet 1'}
+                      <td>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          color: '#1E40AF',
+                          background: '#EFF6FF',
+                          border: '1px solid #DBEAFE',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem'
+                        }}>
+                          <MapPin size={12} color="#2563EB" />
+                          <span>{item.lokasiRak || 'Lemari Studio'}</span>
+                        </span>
                       </td>
                       <td>
                         <StatusBadge status={item.status} />

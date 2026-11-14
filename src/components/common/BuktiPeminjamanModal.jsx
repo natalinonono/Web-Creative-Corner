@@ -289,7 +289,7 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
           </table>
         </div>
 
-        {/* 5. KETENTUAN PENGGUNAAN FASILITAS */}
+        {/* 5. KETENTUAN PENGGUNAAN FASILITAS & SOP KAMERA */}
         <div style={{
           background: '#FFFBEB',
           border: '1px solid #FDE68A',
@@ -300,14 +300,14 @@ Bukti resmi terdaftar di Sistem Digital Creative Corner.`;
           color: '#92400E',
           lineHeight: 1.5
         }}>
-          <strong style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.8rem' }}>
-            Ketentuan & Kewajiban Peminjam:
+          <strong style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.8rem', color: '#78350F' }}>
+            📸 SOP Resmi Perawatan & Kewajiban Peminjam Studio:
           </strong>
           <ol style={{ paddingLeft: '1.2rem', margin: 0 }}>
-            <li>Peminjam bertanggung jawab penuh atas kebersihan, keutuhan, dan keamanan unit selama masa peminjaman.</li>
-            <li>Pengembalian wajib diserahkan tepat waktu sesuai batas jam pengembalian yang disepakati.</li>
-            <li>Wajib melakukan verifikasi inspeksi fisik awal (BEFORE) dan akhir (AFTER) bersama petugas piket.</li>
-            <li>Segala bentuk kelalaian yang menimbulkan kerusakan atau kehilangan menjadi tanggung jawab peminjam.</li>
+            <li><strong>WAJIB INPUT DI WEBSITE:</strong> Setiap memakai & mengembalikan wajib terekam di sistem digital studio.</li>
+            <li><strong>PERHATIKAN POSISI AWAL:</strong> Ambil dan kembalikan unit tepat pada posisi awalnya (Box Coklat, Box Biru, atau Lemari Rak 5/7/8) sesuai foto panduan.</li>
+            <li><strong>BERSIHKAN SETELAH PAKAI:</strong> Bersihkan debu/sidik jari pada optik dan bodi menggunakan <em>Cleaning Kit</em> di Box Coklat.</li>
+            <li><strong>⚠️ PALING PENTING — JANGAN TINGGALKAN BOX TERBUKA:</strong> Box Coklat & Box Biru WAJIB ditutup rapat dan dimasukkan kembali ke Rak 6 Lemari Studio.</li>
           </ol>
         </div>
 

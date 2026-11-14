@@ -32,7 +32,7 @@ import { checkLoanOverdue } from '../../utils/loanOverdue';
 import sonyLensImg from '../../assets/stitch/sony-fe-24-70-gm2.jpg';
 
 export const EquipmentLoanTab = () => {
-  const { equipment, borrowings, activeMemberId, members, currentUser } = useStudio();
+  const { equipment, borrowings, activeMemberId, members, currentUser, openStorageGuide } = useStudio();
   const currentMember = currentUser || members.find((m) => m.id === activeMemberId) || members[0] || { nama: 'Anggota Kru' };
 
   const [activeKategori, setActiveKategori] = useState('Semua');
@@ -342,7 +342,7 @@ export const EquipmentLoanTab = () => {
       <div className="card" style={{ margin: 0 }}>
         <div className="card-header" style={{ borderBottom: '1px solid #E2E8F0', padding: '1.15rem 1.25rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <h3 className="card-title" style={{ fontSize: '1.1rem', margin: 0 }}>
                 Peralatan Siap Pinjam Studio
               </h3>
@@ -358,6 +358,26 @@ export const EquipmentLoanTab = () => {
               }}>
                 {availableCount} Unit Siap
               </span>
+              <button
+                type="button"
+                onClick={() => openStorageGuide && openStorageGuide('4sop')}
+                className="btn btn-outline btn-sm"
+                id="btn-member-open-sop"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.65rem',
+                  borderColor: '#93C5FD',
+                  color: '#2563EB',
+                  background: '#EFF6FF',
+                  borderRadius: '6px'
+                }}
+              >
+                <MapPin size={13} />
+                <span>Panduan SOP & Lokasi Lemari</span>
+              </button>
             </div>
             <div className="card-subtitle" style={{ fontSize: '0.8rem', marginTop: '0.2rem' }}>
               Tersedia untuk checkout cepat kru liputan Creative Corner via barcode / checklist fisik.
@@ -495,8 +515,22 @@ export const EquipmentLoanTab = () => {
                       <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: '#64748B', fontWeight: 600 }}>
                         {tool.kode || `#EQ-${tool.id}`}
                       </span>
-                      <span style={{ fontSize: '0.7rem', color: '#475569', fontWeight: 500 }}>
-                        {tool.lokasiRak || 'Dry Cab 01'}
+                      <span 
+                        style={{ 
+                          fontSize: '0.675rem', 
+                          color: '#2563EB', 
+                          fontWeight: 600,
+                          background: '#EFF6FF',
+                          padding: '1px 6px',
+                          borderRadius: '4px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem'
+                        }}
+                        title={`Lokasi: ${tool.lokasiRak || 'Lemari Studio'}${tool.wadah ? ` (${tool.wadah})` : ''}`}
+                      >
+                        <MapPin size={11} />
+                        <span>{tool.lokasiRak || 'Lemari Studio'}</span>
                       </span>
                     </div>
 

@@ -287,7 +287,12 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       <strong style={{ color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {item.nama}
                       </strong>
-                      <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{item.kategori}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.725rem', color: '#64748B', flexWrap: 'wrap' }}>
+                        <span>{item.kategori}</span>
+                        <span style={{ fontSize: '0.675rem', fontWeight: 600, color: '#9333EA', background: '#FAF5FF', padding: '1px 5px', borderRadius: '4px' }}>
+                          📍 {item.lokasiRak}
+                        </span>
+                      </div>
 
                       {/* Badge Panduan Lensa Kamera (Baterai sengaja TIDAK ditampilkan agar tidak dikira sudah include baterai) */}
                       {itemReq && (
