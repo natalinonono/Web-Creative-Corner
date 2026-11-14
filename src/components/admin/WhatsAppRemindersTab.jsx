@@ -146,7 +146,9 @@ _Tim Pengelola Studio Creative Corner_`;
     const petugasList = Array.isArray(duty.petugas) ? duty.petugas : [];
     // Ambil nomor WA anggota pertama
     const firstStaffName = petugasList[0]?.split('(')[0]?.trim();
-    const foundMember = members.find((m) => (m.nama || '').toLowerCase().includes(firstStaffName?.toLowerCase() || ''));
+    const foundMember = firstStaffName
+      ? members.find((m) => (m.nama || '').toLowerCase().includes(firstStaffName.toLowerCase()))
+      : null;
     const phone = foundMember?.nomorWa || '6281234567890';
     const petugasDisplay = petugasList.join(', ') || 'Tim Piket Studio';
 

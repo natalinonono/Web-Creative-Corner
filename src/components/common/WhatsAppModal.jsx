@@ -23,8 +23,11 @@ export const WhatsAppModal = ({
 
   if (!isOpen) return null;
 
-  const cleanPhone = (phoneNumber || '').replace(/[^0-9]/g, '');
-  const encodedUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+  let cleanPhone = (phoneNumber || '').replace(/[^0-9]/g, '');
+  if (cleanPhone.startsWith('0')) {
+    cleanPhone = '62' + cleanPhone.slice(1);
+  }
+  const encodedUrl = `https://wa.me/${cleanPhone || '6281234567890'}?text=${encodeURIComponent(messageText)}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(messageText);

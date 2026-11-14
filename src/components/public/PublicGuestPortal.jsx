@@ -77,7 +77,7 @@ export const PublicGuestPortal = () => {
 
   // Upload File Foto atau Dokumen dengan Kompresi Otomatis
   const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     try {
@@ -91,7 +91,7 @@ export const PublicGuestPortal = () => {
           name: file.name,
           size: `${(file.size / 1024).toFixed(1)} KB`,
           type: file.type || 'document',
-          isImage: file.type.startsWith('image/'),
+          isImage: Boolean(file.type?.startsWith('image/')),
           dataUrl: event.target.result,
           uploadedAt: new Date().toLocaleString('id-ID')
         });
@@ -147,10 +147,13 @@ export const PublicGuestPortal = () => {
       return;
     }
 
+    let cleanWa = nomorWa.replace(/[^0-9]/g, '');
+    if (cleanWa.startsWith('0')) cleanWa = '62' + cleanWa.slice(1);
+
     const newLoan = submitPublicLoan({
       peminjamNama: namaPeminjam.trim(),
       peminjamKelas: kelasInstansi.trim(),
-      peminjamWa: nomorWa.replace(/[^0-9]/g, ''),
+      peminjamWa: cleanWa || '6281200000000',
       peralatanIds: selectedEquipmentIds,
       keperluan: keperluan.trim() || 'Peminjaman Tugas Siswa / Kegiatan Sekolah',
       tanggalPinjam,

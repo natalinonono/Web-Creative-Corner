@@ -34,22 +34,27 @@ export const exportBorrowingsToCSV = (borrowings = []) => {
     'Catatan / Kendala'
   ];
 
-  const rows = borrowings.map((b) => [
-    `"${b.id || ''}"`,
-    `"${b.tanggalPinjam || ''}"`,
-    `"${b.jamPinjam || ''}"`,
-    `"${b.batasWaktuKembali || ''}"`,
-    `"${(b.peminjamNama || '').replace(/"/g, '""')}"`,
-    `"${(b.peminjamKelas || '').replace(/"/g, '""')}"`,
-    `"'+${b.peminjamWa || ''}"`,
-    `"${(b.peralatanNama || '').replace(/"/g, '""')}"`,
-    `"${(b.keperluan || '').replace(/"/g, '""')}"`,
-    `"${b.status || ''}"`,
-    `"${b.inspeksiPengambilan?.kondisiFisik || 'Baik/Siap Pakai'}"`,
-    `"${b.inspeksiPengembalian?.kondisiFisik || (b.status === 'Selesai' ? 'Baik/Normal' : 'Sedang Dipakai')}"`,
-    `"${b.inspeksiPengambilan?.petugasPemeriksa || 'Petugas Studio'}"`,
-    `"${(b.catatan || b.inspeksiPengembalian?.catatanKendala || '-').replace(/"/g, '""')}"`
-  ]);
+  const rows = borrowings.map((b) => {
+    let cleanWa = String(b.peminjamWa || '').replace(/[^0-9]/g, '');
+    if (cleanWa.startsWith('0')) cleanWa = '62' + cleanWa.slice(1);
+
+    return [
+      `"${b.id || ''}"`,
+      `"${b.tanggalPinjam || ''}"`,
+      `"${b.jamPinjam || ''}"`,
+      `"${b.batasWaktuKembali || ''}"`,
+      `"${(b.peminjamNama || '').replace(/"/g, '""')}"`,
+      `"${(b.peminjamKelas || '').replace(/"/g, '""')}"`,
+      `"'+${cleanWa || '6281234567890'}"`,
+      `"${(b.peralatanNama || '').replace(/"/g, '""')}"`,
+      `"${(b.keperluan || '').replace(/"/g, '""')}"`,
+      `"${b.status || ''}"`,
+      `"${b.inspeksiPengambilan?.kondisiFisik || 'Baik/Siap Pakai'}"`,
+      `"${b.inspeksiPengembalian?.kondisiFisik || (b.status === 'Selesai' ? 'Baik/Normal' : 'Sedang Dipakai')}"`,
+      `"${b.inspeksiPengambilan?.petugasPemeriksa || 'Petugas Studio'}"`,
+      `"${(b.catatan || b.inspeksiPengembalian?.catatanKendala || '-').replace(/"/g, '""')}"`
+    ];
+  });
 
   const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
   const dateStr = new Date().toISOString().split('T')[0];
@@ -76,13 +81,13 @@ export const exportEventsToCSV = (events = [], members = [], equipment = []) => 
   const rows = events.map((ev) => {
     const getPersonnelName = (rolePattern) => {
       const p = ev.personil?.find((item) => item.peran?.toLowerCase().includes(rolePattern));
-      return p ? `${p.nama} (${p.statusTugas})` : '-';
+      return p ? `${p.nama} (${p.statusTugas})` : null;
     };
 
-    const foto1 = getPersonnelName('foto 1') || getPersonnelName('fotografer 1');
-    const foto2 = getPersonnelName('foto 2') || getPersonnelName('fotografer 2');
-    const video = getPersonnelName('video');
-    const liveHp = getPersonnelName('live report') || getPersonnelName('hp');
+    const foto1 = getPersonnelName('foto 1') || getPersonnelName('fotografer 1') || '-';
+    const foto2 = getPersonnelName('foto 2') || getPersonnelName('fotografer 2') || '-';
+    const video = getPersonnelName('video') || '-';
+    const liveHp = getPersonnelName('live report') || getPersonnelName('hp') || '-';
 
     const toolNames = (equipment || [])
       .filter((eq) => ev.peralatanTerkunciIds?.includes(eq.id))
@@ -101,7 +106,7 @@ export const exportEventsToCSV = (events = [], members = [], equipment = []) => 
       `"${foto2.replace(/"/g, '""')}"`,
       `"${video.replace(/"/g, '""')}"`,
       `"${liveHp.replace(/"/g, '""')}"`,
-      `"${toolNames.replace(/"/g, '""')}"`
+      `"${(toolNames || '-').replace(/"/g, '""')}"`
     ];
   });
 

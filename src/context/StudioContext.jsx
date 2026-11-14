@@ -15,6 +15,9 @@ import {
   SEED_OFFICIAL_DOCUMENTS
 } from '../data/seedData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { normalizePhoneNumber } from '../utils/phoneUtils';
+
+export { normalizePhoneNumber };
 
 const StudioContext = createContext();
 
@@ -632,7 +635,7 @@ export const StudioProvider = ({ children }) => {
         email: cleanEmail,
         kelas: kelas || (isTargetAdmin ? 'Pengelola Studio' : 'Anggota Tim Studio'),
         angkatan: angkatan ? (angkatan.includes('Angkatan') ? angkatan : `Angkatan ${angkatan}`) : 'Angkatan 25',
-        nomorWa: nomorWa || '6281200000000',
+        nomorWa: normalizePhoneNumber(nomorWa),
         divisi: userDivisi,
         peranUtama: userDivisi,
         role: isTargetAdmin ? 'admin' : 'member',
@@ -677,7 +680,7 @@ export const StudioProvider = ({ children }) => {
       email: cleanEmail,
       kelas: finalAngkatan,
       angkatan: finalAngkatan,
-      nomorWa: (nomorWa || '').replace(/[^0-9]/g, '') || '6281200000000',
+      nomorWa: normalizePhoneNumber(nomorWa),
       divisi: userDivisi,
       peranUtama: userDivisi,
       role: isTargetAdmin ? 'admin' : 'member',
@@ -746,7 +749,7 @@ export const StudioProvider = ({ children }) => {
       anggotaId: 'GUEST',
       peminjamNama,
       peminjamKelas,
-      peminjamWa,
+      peminjamWa: normalizePhoneNumber(peminjamWa),
       peralatanIds,
       peralatanNama: namaAlatList,
       tanggalPinjam: tanggalPinjam || new Date().toISOString().split('T')[0],
@@ -1076,7 +1079,7 @@ export const StudioProvider = ({ children }) => {
       anggotaId: anggotaId || currentUser?.id,
       peminjamNama,
       peminjamKelas,
-      peminjamWa,
+      peminjamWa: normalizePhoneNumber(peminjamWa),
       peralatanIds,
       peralatanNama: namaAlatList,
       tanggalPinjam: new Date().toISOString().split('T')[0],
@@ -1461,6 +1464,7 @@ export const StudioProvider = ({ children }) => {
     const mem = {
       ...newMem,
       id,
+      nomorWa: normalizePhoneNumber(newMem.nomorWa),
       divisi: memDivisi,
       peranUtama: memDivisi,
       role: isTargetAdmin ? 'admin' : 'member',
