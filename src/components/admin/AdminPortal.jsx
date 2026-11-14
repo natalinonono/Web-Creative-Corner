@@ -76,12 +76,12 @@ export const AdminPortal = () => {
 
               <span style={{
                 fontSize: '0.685rem',
-                background: isSupabaseConfigured ? '#EFF6FF' : '#F1F5F9',
-                color: isSupabaseConfigured ? '#1E3A8A' : '#64748B',
+                background: isSupabaseConfigured ? '#FAF5FF' : '#F1F5F9',
+                color: isSupabaseConfigured ? '#9333EA' : '#64748B',
                 padding: '1px 6px',
                 borderRadius: '4px',
                 fontWeight: 700,
-                border: isSupabaseConfigured ? '1px solid #BFDBFE' : '1px solid #CBD5E1',
+                border: isSupabaseConfigured ? '1px solid #E9D5FF' : '1px solid #CBD5E1',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.3rem'
@@ -105,7 +105,7 @@ export const AdminPortal = () => {
         <div className="portal-hero-stats">
           <div className="portal-hero-stat-card">
             <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Aset Terdaftar</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#9333EA', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {equipment.length}
             </div>
           </div>
@@ -119,7 +119,7 @@ export const AdminPortal = () => {
 
           <div className="portal-hero-stat-card">
             <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>PC Dipakai</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#9333EA', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {activePCCount} / {pcClients.length}
             </div>
           </div>
@@ -235,7 +235,7 @@ export const AdminPortal = () => {
           <Monitor size={18} />
           <span>Pengawasan Klien PC & Log</span>
           {activePCCount > 0 && (
-            <span className="tab-pill-count" style={{ background: '#EFF6FF', color: '#1E3A8A' }}>
+            <span className="tab-pill-count" style={{ background: '#FAF5FF', color: '#9333EA' }}>
               {activePCCount}
             </span>
           )}
@@ -285,7 +285,7 @@ export const AdminPortal = () => {
                 gap: '0.75rem'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1E3A8A' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#FAF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9333EA' }}>
                     <FileSpreadsheet size={22} />
                   </div>
                   <div>

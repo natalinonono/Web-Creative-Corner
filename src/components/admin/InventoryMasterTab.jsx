@@ -97,10 +97,10 @@ export const InventoryMasterTab = () => {
 
   // Helper Ikon dan Warna Kategori
   const getCategoryMeta = (cat) => {
-    if (!cat) return { icon: Layers, color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', label: 'Peralatan Umum' };
+    if (!cat) return { icon: Layers, color: '#3B82F6', bg: '#FAF5FF', border: '#E9D5FF', label: 'Peralatan Umum' };
     const lower = cat.toLowerCase();
     if (lower.includes('kamera')) {
-      return { icon: Camera, color: '#1E3A8A', bg: '#EFF6FF', border: '#BFDBFE', label: 'Kamera' };
+      return { icon: Camera, color: '#9333EA', bg: '#FAF5FF', border: '#E9D5FF', label: 'Kamera' };
     }
     if (lower.includes('lensa')) {
       return { icon: Eye, color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE', label: 'Lensa' };
@@ -259,7 +259,7 @@ export const InventoryMasterTab = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#64748B', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
             <span>CONSOLE</span>
             <span>/</span>
-            <span style={{ color: '#1E3A8A', fontWeight: 700 }}>ASSET INVENTORY</span>
+            <span style={{ color: '#9333EA', fontWeight: 700 }}>ASSET INVENTORY</span>
             <span>/</span>
             <span>CREATIVE CORNER</span>
           </div>
@@ -328,7 +328,7 @@ export const InventoryMasterTab = () => {
                 <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 500 }}>Unit Terdaftar</span>
               </div>
             </div>
-            <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1E3A8A' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#FAF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9333EA' }}>
               <Camera size={20} />
             </div>
           </div>
@@ -427,16 +427,16 @@ export const InventoryMasterTab = () => {
                 <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 500 }}>Pengembalian Baru</span>
               </div>
             </div>
-            <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1E3A8A' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9333EA' }}>
               <ClipboardCheck size={20} />
             </div>
           </div>
           <div style={{ marginTop: '1rem', paddingTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
             <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1E3A8A' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#9333EA' }} />
               Verifikasi Foto Before / After
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#1E3A8A' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#9333EA' }}>
               {inspectableBorrowings.length} Total
             </span>
           </div>
@@ -448,7 +448,7 @@ export const InventoryMasterTab = () => {
         <div className="card-header" style={{ borderBottom: '1px solid #E2E8F0', padding: '1rem 1.25rem' }}>
           <div>
             <h3 className="card-title" style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ClipboardCheck size={18} color="#1E3A8A" />
+              <ClipboardCheck size={18} color="#9333EA" />
               <span>Validasi Laporan Fisik & Komparasi Foto Before / After</span>
             </h3>
             <div className="card-subtitle" style={{ fontSize: '0.8rem' }}>
@@ -472,7 +472,7 @@ export const InventoryMasterTab = () => {
               fontWeight: 700,
               padding: '2px 8px',
               borderRadius: '9999px',
-              background: inspectableBorrowings.length > 0 ? '#EFF6FF' : '#F1F5F9',
+              background: inspectableBorrowings.length > 0 ? '#FAF5FF' : '#F1F5F9',
               color: inspectableBorrowings.length > 0 ? '#1E40AF' : '#64748B'
             }}>
               {inspectableBorrowings.length} Laporan
@@ -531,7 +531,7 @@ export const InventoryMasterTab = () => {
                                 isImage: true,
                                 dataUrl: beforePhoto.dataUrl || beforePhoto
                               })}
-                              style={{ fontSize: '0.7rem', padding: '0.2rem 0.45rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}
+                              style={{ fontSize: '0.7rem', padding: '0.2rem 0.45rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#1E40AF', background: '#FAF5FF', borderColor: '#E9D5FF' }}
                               title="Lihat Foto Fisik Awal (BEFORE)"
                             >
                               <Camera size={11} />
@@ -566,7 +566,7 @@ export const InventoryMasterTab = () => {
                       </td>
                       <td>
                         {isAdminVerified ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#1E3A8A', fontSize: '0.75rem', fontWeight: 700 }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#9333EA', fontSize: '0.75rem', fontWeight: 700 }}>
                             <ShieldCheck size={13} />
                             Terverifikasi Admin
                           </span>
@@ -677,7 +677,7 @@ export const InventoryMasterTab = () => {
                   style={{
                     border: 'none',
                     background: viewMode === 'matrix' ? '#FFFFFF' : 'transparent',
-                    color: viewMode === 'matrix' ? '#1E3A8A' : '#64748B',
+                    color: viewMode === 'matrix' ? '#9333EA' : '#64748B',
                     padding: '0.35rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.75rem',
@@ -700,7 +700,7 @@ export const InventoryMasterTab = () => {
                   style={{
                     border: 'none',
                     background: viewMode === 'grouped' ? '#FFFFFF' : 'transparent',
-                    color: viewMode === 'grouped' ? '#1E3A8A' : '#64748B',
+                    color: viewMode === 'grouped' ? '#9333EA' : '#64748B',
                     padding: '0.35rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.75rem',
@@ -723,7 +723,7 @@ export const InventoryMasterTab = () => {
                   style={{
                     border: 'none',
                     background: viewMode === 'flat' ? '#FFFFFF' : 'transparent',
-                    color: viewMode === 'flat' ? '#1E3A8A' : '#64748B',
+                    color: viewMode === 'flat' ? '#9333EA' : '#64748B',
                     padding: '0.35rem 0.65rem',
                     borderRadius: '6px',
                     fontSize: '0.75rem',
@@ -882,7 +882,7 @@ export const InventoryMasterTab = () => {
                           fontFamily: 'var(--font-mono)',
                           fontSize: '0.725rem',
                           fontWeight: 700,
-                          background: '#EFF6FF',
+                          background: '#FAF5FF',
                           color: '#1E40AF',
                           padding: '2px 7px',
                           borderRadius: '4px',
@@ -1158,8 +1158,8 @@ export const InventoryMasterTab = () => {
                                       fontSize: '0.7rem',
                                       fontWeight: 700,
                                       color: camReq.lensType === 'EF-M' ? '#6D28D9' : '#1E40AF',
-                                      background: camReq.lensType === 'EF-M' ? '#F5F3FF' : '#EFF6FF',
-                                      border: `1px solid ${camReq.lensType === 'EF-M' ? '#DDD6FE' : '#BFDBFE'}`,
+                                      background: camReq.lensType === 'EF-M' ? '#F5F3FF' : '#FAF5FF',
+                                      border: `1px solid ${camReq.lensType === 'EF-M' ? '#DDD6FE' : '#E9D5FF'}`,
                                       padding: '1px 6px',
                                       borderRadius: '4px'
                                     }}>
@@ -1265,8 +1265,8 @@ export const InventoryMasterTab = () => {
                               fontSize: '0.7rem',
                               fontWeight: 700,
                               color: camReq.lensType === 'EF-M' ? '#6D28D9' : '#1E40AF',
-                              background: camReq.lensType === 'EF-M' ? '#F5F3FF' : '#EFF6FF',
-                              border: `1px solid ${camReq.lensType === 'EF-M' ? '#DDD6FE' : '#BFDBFE'}`,
+                              background: camReq.lensType === 'EF-M' ? '#F5F3FF' : '#FAF5FF',
+                              border: `1px solid ${camReq.lensType === 'EF-M' ? '#DDD6FE' : '#E9D5FF'}`,
                               padding: '1px 6px',
                               borderRadius: '4px'
                             }}>
@@ -1391,7 +1391,7 @@ export const InventoryMasterTab = () => {
 
           <div className="inspection-comparison-grid">
             <div className="inspection-column pickup">
-              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E3A8A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#9333EA', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <ClipboardCheck size={18} />
                 <span>1. Kondisi Saat Diambil (BEFORE)</span>
               </div>
@@ -1403,7 +1403,7 @@ export const InventoryMasterTab = () => {
                 const src = beforePhoto.dataUrl || beforePhoto;
                 return (
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#1E40AF', background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '2px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#1E40AF', background: '#FAF5FF', border: '1px solid #E9D5FF', padding: '2px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
                       <Camera size={11} />
                       <span>FOTO FISIK AWAL (BEFORE)</span>
                     </div>
@@ -1568,7 +1568,7 @@ export const InventoryMasterTab = () => {
 
           {/* Presets Kamera Resmi */}
           {kategori === 'Kamera' && (
-            <div style={{ marginBottom: '1rem', background: '#EFF6FF', border: '1px dashed #93C5FD', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
+            <div style={{ marginBottom: '1rem', background: '#FAF5FF', border: '1px dashed #93C5FD', borderRadius: '8px', padding: '0.65rem 0.75rem' }}>
               <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#1E40AF', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <Sparkles size={13} color="#2563EB" />
                 <span>Preset Kamera Resmi Creative Corner:</span>
@@ -1964,7 +1964,7 @@ export const InventoryMasterTab = () => {
               </div>
             ) : (
               <div style={{ padding: '2.5rem 1.5rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <FileText size={48} color="#1E3A8A" style={{ margin: '0 auto 1rem' }} />
+                <FileText size={48} color="#9333EA" style={{ margin: '0 auto 1rem' }} />
                 <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.25rem' }}>
                   {previewProofModal.name}
                 </h4>

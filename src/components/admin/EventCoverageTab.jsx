@@ -550,7 +550,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Users size={22} color="#1E3A8A" />
+              <Users size={22} color="#9333EA" />
               <span>Pelacakan Status Personil Lapangan (Live Tracker)</span>
             </h2>
             <p style={{ fontSize: '0.85rem', color: '#475569' }}>
@@ -571,8 +571,8 @@ _Tim Pengelola Studio Creative Corner_`;
 
         {/* 3 Indikator Counter Status Lapangan */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-          <div className="card" style={{ borderLeft: '4px solid #1E3A8A', background: '#FFFFFF' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A', textTransform: 'uppercase' }}>
+          <div className="card" style={{ borderLeft: '4px solid #9333EA', background: '#FFFFFF' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#9333EA', textTransform: 'uppercase' }}>
               Belum Mengambil Alat
             </div>
             <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '0.25rem 0' }}>
@@ -613,7 +613,7 @@ _Tim Pengelola Studio Creative Corner_`;
           <div className="card-header" style={{ flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-start' }}>
             <div>
               <h3 className="card-title">
-                <Camera size={20} color="#1E3A8A" />
+                <Camera size={20} color="#9333EA" />
                 <span>Daftar Agenda Liputan Sekolah & Alokasi Alat</span>
               </h3>
               <div className="card-subtitle">
@@ -728,7 +728,7 @@ _Tim Pengelola Studio Creative Corner_`;
                                 </div>
                                 {(ev.personil || []).map((p, idx) => {
                                   const getRoleBadge = (role) => {
-                                    if (role === 'Kamera Foto 1') return { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE', Icon: Camera };
+                                    if (role === 'Kamera Foto 1') return { bg: '#FAF5FF', text: '#1E40AF', border: '#E9D5FF', Icon: Camera };
                                     if (role === 'Foto 2') return { bg: '#F0F9FF', text: '#0369A1', border: '#BAE6FD', Icon: Camera };
                                     if (role === 'Video') return { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A', Icon: Video };
                                     if (role?.includes('Live Report')) return { bg: '#F0FDF4', text: '#166534', border: '#BBF7D0', Icon: Smartphone };
@@ -778,7 +778,7 @@ _Tim Pengelola Studio Creative Corner_`;
                               {lockedList.length > 0 ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                                   {lockedList.map((tool) => (
-                                    <span key={tool.id} style={{ fontSize: '0.775rem', color: '#1E3A8A', fontWeight: 600 }}>
+                                    <span key={tool.id} style={{ fontSize: '0.775rem', color: '#9333EA', fontWeight: 600 }}>
                                       {tool.nama}
                                     </span>
                                   ))}
@@ -869,9 +869,9 @@ _Tim Pengelola Studio Creative Corner_`;
                                       type="button"
                                       className="btn btn-sm"
                                       style={{
-                                        background: '#EFF6FF',
+                                        background: '#FAF5FF',
                                         color: '#1E40AF',
-                                        border: '1px solid #BFDBFE',
+                                        border: '1px solid #E9D5FF',
                                         padding: '0.25rem 0.5rem',
                                         fontSize: '0.725rem',
                                         fontWeight: 600
@@ -927,7 +927,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Layers size={20} color="#1E3A8A" />
+              <Layers size={20} color="#9333EA" />
               <span>Dasbor Proyek Tim & Tenggat Waktu Konten</span>
             </h3>
             <div className="card-subtitle">
@@ -965,7 +965,7 @@ _Tim Pengelola Studio Creative Corner_`;
                       <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{t.deskripsi}</div>
                     </td>
                     <td>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#1E3A8A' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#9333EA' }}>
                         {t.kategori}
                       </span>
                     </td>
@@ -1008,7 +1008,7 @@ _Tim Pengelola Studio Creative Corner_`;
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <Clock size={20} color="#1E3A8A" />
+              <Clock size={20} color="#9333EA" />
               <span>Pengaturan Roster Giliran Piket Jaga Studio Creative Corner</span>
             </h3>
             <div className="card-subtitle">
@@ -1109,8 +1109,8 @@ _Tim Pengelola Studio Creative Corner_`;
       >
         <form onSubmit={handleScheduleSubmit}>
           <div style={{
-            background: '#EFF6FF',
-            border: '1px solid #BFDBFE',
+            background: '#FAF5FF',
+            border: '1px solid #E9D5FF',
             borderRadius: '10px',
             padding: '1rem',
             marginBottom: '1.25rem',
@@ -1118,9 +1118,9 @@ _Tim Pengelola Studio Creative Corner_`;
             gap: '0.75rem',
             alignItems: 'flex-start'
           }}>
-            <Lock size={22} color="#1E3A8A" style={{ marginTop: '2px', flexShrink: 0 }} />
+            <Lock size={22} color="#9333EA" style={{ marginTop: '2px', flexShrink: 0 }} />
             <div>
-              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1E3A8A' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#9333EA' }}>
                 Alur Otomatis Creative Corner (State-Machine Trigger 1)
               </div>
               <p style={{ fontSize: '0.8rem', color: '#334155', marginTop: '2px' }}>
@@ -1222,7 +1222,7 @@ _Tim Pengelola Studio Creative Corner_`;
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
             {/* 1. Kamera Foto 1 */}
             <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E3A8A', fontWeight: 700 }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#9333EA', fontWeight: 700 }}>
                 <Camera size={15} color="#2563EB" />
                 <span>1. Kamera Foto 1</span>
               </label>
@@ -1388,7 +1388,7 @@ _Tim Pengelola Studio Creative Corner_`;
                         alignItems: 'center',
                         gap: '0.5rem',
                         padding: '0.45rem 0.65rem',
-                        background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                        background: isSelected ? '#FAF5FF' : '#FFFFFF',
                         border: isSelected ? '1px solid #3B82F6' : '1px solid #E2E8F0',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -1399,7 +1399,7 @@ _Tim Pengelola Studio Creative Corner_`;
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleTool(item.id)}
-                        style={{ accentColor: '#1E3A8A' }}
+                        style={{ accentColor: '#9333EA' }}
                       />
                       <div>
                         <strong style={{ color: '#0F172A' }}>{item.nama}</strong>
@@ -1565,7 +1565,7 @@ _Tim Pengelola Studio Creative Corner_`;
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
               {/* 1. Kamera Foto 1 */}
               <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E3A8A', fontWeight: 700 }}>
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#9333EA', fontWeight: 700 }}>
                   <Camera size={15} color="#2563EB" />
                   <span>1. Kamera Foto 1</span>
                 </label>
@@ -1723,7 +1723,7 @@ _Tim Pengelola Studio Creative Corner_`;
                           alignItems: 'center',
                           gap: '0.5rem',
                           padding: '0.45rem 0.65rem',
-                          background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                          background: isSelected ? '#FAF5FF' : '#FFFFFF',
                           border: isSelected ? '1px solid #3B82F6' : '1px solid #E2E8F0',
                           borderRadius: '6px',
                           cursor: 'pointer',
@@ -1734,7 +1734,7 @@ _Tim Pengelola Studio Creative Corner_`;
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleToggleEditTool(item.id)}
-                          style={{ accentColor: '#1E3A8A' }}
+                          style={{ accentColor: '#9333EA' }}
                         />
                         <div>
                           <strong style={{ color: '#0F172A' }}>{item.nama}</strong>

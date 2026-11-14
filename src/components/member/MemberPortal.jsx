@@ -64,12 +64,12 @@ export const MemberPortal = () => {
               </h1>
               <span style={{
                 fontSize: '0.7rem',
-                background: '#EFF6FF',
-                color: '#1E3A8A',
+                background: '#FAF5FF',
+                color: '#9333EA',
                 padding: '1px 6px',
                 borderRadius: '4px',
                 fontWeight: 700,
-                border: '1px solid #BFDBFE'
+                border: '1px solid #E9D5FF'
               }}>
                 {currentMember.kelas}
               </span>
@@ -90,7 +90,7 @@ export const MemberPortal = () => {
 
           <div className="portal-hero-stat-card">
             <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>Tugas Aktif</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#9333EA', lineHeight: 1.1, fontFamily: 'var(--font-mono)' }}>
               {activeTasksCount}
             </div>
           </div>

@@ -288,7 +288,7 @@ export const PCKioskClient = () => {
                   padding: '0.5rem 1rem',
                   borderRadius: '8px',
                   border: isSelected ? '2px solid #60A5FA' : '1px solid transparent',
-                  background: isSelected ? '#1E3A8A' : 'transparent',
+                  background: isSelected ? '#9333EA' : 'transparent',
                   color: '#FFFFFF',
                   fontWeight: 700,
                   fontSize: '0.85rem',
@@ -348,19 +348,19 @@ export const PCKioskClient = () => {
                 {currentPC.namaUnit}
               </div>
             )}
-            <p style={{ fontSize: '0.8rem', color: '#BFDBFE', marginTop: '0.25rem' }}>
+            <p style={{ fontSize: '0.8rem', color: '#E9D5FF', marginTop: '0.25rem' }}>
               Workstation ini terkunci. Lengkapi identitas & pilih durasi pakai untuk membuka layar.
             </p>
           </div>
 
           <div className="kiosk-card-body">
             <div style={{
-              background: '#EFF6FF',
-              border: '1px solid #BFDBFE',
+              background: '#FAF5FF',
+              border: '1px solid #E9D5FF',
               borderRadius: '8px',
               padding: '0.75rem 1rem',
               fontSize: '0.775rem',
-              color: '#1E3A8A',
+              color: '#9333EA',
               marginBottom: '1.25rem',
               display: 'flex',
               alignItems: 'center',
@@ -502,7 +502,7 @@ export const PCKioskClient = () => {
               <div className="form-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                   <label className="form-label" style={{ margin: 0 }}>Estimasi Durasi Pakai (Menit) *</label>
-                  <span style={{ fontSize: '0.75rem', color: '#1E3A8A', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.75rem', color: '#9333EA', fontWeight: 700 }}>
                     Dipilih: {durasiMenit} Menit
                   </span>
                 </div>
@@ -571,7 +571,7 @@ export const PCKioskClient = () => {
            2. SESI AKTIF & JENDELA TERKUNCI (LIVE WORKSTATION)
         ======================================================= */
         <div className="kiosk-card" style={{ maxWidth: '640px' }}>
-          <div className="kiosk-card-header" style={{ background: '#0F172A', borderBottom: '2px solid #1E3A8A' }}>
+          <div className="kiosk-card-header" style={{ background: '#0F172A', borderBottom: '2px solid #9333EA' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{
@@ -639,7 +639,7 @@ export const PCKioskClient = () => {
 
               <div>
                 <span style={{ color: '#64748B', fontSize: '0.75rem' }}>Proyek Kreatif Terhubung:</span>
-                <div style={{ fontWeight: 700, color: '#1E3A8A' }}>
+                <div style={{ fontWeight: 700, color: '#9333EA' }}>
                   {currentPC.penggunaAktif.keperluan}
                 </div>
                 <div style={{ color: '#059669', fontSize: '0.75rem', fontWeight: 600 }}>
@@ -650,7 +650,7 @@ export const PCKioskClient = () => {
 
             {/* LIVE COUNTDOWN TIMER */}
             <div className="countdown-container">
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: isNearTimeout ? '#E11D48' : '#1E3A8A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: isNearTimeout ? '#E11D48' : '#9333EA', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
                 {isNearTimeout ? 'Sisa Waktu Pemakaian Kritis!' : 'Sisa Waktu Sesi Editing'}
               </div>
 
@@ -894,12 +894,12 @@ export const PCKioskClient = () => {
               Apakah Anda telah menyimpan seluruh file proyek di <strong>{currentPC.id}</strong> dan siap untuk mengunci kembali layar workstation ini?
             </p>
             <div style={{
-              background: '#EFF6FF',
-              border: '1px solid #BFDBFE',
+              background: '#FAF5FF',
+              border: '1px solid #E9D5FF',
               borderRadius: '8px',
               padding: '0.75rem',
               fontSize: '0.8rem',
-              color: '#1E3A8A'
+              color: '#9333EA'
             }}>
               • Riwayat sesi ini akan otomatis dicatat ke dalam <strong>Arsip Log Aktivitas Admin</strong>.<br />
               • Kaitan tugas kreatif akan dilepas dan PC dikembalikan ke mode layar kunci siap pakai.

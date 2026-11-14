@@ -205,7 +205,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
             <label className="form-label" style={{ margin: 0 }}>
               Pilih Unit Peralatan / Ruang yang Diperiksa & Diambil *
             </label>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#9333EA' }}>
               {selectedEqIds.length} Unit Dipilih
             </span>
           </div>
@@ -215,7 +215,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
             <div style={{
               marginBottom: '0.65rem',
               padding: '0.55rem 0.75rem',
-              background: '#EFF6FF',
+              background: '#FAF5FF',
               border: '1.5px solid #3B82F6',
               borderRadius: '6px',
               fontSize: '0.75rem',
@@ -226,7 +226,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
             }}>
               <Sparkles size={16} color="#2563EB" style={{ flexShrink: 0 }} />
               <div style={{ flex: 1, lineHeight: 1.4 }}>
-                <span style={{ fontWeight: 800, color: '#1E3A8A' }}>Filter Kompatibilitas Otomatis:</span> Kamera <strong>{selectedCamera.nama}</strong> terpilih.{' '}
+                <span style={{ fontWeight: 800, color: '#9333EA' }}>Filter Kompatibilitas Otomatis:</span> Kamera <strong>{selectedCamera.nama}</strong> terpilih.{' '}
                 {cameraReq.needsAdapter ? 'Wajib pakai Adapter EF-M to EF & Lensa EF (DSLR).' : `Menggunakan ${cameraReq.lensLabel}.`}{' '}
                 Rekomendasi Baterai: <strong>{cameraReq.batteryLabel}</strong>.
                 <span style={{ color: '#2563EB', display: 'block', fontSize: '0.685rem', marginTop: '1px', fontStyle: 'italic' }}>
@@ -270,7 +270,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       alignItems: 'flex-start',
                       gap: '0.5rem',
                       padding: '0.5rem 0.65rem',
-                      background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                      background: isSelected ? '#FAF5FF' : '#FFFFFF',
                       border: isSelected ? '1.5px solid #3B82F6' : '1px solid #E2E8F0',
                       borderRadius: '6px',
                       cursor: 'pointer',
@@ -281,7 +281,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleEq(item.id)}
-                      style={{ marginTop: '3px', accentColor: '#1E3A8A' }}
+                      style={{ marginTop: '3px', accentColor: '#9333EA' }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <strong style={{ color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -296,7 +296,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                             fontSize: '0.675rem',
                             padding: '1px 5px',
                             borderRadius: '3px',
-                            background: itemReq.needsAdapter ? '#FEF3C7' : '#EFF6FF',
+                            background: itemReq.needsAdapter ? '#FEF3C7' : '#FAF5FF',
                             color: itemReq.needsAdapter ? '#92400E' : '#1E40AF',
                             fontWeight: 700,
                             width: 'fit-content'
@@ -410,7 +410,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
         <div className="form-group" style={{ marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <label className="form-label" style={{ margin: 0, fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Camera size={18} color="#1E3A8A" />
+              <Camera size={18} color="#9333EA" />
               <span>Foto Fisik Alat / Gear Sebelum Dipakai (BEFORE) *</span>
             </label>
             <span className="badge badge-primary" style={{ fontSize: '0.7rem', padding: '2px 8px' }}>
@@ -430,7 +430,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
               textAlign: 'center',
               background: '#FAFAFA'
             }}>
-              <Camera size={30} color="#1E3A8A" style={{ margin: '0 auto 0.5rem' }} />
+              <Camera size={30} color="#9333EA" style={{ margin: '0 auto 0.5rem' }} />
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.2rem' }}>
                 Ambil Foto Kondisi Alat Sebelum Digunakan (BEFORE)
               </div>
@@ -447,7 +447,7 @@ export const PickupInspectionModal = ({ isOpen, onClose, targetEvent, prefilledE
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.45rem',
-                    background: '#1E3A8A'
+                    background: '#9333EA'
                   }}
                   id="btn-pickup-camera"
                 >

@@ -192,7 +192,7 @@ exit
       <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Monitor size={22} color="#1E3A8A" />
+            <Monitor size={22} color="#9333EA" />
             <span>Pengawasan Klien PC Studio & Manajemen Workstation</span>
           </h2>
           <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0 }}>
@@ -207,8 +207,8 @@ exit
             onClick={() => setIsStartupGuideOpen(true)}
             style={{
               borderColor: '#60A5FA',
-              background: '#EFF6FF',
-              color: '#1E3A8A',
+              background: '#FAF5FF',
+              color: '#9333EA',
               fontWeight: 700
             }}
           >
@@ -253,14 +253,14 @@ exit
                 key={pc.id}
                 className="card"
                 style={{
-                  borderTop: isActive ? '4px solid #1E3A8A' : isMaintenance ? '4px solid #F59E0B' : '4px solid #94A3B8',
+                  borderTop: isActive ? '4px solid #9333EA' : isMaintenance ? '4px solid #F59E0B' : '4px solid #94A3B8',
                   background: isActive ? '#FFFFFF' : '#FAFAFA',
                   boxShadow: isActive ? 'var(--shadow-md)' : 'var(--shadow-sm)'
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Monitor size={20} color={isActive ? '#1E3A8A' : isMaintenance ? '#D97706' : '#94A3B8'} />
+                    <Monitor size={20} color={isActive ? '#9333EA' : isMaintenance ? '#D97706' : '#94A3B8'} />
                     <div>
                       <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>
                         {pc.id}
@@ -291,7 +291,7 @@ exit
                   lineHeight: '1.4'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                    <strong style={{ color: '#1E3A8A', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <strong style={{ color: '#9333EA', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <Cpu size={12} />
                       <span>Spesifikasi Hardware:</span>
                     </strong>
@@ -334,26 +334,26 @@ exit
                     </div>
                     <div style={{ marginBottom: '0.5rem' }}>
                       <span style={{ color: '#64748B' }}>Keperluan:</span>{' '}
-                      <span style={{ color: '#1E3A8A', fontWeight: 600 }}>{pc.penggunaAktif.keperluan}</span>
+                      <span style={{ color: '#9333EA', fontWeight: 600 }}>{pc.penggunaAktif.keperluan}</span>
                     </div>
 
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: isNearTimeout ? '#FFF1F2' : '#EFF6FF',
+                      background: isNearTimeout ? '#FFF1F2' : '#FAF5FF',
                       padding: '0.5rem 0.75rem',
                       borderRadius: '6px',
-                      border: isNearTimeout ? '1px solid #FECDD3' : '1px solid #BFDBFE'
+                      border: isNearTimeout ? '1px solid #FECDD3' : '1px solid #E9D5FF'
                     }}>
-                      <span style={{ fontSize: '0.75rem', color: isNearTimeout ? '#E11D48' : '#1E3A8A', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.75rem', color: isNearTimeout ? '#E11D48' : '#9333EA', fontWeight: 700 }}>
                         ⏱️ Sisa Durasi:
                       </span>
                       <span style={{
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 800,
                         fontSize: '1.1rem',
-                        color: isNearTimeout ? '#E11D48' : '#1E3A8A'
+                        color: isNearTimeout ? '#E11D48' : '#9333EA'
                       }}>
                         {formatTime(sisaDetik)}
                       </span>
@@ -465,8 +465,8 @@ exit
                         justifyContent: 'center', 
                         gap: '0.25rem',
                         borderColor: '#93C5FD', 
-                        background: '#EFF6FF', 
-                        color: '#1E3A8A',
+                        background: '#FAF5FF', 
+                        color: '#9333EA',
                         fontWeight: 700 
                       }}
                       onClick={() => handleDownloadStartupScript(pc.id)}
@@ -488,7 +488,7 @@ exit
         <div className="card-header">
           <div>
             <h3 className="card-title">
-              <History size={20} color="#1E3A8A" />
+              <History size={20} color="#9333EA" />
               <span>Arsip Rekapitulasi Pemakaian PC Studio ({filteredLogs.length} Sesi Selesai)</span>
             </h3>
             <div className="card-subtitle">
@@ -498,9 +498,9 @@ exit
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <span style={{
-              background: '#EFF6FF',
-              border: '1px solid #BFDBFE',
-              color: '#1E3A8A',
+              background: '#FAF5FF',
+              border: '1px solid #E9D5FF',
+              color: '#9333EA',
               padding: '0.35rem 0.75rem',
               borderRadius: '9999px',
               fontSize: '0.785rem',
@@ -561,7 +561,7 @@ exit
               <tbody>
                 {filteredLogs.map((log) => (
                   <tr key={log.id}>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#1E3A8A' }}>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#9333EA' }}>
                       {log.id}
                     </td>
                     <td>
@@ -759,7 +759,7 @@ exit
               gap: '0.75rem'
             }}>
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A', display: 'block', marginBottom: '0.2rem' }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#9333EA', display: 'block', marginBottom: '0.2rem' }}>
                   Pilih Unit PC Studio yang Sedang Dikonfigurasi:
                 </label>
                 <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
@@ -772,7 +772,7 @@ exit
                   className="form-select"
                   value={guideActivePC}
                   onChange={(e) => setGuideActivePC(e.target.value)}
-                  style={{ width: 'auto', fontWeight: 800, color: '#1E3A8A' }}
+                  style={{ width: 'auto', fontWeight: 800, color: '#9333EA' }}
                 >
                   {pcClients.map((pc) => (
                     <option key={pc.id} value={pc.id}>{pc.id} - {pc.namaUnit || 'Workstation'}</option>
@@ -797,7 +797,7 @@ exit
                 type="button"
                 onClick={() => setActiveGuideTab('bat')}
                 style={{
-                  background: activeGuideTab === 'bat' ? '#1E3A8A' : 'transparent',
+                  background: activeGuideTab === 'bat' ? '#9333EA' : 'transparent',
                   color: activeGuideTab === 'bat' ? '#FFFFFF' : '#64748B',
                   border: 'none',
                   padding: '0.5rem 0.85rem',
@@ -818,7 +818,7 @@ exit
                 type="button"
                 onClick={() => setActiveGuideTab('shortcut')}
                 style={{
-                  background: activeGuideTab === 'shortcut' ? '#1E3A8A' : 'transparent',
+                  background: activeGuideTab === 'shortcut' ? '#9333EA' : 'transparent',
                   color: activeGuideTab === 'shortcut' ? '#FFFFFF' : '#64748B',
                   border: 'none',
                   padding: '0.5rem 0.85rem',
@@ -839,7 +839,7 @@ exit
                 type="button"
                 onClick={() => setActiveGuideTab('assigned')}
                 style={{
-                  background: activeGuideTab === 'assigned' ? '#1E3A8A' : 'transparent',
+                  background: activeGuideTab === 'assigned' ? '#9333EA' : 'transparent',
                   color: activeGuideTab === 'assigned' ? '#FFFFFF' : '#64748B',
                   border: 'none',
                   padding: '0.5rem 0.85rem',
@@ -860,10 +860,10 @@ exit
             {/* KONTEN TAB 1: SCRIPT .BAT */}
             {activeGuideTab === 'bat' && (
               <div>
-                <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem' }}>
+                <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
-                      <strong style={{ color: '#1E3A8A', fontSize: '0.9rem' }}>
+                      <strong style={{ color: '#9333EA', fontSize: '0.9rem' }}>
                         Unduh Script Startup Otomatis untuk {guideActivePC}:
                       </strong>
                       <p style={{ fontSize: '0.785rem', color: '#3B82F6', margin: '0.2rem 0 0 0' }}>
@@ -894,7 +894,7 @@ exit
                       Pada keyboard PC tersebut, tekan kombinasi tombol <strong>Windows + R</strong> untuk membuka dialog <em>Run</em>.
                     </li>
                     <li style={{ marginBottom: '0.5rem' }}>
-                      Ketik <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', color: '#1E3A8A', fontWeight: 700 }}>shell:startup</code> lalu tekan <strong>Enter</strong>. Jendela folder Startup Windows akan terbuka.
+                      Ketik <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', color: '#9333EA', fontWeight: 700 }}>shell:startup</code> lalu tekan <strong>Enter</strong>. Jendela folder Startup Windows akan terbuka.
                     </li>
                     <li style={{ marginBottom: '0.5rem' }}>
                       Pindahkan (Cut / Copy) file <strong>Startup_{guideActivePC}.bat</strong> ke dalam folder Startup tersebut.
@@ -965,7 +965,7 @@ exit
                     Pilih aplikasi <strong>Microsoft Edge</strong> &gt; pilih opsi <strong>As a digital sign or interactive display</strong> (Fullscreen).
                   </li>
                   <li style={{ marginBottom: '0.5rem' }}>
-                    Masukkan tautan URL: <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', color: '#1E3A8A' }}>https://web-creative-corner.vercel.app/?mode=kiosk&pc={guideActivePC}</code>
+                    Masukkan tautan URL: <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', color: '#9333EA' }}>https://web-creative-corner.vercel.app/?mode=kiosk&pc={guideActivePC}</code>
                   </li>
                   <li>
                     Atur waktu idle refresh, lalu simpan. Setiap kali PC dinyalakan, Windows otomatis login langsung ke Kiosk Creative Corner.
@@ -980,12 +980,12 @@ exit
               padding: '0.85rem 1rem',
               background: '#F1F5F9',
               borderRadius: '8px',
-              borderLeft: '4px solid #1E3A8A',
+              borderLeft: '4px solid #9333EA',
               fontSize: '0.8rem',
               color: '#334155'
             }}>
               <strong style={{ color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem' }}>
-                <HelpCircle size={15} color="#1E3A8A" />
+                <HelpCircle size={15} color="#9333EA" />
                 <span>Tips Penting untuk Administrator Studio:</span>
               </strong>
               <ul style={{ margin: 0, paddingLeft: '1.2rem', lineHeight: '1.5' }}>
