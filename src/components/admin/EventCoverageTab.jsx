@@ -143,8 +143,8 @@ _Tim Pengelola Studio Creative Corner_`;
   const [manualHari, setManualHari] = useState('');
   const [dutyTanggal, setDutyTanggal] = useState('Jadwal Mingguan');
   const [dutyStaffText, setDutyStaffText] = useState('');
-  const [dutyHoursText, setDutyHoursText] = useState('06:45 - 07:15 & 14:00 - 15:30');
-  const [dutyDescText, setDutyDescText] = useState('Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.');
+  const [dutyHoursText, setDutyHoursText] = useState('06:30 - 06:55');
+  const [dutyDescText, setDutyDescText] = useState('Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).');
   
   // State Edit Roster Piket
   const [editDutyJenis, setEditDutyJenis] = useState('Piket 5S');
@@ -534,7 +534,7 @@ _Tim Pengelola Studio Creative Corner_`;
       tanggal: dutyTanggal || 'Jadwal Mingguan',
       jamOperasional: dutyHoursText,
       petugas: dutyStaffText.split(',').map((s) => s.trim()).filter(Boolean),
-      tanggungJawab: dutyDescText || (dutyJenis === 'Piket 5S' ? 'Penerapan budaya 5S studio' : 'Pemeliharaan kebersihan dan inventarisasi studio')
+      tanggungJawab: dutyDescText || (dutyJenis === 'Piket 5S' ? 'Piket 5S Gerbang Sekolah: Berdiri di depan gerbang menyambut siswa-siswi masuk sekolah' : 'Piket kebersihan dan inventarisasi studio')
     });
 
     setDutyStaffText('');
@@ -1094,7 +1094,7 @@ _Tim Pengelola Studio Creative Corner_`;
                     setDutyHari('Kamis (Grup 1)');
                     setDutyTanggal('Rotasi Tiap Kamis Pagi');
                     setDutyHoursText('06:30 - 06:55');
-                    setDutyDescText('Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.');
+                    setDutyDescText('Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).');
                     setDutyStaffText('');
                     setIsAddDutyModalOpen(true);
                   }}
@@ -1197,7 +1197,7 @@ _Tim Pengelola Studio Creative Corner_`;
                                 color: is5S ? '#4338CA' : '#065F46',
                                 border: `1px solid ${is5S ? '#C7D2FE' : '#A7F3D0'}`
                               }}>
-                                {is5S ? '🤝 Piket 5S' : '🧹 Kebersihan Studio'}
+                                {is5S ? '🤝 Piket 5S (Gerbang Depan)' : '🧹 Kebersihan Studio'}
                               </span>
                               <div>
                                 <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>{d.hari}</strong>
@@ -1964,7 +1964,7 @@ _Tim Pengelola Studio Creative Corner_`;
                     setDutyHoursText('06:30 - 06:55');
                     setDutyHari('Kamis (Grup 1)');
                     setDutyTanggal('Rotasi Tiap Kamis Pagi');
-                    setDutyDescText('Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.');
+                    setDutyDescText('Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).');
                   }}
                   style={{
                     padding: '0.85rem',
@@ -1976,10 +1976,10 @@ _Tim Pengelola Studio Creative Corner_`;
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#4338CA', fontSize: '0.875rem' }}>
-                    <span>🤝 Piket 5S (Kamis Pagi)</span>
+                    <span>🤝 Piket 5S (Gerbang Depan Sekolah)</span>
                   </div>
                   <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.25rem' }}>
-                    Tiap Kamis 06:30 – 06:55 WIB: Senyum, Salam, Sapa & Presensi Tamu.
+                    Tiap Kamis 06:30 – 06:55 WIB: Menyambut siswa-siswi masuk sekolah di gerbang depan.
                   </div>
                 </div>
 
@@ -2185,8 +2185,8 @@ _Tim Pengelola Studio Creative Corner_`;
                     cursor: 'pointer'
                   }}
                 >
-                  <div style={{ fontWeight: 700, color: '#4338CA', fontSize: '0.85rem' }}>🤝 Piket 5S</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Senyum, Salam, Sapa, Sopan, Santun</div>
+                  <div style={{ fontWeight: 700, color: '#4338CA', fontSize: '0.85rem' }}>🤝 Piket 5S (Gerbang Depan)</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Menyambut siswa masuk sekolah (06:30 - 06:55)</div>
                 </div>
 
                 <div

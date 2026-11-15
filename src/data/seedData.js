@@ -944,7 +944,8 @@ export const SEED_CREATIVE_TASKS = [];
 export const SEED_DUTY_ROSTER = [
   // ==============================================================
   // 1. JADWAL PIKET 5S (SENYUM, SALAM, SAPA, SOPAN, SANTUN)
-  // Dilaksanakan Tiap Hari Kamis Jam 06.30 - 06.55 WIB
+  // Dilaksanakan Tiap Hari Kamis Jam 06.30 - 06.55 WIB di Depan Gerbang Sekolah
+  // Menyambut Siswa-Siswi yang Hendak Masuk Sekolah
   // ==============================================================
   {
     id: 'DUTY-5S-01',
@@ -957,7 +958,7 @@ export const SEED_DUTY_ROSTER = [
       'Aesar Abi Febrian (Aesar)',
       'Grindra Felix Suryawijaya (Felix)'
     ],
-    tanggungJawab: 'Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.',
+    tanggungJawab: 'Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).',
     status: 'Terjadwal'
   },
   {
@@ -971,7 +972,7 @@ export const SEED_DUTY_ROSTER = [
       'Alif Castar Kenta Wicaksono (Alif)',
       'Alif Arrohman (Tulip)'
     ],
-    tanggungJawab: 'Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.',
+    tanggungJawab: 'Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).',
     status: 'Terjadwal'
   },
   {
@@ -985,7 +986,7 @@ export const SEED_DUTY_ROSTER = [
       'Dwi Aditya Wibowo (Dwi)',
       'Faiz Romadhon Nur Wijanarko (Faiz)'
     ],
-    tanggungJawab: 'Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.',
+    tanggungJawab: 'Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).',
     status: 'Terjadwal'
   },
   {
@@ -999,7 +1000,7 @@ export const SEED_DUTY_ROSTER = [
       'Jonathan Surya Kristiawan (Jonathan)',
       'Arya Mustofa (Arya)'
     ],
-    tanggungJawab: 'Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.',
+    tanggungJawab: 'Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).',
     status: 'Terjadwal'
   },
   {
@@ -1013,7 +1014,7 @@ export const SEED_DUTY_ROSTER = [
       'Abrariy Kumara Arkananta (Arka)',
       'Muhammad Ilham Nur Hayat (Ilham)'
     ],
-    tanggungJawab: 'Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.',
+    tanggungJawab: 'Piket 5S Gerbang Sekolah: Berdiri di depan gerbang sekolah menyambut siswa-siswi yang hendak masuk sekolah dengan Senyum, Salam, Sapa, Sopan, dan Santun (06:30 - 06:55 WIB).',
     status: 'Terjadwal'
   },
 

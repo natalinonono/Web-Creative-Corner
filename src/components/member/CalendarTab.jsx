@@ -1073,7 +1073,7 @@ export const CalendarTab = () => {
                     const badgeBg = is5S ? '#EEF2FF' : '#DCFCE7';
                     const badgeText = is5S ? '#4338CA' : '#166534';
                     const badgeBorder = is5S ? '#C7D2FE' : '#86EFAC';
-                    const dutyTitle = is5S ? '🤝 PIKET 5S (SALAM & SAPA)' : '🧹 PIKET KEBERSIHAN STUDIO';
+                    const dutyTitle = is5S ? '🤝 PIKET 5S (GERBANG SEKOLAH)' : '🧹 PIKET KEBERSIHAN STUDIO';
 
                     return (
                       <div
