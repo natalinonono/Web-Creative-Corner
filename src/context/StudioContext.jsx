@@ -116,7 +116,7 @@ export const StudioProvider = ({ children }) => {
       const saved = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 10 && parsed.some((d) => d.jenisPiket)) {
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed.some((d) => d.id?.startsWith('DUTY-5S-') || d.hari?.includes('Grup 1'))) {
           return parsed;
         }
       }
@@ -463,7 +463,7 @@ export const StudioProvider = ({ children }) => {
           const savedDuties = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
           if (savedDuties) {
             const parsed = JSON.parse(savedDuties);
-            if (Array.isArray(parsed) && parsed.length >= 10 && parsed.some((d) => d.jenisPiket)) {
+            if (Array.isArray(parsed) && parsed.length > 0 && parsed.some((d) => d.id?.startsWith('DUTY-5S-') || d.hari?.includes('Grup 1'))) {
               setDutyRoster(parsed);
             } else {
               setDutyRoster(SEED_DUTY_ROSTER);

@@ -1068,7 +1068,7 @@ _Tim Pengelola Studio Creative Corner_`;
                   <span>Pengaturan Roster Giliran Piket Jaga Studio Creative Corner</span>
                 </h3>
                 <div className="card-subtitle">
-                  Pemisahan 2 versi piket harian: <strong>Piket 5S</strong> (Senyum, Salam, Sapa, Sopan, Santun & Presensi Tamu) dan <strong>Piket Kebersihan Studio</strong> (Sanitasi Alat, Box Kamera, & PC Editing).
+                  Jadwal 2 versi piket studio resmi: <strong>Piket 5S</strong> (5 Grup tiap hari Kamis pagi 06:30 – 06:55 WIB) dan <strong>Piket Kebersihan Studio</strong> (3 Grup rotasi tiap 2 minggu sekali 15:00 – 17:00 WIB).
                 </div>
               </div>
 
@@ -1076,9 +1076,9 @@ _Tim Pengelola Studio Creative Corner_`;
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  title="Muat Ulang 10 Jadwal Resmi (Piket 5S & Piket Kebersihan Studio)"
+                  title="Muat Ulang Jadwal Resmi (Piket 5S & Piket Kebersihan Studio)"
                   onClick={() => {
-                    if (window.confirm('Muat ulang 10 jadwal resmi lengkap (5 hari Piket 5S & 5 hari Piket Kebersihan Studio untuk seluruh 22 anggota)?')) {
+                    if (window.confirm('Muat ulang jadwal resmi lengkap (5 Grup Piket 5S Tiap Kamis 06.30-06.55 & 3 Grup Piket Kebersihan Tiap 2 Minggu Sekali)?')) {
                       resetDutyRosterToDefault();
                     }
                   }}
@@ -1091,8 +1091,10 @@ _Tim Pengelola Studio Creative Corner_`;
                   className="btn btn-primary btn-sm"
                   onClick={() => {
                     setDutyJenis('Piket 5S');
-                    setDutyHoursText('06:45 - 07:15 & 14:00 - 15:30');
-                    setDutyDescText('Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.');
+                    setDutyHari('Kamis (Grup 1)');
+                    setDutyTanggal('Rotasi Tiap Kamis Pagi');
+                    setDutyHoursText('06:30 - 06:55');
+                    setDutyDescText('Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.');
                     setDutyStaffText('');
                     setIsAddDutyModalOpen(true);
                   }}
@@ -1959,8 +1961,10 @@ _Tim Pengelola Studio Creative Corner_`;
                 <div
                   onClick={() => {
                     setDutyJenis('Piket 5S');
-                    setDutyHoursText('06:45 - 07:15 & 14:00 - 15:30');
-                    setDutyDescText('Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.');
+                    setDutyHoursText('06:30 - 06:55');
+                    setDutyHari('Kamis (Grup 1)');
+                    setDutyTanggal('Rotasi Tiap Kamis Pagi');
+                    setDutyDescText('Piket 5S Pagi: Senyum, Salam, Sapa di pintu masuk studio, menyambut siswa & tamu, pengarahan sopan santun, serta presensi kehadiran.');
                   }}
                   style={{
                     padding: '0.85rem',
@@ -1972,10 +1976,10 @@ _Tim Pengelola Studio Creative Corner_`;
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#4338CA', fontSize: '0.875rem' }}>
-                    <span>🤝 Piket 5S</span>
+                    <span>🤝 Piket 5S (Kamis Pagi)</span>
                   </div>
                   <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.25rem' }}>
-                    Senyum, Salam, Sapa, Sopan, Santun & Presensi Tamu Studio.
+                    Tiap Kamis 06:30 – 06:55 WIB: Senyum, Salam, Sapa & Presensi Tamu.
                   </div>
                 </div>
 
@@ -1983,7 +1987,9 @@ _Tim Pengelola Studio Creative Corner_`;
                   onClick={() => {
                     setDutyJenis('Piket Kebersihan Studio');
                     setDutyHoursText('15:00 - 17:00');
-                    setDutyDescText('Menyapu & mengepel lantai, sanitasi meja PC editing, cek dry cabinet, dan merapikan Box Coklat & Biru.');
+                    setDutyHari('Jadwal Pertama (Grup 1)');
+                    setDutyTanggal('Rotasi Tiap 2 Minggu');
+                    setDutyDescText('Piket Kebersihan Studio: Menyapu & mengepel lantai, sanitasi workstation PC editing, membersihkan dry cabinet, dan merapikan Box Coklat & Box Biru di lemari.');
                   }}
                   style={{
                     padding: '0.85rem',
@@ -1995,10 +2001,10 @@ _Tim Pengelola Studio Creative Corner_`;
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#065F46', fontSize: '0.875rem' }}>
-                    <span>🧹 Piket Kebersihan</span>
+                    <span>🧹 Piket Kebersihan Studio</span>
                   </div>
                   <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.25rem' }}>
-                    Sanitasi PC editing, sapu/pel, rapikan Box Kamera & lemari studio.
+                    Tiap 2 Minggu Sekali: Sanitasi PC editing, sapu/pel, rapikan Box Kamera & lemari.
                   </div>
                 </div>
               </div>
@@ -2012,7 +2018,22 @@ _Tim Pengelola Studio Creative Corner_`;
                   value={dutyHari}
                   onChange={(e) => setDutyHari(e.target.value)}
                 >
-                  {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map((h) => (
+                  {[
+                    'Kamis (Grup 1)',
+                    'Kamis (Grup 2)',
+                    'Kamis (Grup 3)',
+                    'Kamis (Grup 4)',
+                    'Kamis (Grup 5)',
+                    'Jadwal Pertama (Grup 1)',
+                    'Jadwal Kedua (Grup 2)',
+                    'Jadwal Ketiga (Grup 3)',
+                    'Senin',
+                    'Selasa',
+                    'Rabu',
+                    'Kamis',
+                    'Jumat',
+                    'Sabtu'
+                  ].map((h) => (
                     <option key={h} value={h}>{h}</option>
                   ))}
                   <option value="MANUAL">+ Tulis Hari / Jadwal Manual...</option>
@@ -2073,14 +2094,24 @@ _Tim Pengelola Studio Creative Corner_`;
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.5rem', maxHeight: '110px', overflowY: 'auto', padding: '4px' }}>
                 {members.map((m) => {
                   const currentList = dutyStaffText.split(',').map((s) => s.trim()).filter(Boolean);
-                  const isPicked = currentList.includes(m.nama);
+                  const isPicked = currentList.some((s) => {
+                    const sLow = s.toLowerCase();
+                    const mLow = m.nama.toLowerCase();
+                    const firstName = mLow.split(' ')[0];
+                    return sLow.includes(mLow) || mLow.includes(sLow) || (firstName.length > 2 && sLow.includes(firstName));
+                  });
                   return (
                     <button
                       key={m.id}
                       type="button"
                       onClick={() => {
                         if (isPicked) {
-                          setDutyStaffText(currentList.filter((s) => s !== m.nama).join(', '));
+                          setDutyStaffText(currentList.filter((s) => {
+                            const sLow = s.toLowerCase();
+                            const mLow = m.nama.toLowerCase();
+                            const firstName = mLow.split(' ')[0];
+                            return !(sLow.includes(mLow) || mLow.includes(sLow) || (firstName.length > 2 && sLow.includes(firstName)));
+                          }).join(', '));
                         } else {
                           setDutyStaffText([...currentList, m.nama].join(', '));
                         }
@@ -2182,7 +2213,22 @@ _Tim Pengelola Studio Creative Corner_`;
                   value={editDutyHari}
                   onChange={(e) => setEditDutyHari(e.target.value)}
                 >
-                  {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map((h) => (
+                  {[
+                    'Kamis (Grup 1)',
+                    'Kamis (Grup 2)',
+                    'Kamis (Grup 3)',
+                    'Kamis (Grup 4)',
+                    'Kamis (Grup 5)',
+                    'Jadwal Pertama (Grup 1)',
+                    'Jadwal Kedua (Grup 2)',
+                    'Jadwal Ketiga (Grup 3)',
+                    'Senin',
+                    'Selasa',
+                    'Rabu',
+                    'Kamis',
+                    'Jumat',
+                    'Sabtu'
+                  ].map((h) => (
                     <option key={h} value={h}>{h}</option>
                   ))}
                 </select>
@@ -2228,14 +2274,24 @@ _Tim Pengelola Studio Creative Corner_`;
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.5rem', maxHeight: '110px', overflowY: 'auto', padding: '4px' }}>
                 {members.map((m) => {
                   const currentList = editDutyStaffText.split(',').map((s) => s.trim()).filter(Boolean);
-                  const isPicked = currentList.includes(m.nama);
+                  const isPicked = currentList.some((s) => {
+                    const sLow = s.toLowerCase();
+                    const mLow = m.nama.toLowerCase();
+                    const firstName = mLow.split(' ')[0];
+                    return sLow.includes(mLow) || mLow.includes(sLow) || (firstName.length > 2 && sLow.includes(firstName));
+                  });
                   return (
                     <button
                       key={m.id}
                       type="button"
                       onClick={() => {
                         if (isPicked) {
-                          setEditDutyStaffText(currentList.filter((s) => s !== m.nama).join(', '));
+                          setEditDutyStaffText(currentList.filter((s) => {
+                            const sLow = s.toLowerCase();
+                            const mLow = m.nama.toLowerCase();
+                            const firstName = mLow.split(' ')[0];
+                            return !(sLow.includes(mLow) || mLow.includes(sLow) || (firstName.length > 2 && sLow.includes(firstName)));
+                          }).join(', '));
                         } else {
                           setEditDutyStaffText([...currentList, m.nama].join(', '));
                         }
