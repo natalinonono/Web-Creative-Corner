@@ -940,8 +940,116 @@ export const SEED_BORROWINGS = [];
 // Dasbor Tugas Kreatif (Dimulai Kosong - Diisi oleh Admin/Siswa)
 export const SEED_CREATIVE_TASKS = [];
 
-// Roster Piket Studio (Dimulai Kosong - Diisi oleh Admin)
-export const SEED_DUTY_ROSTER = [];
+// Roster Piket Studio Creative Corner: 2 Versi (Piket 5S & Piket Kebersihan Studio)
+export const SEED_DUTY_ROSTER = [
+  // ==============================================================
+  // 1. PIKET 5S (SENYUM, SALAM, SAPA, SOPAN, SANTUN)
+  // ==============================================================
+  {
+    id: 'DUTY-01',
+    jenisPiket: 'Piket 5S',
+    hari: 'Senin',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '06:45 - 07:15 & 14:00 - 15:30',
+    petugas: ['Malika Anindita Kiyasatina', 'Gladis Elysia Salsabila'],
+    tanggungJawab: 'Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-02',
+    jenisPiket: 'Piket 5S',
+    hari: 'Selasa',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '06:45 - 07:15 & 14:00 - 15:30',
+    petugas: ['Jonathan Surya Kristiawan', 'Abrariy Kumara Arkananta'],
+    tanggungJawab: 'Penerimaan tamu ramah 5S, konsultasi konten studio, dan mendampingi kunjungan siswa ke Creative Corner.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-03',
+    jenisPiket: 'Piket 5S',
+    hari: 'Rabu',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '06:45 - 07:15 & 14:00 - 15:30',
+    petugas: ['Vania Augusta Ramadhani', 'Ubai Hafidzul Ilmi'],
+    tanggungJawab: 'Penerapan budaya 5S, pengarahan sopan santun pemakaian ruang studio Creative Corner, dan pendataan tamu.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-04',
+    jenisPiket: 'Piket 5S',
+    hari: 'Kamis',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '06:45 - 07:15 & 14:00 - 15:30',
+    petugas: ['Arya Mustofa', 'Faiz Romadhon Nur Wijanarko'],
+    tanggungJawab: 'Senyum, Salam, Sapa di gerbang studio, memberikan informasi jadwal kegiatan studio, dan melayani tamu.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-05',
+    jenisPiket: 'Piket 5S',
+    hari: 'Jumat',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '06:45 - 07:15 & 13:00 - 14:30',
+    petugas: ['Dwi Aditya Wibowo', 'Alif Arrohman'],
+    tanggungJawab: 'Pelayanan prima 5S, pengawasan etika pengunjung studio, dan evaluasi keteraturan resepsionis studio.',
+    status: 'Terjadwal'
+  },
+
+  // ==============================================================
+  // 2. PIKET KEBERSIHAN STUDIO
+  // ==============================================================
+  {
+    id: 'DUTY-06',
+    jenisPiket: 'Piket Kebersihan Studio',
+    hari: 'Senin',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '15:00 - 17:00',
+    petugas: ['Muhammad Akbar Ramadhani', 'Stefanus Natalino Putra Pratama'],
+    tanggungJawab: 'Menyapu & mengepel lantai studio, membersihkan dry cabinet dengan cleaning kit, dan cek baterai kamera.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-07',
+    jenisPiket: 'Piket Kebersihan Studio',
+    hari: 'Selasa',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '15:00 - 17:00',
+    petugas: ['Satrio Ernesto Utomo', 'Jatmiko Bayu Pamungkas'],
+    tanggungJawab: 'Sanitasi meja workstation PC editing, merapikan keyboard/mouse, dan menata kabel floor agar rapi.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-08',
+    jenisPiket: 'Piket Kebersihan Studio',
+    hari: 'Rabu',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '15:00 - 17:00',
+    petugas: ['Virillos Galih Priatmadja', 'Grindra Felix Suryawijaya'],
+    tanggungJawab: 'Inspeksi kerapian Box Coklat & Box Biru di lemari, memastikan box tidak terbuka di luar, dan buang sampah studio.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-09',
+    jenisPiket: 'Piket Kebersihan Studio',
+    hari: 'Kamis',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '15:00 - 17:00',
+    petugas: ['Muhammad Ilham Nur Hayat', 'Aesar Abi Febrian'],
+    tanggungJawab: 'Pembersihan rak tripod, sanitasi area audio podcast, merapikan kabel mic/lighting, dan sanitasi sofa studio.',
+    status: 'Terjadwal'
+  },
+  {
+    id: 'DUTY-10',
+    jenisPiket: 'Piket Kebersihan Studio',
+    hari: 'Jumat',
+    tanggal: 'Jadwal Mingguan',
+    jamOperasional: '13:30 - 16:30',
+    petugas: ['Alif Castar Kenta Wicaksono', 'Abiyyudhia Falah', 'Alfiano Syahri Alfredo'],
+    tanggungJawab: 'General cleaning akhir pekan: pel bersih seluruh lantai studio, pastikan semua box kamera terkunci di lemari, dan matikan saklar listrik.',
+    status: 'Terjadwal'
+  }
+];
 
 // Slot Klien Workstation PC Resmi Creative Corner (2 Unit Aktif Studio)
 export const SEED_PC_CLIENTS = [

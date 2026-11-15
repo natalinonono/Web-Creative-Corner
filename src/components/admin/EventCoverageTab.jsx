@@ -40,7 +40,9 @@ export const EventCoverageTab = () => {
     members, 
     dutyRoster, 
     addDutyRoster,
-    updateDutyRoster, 
+    updateDutyRoster,
+    deleteDutyRoster,
+    resetDutyRosterToDefault,
     creativeTasks 
   } = useStudio();
 
@@ -132,15 +134,25 @@ _Tim Pengelola Studio Creative Corner_`;
     });
   };
 
-  // Modal State untuk Tambah / Edit Roster Piket
+  // Modal State untuk Tambah / Edit Roster Piket (2 Versi: Piket 5S & Piket Kebersihan Studio)
+  const [selectedDutyFilter, setSelectedDutyFilter] = useState('Semua'); // 'Semua' | 'Piket 5S' | 'Piket Kebersihan Studio'
   const [isAddDutyModalOpen, setIsAddDutyModalOpen] = useState(false);
   const [editingDuty, setEditingDuty] = useState(null);
+  const [dutyJenis, setDutyJenis] = useState('Piket 5S'); // 'Piket 5S' | 'Piket Kebersihan Studio'
   const [dutyHari, setDutyHari] = useState('Senin');
   const [manualHari, setManualHari] = useState('');
-  const [dutyTanggal, setDutyTanggal] = useState('');
+  const [dutyTanggal, setDutyTanggal] = useState('Jadwal Mingguan');
   const [dutyStaffText, setDutyStaffText] = useState('');
-  const [dutyHoursText, setDutyHoursText] = useState('14:00 - 17:00');
-  const [dutyDescText, setDutyDescText] = useState('');
+  const [dutyHoursText, setDutyHoursText] = useState('06:45 - 07:15 & 14:00 - 15:30');
+  const [dutyDescText, setDutyDescText] = useState('Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.');
+  
+  // State Edit Roster Piket
+  const [editDutyJenis, setEditDutyJenis] = useState('Piket 5S');
+  const [editDutyHari, setEditDutyHari] = useState('Senin');
+  const [editDutyTanggal, setEditDutyTanggal] = useState('Jadwal Mingguan');
+  const [editDutyHoursText, setEditDutyHoursText] = useState('');
+  const [editDutyStaffText, setEditDutyStaffText] = useState('');
+  const [editDutyDescText, setEditDutyDescText] = useState('');
 
   // Toggle selection of equipment to lock
   const handleToggleTool = (toolId) => {
@@ -517,17 +529,51 @@ _Tim Pengelola Studio Creative Corner_`;
     const finalHari = dutyHari === 'MANUAL' ? (manualHari.trim() || 'Senin') : dutyHari;
 
     addDutyRoster({
+      jenisPiket: dutyJenis,
       hari: finalHari,
-      tanggal: dutyTanggal || 'Mingguan',
+      tanggal: dutyTanggal || 'Jadwal Mingguan',
       jamOperasional: dutyHoursText,
       petugas: dutyStaffText.split(',').map((s) => s.trim()).filter(Boolean),
-      tanggungJawab: dutyDescText || 'Pemeliharaan kebersihan dan inventarisasi studio'
+      tanggungJawab: dutyDescText || (dutyJenis === 'Piket 5S' ? 'Penerapan budaya 5S studio' : 'Pemeliharaan kebersihan dan inventarisasi studio')
     });
 
     setDutyStaffText('');
     setDutyDescText('');
     setManualHari('');
     setIsAddDutyModalOpen(false);
+  };
+
+  const handleDeleteDuty = (dutyItem) => {
+    if (window.confirm(`HAPUS JADWAL PIKET:\nApakah Anda yakin ingin menghapus jadwal "${dutyItem.jenisPiket || 'Piket'}: ${dutyItem.hari}"?`)) {
+      deleteDutyRoster(dutyItem.id);
+    }
+  };
+
+  const handleOpenEditDuty = (duty) => {
+    setEditingDuty(duty);
+    setEditDutyJenis(duty.jenisPiket || 'Piket 5S');
+    setEditDutyHari(duty.hari || 'Senin');
+    setEditDutyTanggal(duty.tanggal || 'Jadwal Mingguan');
+    setEditDutyHoursText(duty.jamOperasional || '');
+    setEditDutyStaffText(Array.isArray(duty.petugas) ? duty.petugas.join(', ') : duty.petugas || '');
+    setEditDutyDescText(duty.tanggungJawab || '');
+  };
+
+  const handleSaveEditDuty = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!editDutyStaffText.trim()) {
+      alert('Nama petugas piket tidak boleh kosong.');
+      return;
+    }
+    updateDutyRoster(editingDuty.id, {
+      jenisPiket: editDutyJenis,
+      hari: editDutyHari,
+      tanggal: editDutyTanggal,
+      jamOperasional: editDutyHoursText,
+      petugas: editDutyStaffText.split(',').map((s) => s.trim()).filter(Boolean),
+      tanggungJawab: editDutyDescText
+    });
+    setEditingDuty(null);
   };
 
   // Hitung agregat personil lapangan
@@ -1003,86 +1049,221 @@ _Tim Pengelola Studio Creative Corner_`;
         )}
       </div>
 
-      {/* 3. PENGATURAN GILIRAN PIKET STUDIO */}
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <h3 className="card-title">
-              <Clock size={20} color="#1E3A8A" />
-              <span>Pengaturan Roster Giliran Piket Jaga Studio Creative Corner</span>
-            </h3>
-            <div className="card-subtitle">
-              Atur jadwal jaga harian anggota untuk memastikan kerapian dan inventarisasi studio terjaga.
+      {/* 3. PENGATURAN GILIRAN PIKET STUDIO (2 VERSI: 5S & KEBERSIHAN) */}
+      {(() => {
+        const count5S = dutyRoster.filter((d) => (d.jenisPiket || '').includes('5S')).length;
+        const countKebersihan = dutyRoster.filter((d) => (d.jenisPiket || '').includes('Kebersihan')).length;
+        const filteredDutyList = dutyRoster.filter((d) => {
+          if (selectedDutyFilter === 'Piket 5S') return (d.jenisPiket || '').includes('5S');
+          if (selectedDutyFilter === 'Piket Kebersihan Studio') return (d.jenisPiket || '').includes('Kebersihan');
+          return true;
+        });
+
+        return (
+          <div className="card">
+            <div className="card-header" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div>
+                <h3 className="card-title">
+                  <Clock size={20} color="#1E3A8A" />
+                  <span>Pengaturan Roster Giliran Piket Jaga Studio Creative Corner</span>
+                </h3>
+                <div className="card-subtitle">
+                  Pemisahan 2 versi piket harian: <strong>Piket 5S</strong> (Senyum, Salam, Sapa, Sopan, Santun & Presensi Tamu) dan <strong>Piket Kebersihan Studio</strong> (Sanitasi Alat, Box Kamera, & PC Editing).
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  title="Muat Ulang 10 Jadwal Resmi (Piket 5S & Piket Kebersihan Studio)"
+                  onClick={() => {
+                    if (window.confirm('Muat ulang 10 jadwal resmi lengkap (5 hari Piket 5S & 5 hari Piket Kebersihan Studio untuk seluruh 22 anggota)?')) {
+                      resetDutyRosterToDefault();
+                    }
+                  }}
+                >
+                  <RotateCcw size={14} />
+                  <span>Reset Jadwal Resmi</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    setDutyJenis('Piket 5S');
+                    setDutyHoursText('06:45 - 07:15 & 14:00 - 15:30');
+                    setDutyDescText('Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.');
+                    setDutyStaffText('');
+                    setIsAddDutyModalOpen(true);
+                  }}
+                >
+                  <Plus size={15} />
+                  <span>Tambah Roster Piket</span>
+                </button>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={() => setIsAddDutyModalOpen(true)}
-          >
-            <Plus size={15} />
-            <span>Tambah Roster Piket</span>
-          </button>
-        </div>
+            {/* Filter Bar Roster: Semua, Piket 5S, Piket Kebersihan Studio */}
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              padding: '0.75rem 1.25rem',
+              background: '#F8FAFC',
+              borderBottom: '1px solid #E2E8F0',
+              flexWrap: 'wrap',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Filter size={14} /> Filter Kategori:
+              </span>
+              <button
+                type="button"
+                className={`btn btn-sm ${selectedDutyFilter === 'Semua' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '999px' }}
+                onClick={() => setSelectedDutyFilter('Semua')}
+              >
+                Semua Roster ({dutyRoster.length})
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${selectedDutyFilter === 'Piket 5S' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '999px',
+                  background: selectedDutyFilter === 'Piket 5S' ? '#4338CA' : undefined,
+                  borderColor: selectedDutyFilter === 'Piket 5S' ? '#4338CA' : undefined,
+                  color: selectedDutyFilter === 'Piket 5S' ? '#FFFFFF' : undefined
+                }}
+                onClick={() => setSelectedDutyFilter('Piket 5S')}
+              >
+                🤝 Piket 5S ({count5S})
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${selectedDutyFilter === 'Piket Kebersihan Studio' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '999px',
+                  background: selectedDutyFilter === 'Piket Kebersihan Studio' ? '#059669' : undefined,
+                  borderColor: selectedDutyFilter === 'Piket Kebersihan Studio' ? '#059669' : undefined,
+                  color: selectedDutyFilter === 'Piket Kebersihan Studio' ? '#FFFFFF' : undefined
+                }}
+                onClick={() => setSelectedDutyFilter('Piket Kebersihan Studio')}
+              >
+                🧹 Piket Kebersihan Studio ({countKebersihan})
+              </button>
+            </div>
 
-        {dutyRoster.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', background: '#F8FAFC', color: '#64748B' }}>
-            <div style={{ fontWeight: 600, color: '#334155' }}>Belum Ada Roster Piket Studio</div>
-            <p style={{ fontSize: '0.8rem', marginBottom: '0.75rem' }}>
-              Klik tombol 'Tambah Roster Piket' di atas untuk menyusun jadwal jaga anggota studio.
-            </p>
+            {filteredDutyList.length === 0 ? (
+              <div style={{ padding: '2.5rem', textAlign: 'center', background: '#F8FAFC', color: '#64748B' }}>
+                <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>Belum Ada Roster Piket ({selectedDutyFilter})</div>
+                <p style={{ fontSize: '0.8rem', marginBottom: '0.75rem', color: '#64748B' }}>
+                  Klik tombol 'Tambah Roster Piket' di atas untuk menyusun jadwal jaga anggota studio.
+                </p>
+              </div>
+            ) : (
+              <div className="table-container">
+                <table className="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Hari & Kategori</th>
+                      <th>Jam Operasional</th>
+                      <th>Daftar Anggota Bertugas</th>
+                      <th>Tugas & Tanggung Jawab</th>
+                      <th>Aksi Kelola</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDutyList.map((d) => {
+                      const is5S = (d.jenisPiket || '').includes('5S');
+                      return (
+                        <tr key={d.id}>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.35rem',
+                                fontSize: '0.685rem',
+                                fontWeight: 700,
+                                padding: '0.2rem 0.55rem',
+                                borderRadius: '999px',
+                                width: 'fit-content',
+                                background: is5S ? '#EEF2FF' : '#ECFDF5',
+                                color: is5S ? '#4338CA' : '#065F46',
+                                border: `1px solid ${is5S ? '#C7D2FE' : '#A7F3D0'}`
+                              }}>
+                                {is5S ? '🤝 Piket 5S' : '🧹 Kebersihan Studio'}
+                              </span>
+                              <div>
+                                <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>{d.hari}</strong>
+                                <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{d.tanggal}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.825rem', color: '#1E293B' }}>
+                            {d.jamOperasional} WIB
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                              {(Array.isArray(d.petugas) ? d.petugas : [d.petugas]).map((p, idx) => (
+                                <span
+                                  key={idx}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    padding: '0.2rem 0.55rem',
+                                    borderRadius: '6px',
+                                    background: '#F1F5F9',
+                                    color: '#1E293B',
+                                    fontSize: '0.775rem',
+                                    fontWeight: 600,
+                                    border: '1px solid #E2E8F0'
+                                  }}
+                                >
+                                  {p}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                          <td style={{ fontSize: '0.8rem', color: '#334155', maxWidth: '300px' }}>
+                            {d.tanggungJawab}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+                                onClick={() => handleOpenEditDuty(d)}
+                                title="Ubah Roster"
+                              >
+                                <Edit3 size={13} />
+                                <span>Ubah</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', color: '#DC2626', borderColor: '#FECACA' }}
+                                onClick={() => handleDeleteDuty(d)}
+                                title="Hapus Roster"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="table-container">
-            <table className="custom-table">
-              <thead>
-                <tr>
-                  <th>Hari & Tanggal</th>
-                  <th>Jam Piket</th>
-                  <th>Daftar Anggota Bertugas</th>
-                  <th>Tugas Operasional</th>
-                  <th>Aksi Kelola</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dutyRoster.map((d) => (
-                  <tr key={d.id}>
-                    <td>
-                      <strong>{d.hari}</strong>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{d.tanggal}</div>
-                    </td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.825rem' }}>
-                      {d.jamOperasional} WIB
-                    </td>
-                    <td>
-                      <div style={{ fontSize: '0.825rem', color: '#0F172A', fontWeight: 600 }}>
-                        {d.petugas.join(' • ')}
-                      </div>
-                    </td>
-                    <td style={{ fontSize: '0.8rem', color: '#334155' }}>
-                      {d.tanggungJawab}
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => {
-                          setEditingDuty(d);
-                          setDutyStaffText(d.petugas.join(', '));
-                          setDutyHoursText(d.jamOperasional);
-                        }}
-                      >
-                        Ubah Roster
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+        );
+      })()}
 
       {/* MODAL PENJADWALAN LIPUTAN SEKOLAH (TRIGGER 1) */}
       <Modal
@@ -1752,12 +1933,13 @@ _Tim Pengelola Studio Creative Corner_`;
         </Modal>
       )}
 
-      {/* MODAL TAMBAH ROSTER PIKET BARU */}
+      {/* MODAL TAMBAH ROSTER PIKET BARU (2 VERSI: 5S & KEBERSIHAN) */}
       {isAddDutyModalOpen && (
         <Modal
           isOpen={isAddDutyModalOpen}
           onClose={() => setIsAddDutyModalOpen(false)}
-          title="Tambah Roster Giliran Piket Studio Baru"
+          title="Tambah Jadwal Roster Giliran Piket Studio"
+          size="medium"
           footer={
             <>
               <button type="button" className="btn btn-secondary" onClick={() => setIsAddDutyModalOpen(false)}>
@@ -1770,9 +1952,61 @@ _Tim Pengelola Studio Creative Corner_`;
           }
         >
           <form onSubmit={handleAddDutySubmit}>
+            {/* 1. Pilih Versi Piket (Dual-Card Selection) */}
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label className="form-label" style={{ fontWeight: 700 }}>Pilih Versi / Kategori Piket *</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div
+                  onClick={() => {
+                    setDutyJenis('Piket 5S');
+                    setDutyHoursText('06:45 - 07:15 & 14:00 - 15:30');
+                    setDutyDescText('Menyambut siswa & tamu studio dengan Senyum, Salam, Sapa, Sopan, Santun, serta melayani buku tamu & presensi.');
+                  }}
+                  style={{
+                    padding: '0.85rem',
+                    borderRadius: '8px',
+                    border: dutyJenis === 'Piket 5S' ? '2px solid #4338CA' : '1px solid #E2E8F0',
+                    background: dutyJenis === 'Piket 5S' ? '#EEF2FF' : '#F8FAFC',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#4338CA', fontSize: '0.875rem' }}>
+                    <span>🤝 Piket 5S</span>
+                  </div>
+                  <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.25rem' }}>
+                    Senyum, Salam, Sapa, Sopan, Santun & Presensi Tamu Studio.
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => {
+                    setDutyJenis('Piket Kebersihan Studio');
+                    setDutyHoursText('15:00 - 17:00');
+                    setDutyDescText('Menyapu & mengepel lantai, sanitasi meja PC editing, cek dry cabinet, dan merapikan Box Coklat & Biru.');
+                  }}
+                  style={{
+                    padding: '0.85rem',
+                    borderRadius: '8px',
+                    border: dutyJenis === 'Piket Kebersihan Studio' ? '2px solid #059669' : '1px solid #E2E8F0',
+                    background: dutyJenis === 'Piket Kebersihan Studio' ? '#ECFDF5' : '#F8FAFC',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#065F46', fontSize: '0.875rem' }}>
+                    <span>🧹 Piket Kebersihan</span>
+                  </div>
+                  <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.25rem' }}>
+                    Sanitasi PC editing, sapu/pel, rapikan Box Kamera & lemari studio.
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
-                <label className="form-label">Hari *</label>
+                <label className="form-label">Hari Operasional *</label>
                 <select
                   className="form-select"
                   value={dutyHari}
@@ -1798,12 +2032,13 @@ _Tim Pengelola Studio Creative Corner_`;
                 )}
               </div>
               <div>
-                <label className="form-label">Tanggal Pelaksanaan (Opsional)</label>
+                <label className="form-label">Keterangan Waktu / Tanggal</label>
                 <input
-                  type="date"
+                  type="text"
                   className="form-input"
                   value={dutyTanggal}
                   onChange={(e) => setDutyTanggal(e.target.value)}
+                  placeholder="Jadwal Mingguan / 2026-11-20"
                 />
               </div>
             </div>
@@ -1815,43 +2050,80 @@ _Tim Pengelola Studio Creative Corner_`;
                 className="form-input"
                 value={dutyHoursText}
                 onChange={(e) => setDutyHoursText(e.target.value)}
-                placeholder="14:00 - 17:00"
+                placeholder="Contoh: 06:45 - 07:15 & 14:00 - 15:30"
                 required
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label">Petugas Bertugas (Pisahkan dengan koma) *</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label">Daftar Petugas Piket (Pisahkan dengan koma) *</label>
+                <span style={{ fontSize: '0.725rem', color: '#64748B' }}>Klik chip untuk tambah/hapus</span>
+              </div>
               <input
                 type="text"
                 className="form-input"
                 value={dutyStaffText}
                 onChange={(e) => setDutyStaffText(e.target.value)}
-                placeholder="Nama Anggota 1, Nama Anggota 2"
+                placeholder="Pilih dari daftar anggota di bawah atau ketik manual..."
                 required
               />
+
+              {/* Quick Pick Member Chips */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.5rem', maxHeight: '110px', overflowY: 'auto', padding: '4px' }}>
+                {members.map((m) => {
+                  const currentList = dutyStaffText.split(',').map((s) => s.trim()).filter(Boolean);
+                  const isPicked = currentList.includes(m.nama);
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        if (isPicked) {
+                          setDutyStaffText(currentList.filter((s) => s !== m.nama).join(', '));
+                        } else {
+                          setDutyStaffText([...currentList, m.nama].join(', '));
+                        }
+                      }}
+                      style={{
+                        padding: '0.2rem 0.5rem',
+                        fontSize: '0.725rem',
+                        borderRadius: '999px',
+                        border: isPicked ? '1px solid #3B82F6' : '1px solid #E2E8F0',
+                        background: isPicked ? '#EFF6FF' : '#FFFFFF',
+                        color: isPicked ? '#1D4ED8' : '#475569',
+                        cursor: 'pointer',
+                        fontWeight: isPicked ? 700 : 500
+                      }}
+                    >
+                      {isPicked ? '✓ ' : '+ '} {m.nama} ({m.kelas || m.divisi})
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Tanggung Jawab Operasional</label>
-              <input
-                type="text"
+              <label className="form-label">Tanggung Jawab & Deskripsi Tugas</label>
+              <textarea
                 className="form-input"
+                rows={2}
                 value={dutyDescText}
                 onChange={(e) => setDutyDescText(e.target.value)}
-                placeholder="Contoh: Pembersihan dry cabinet dan stand by peminjaman alat"
+                placeholder="Rincian checklist tugas yang harus diselesaikan..."
               />
             </div>
           </form>
         </Modal>
       )}
 
-      {/* Modal Edit Roster Piket */}
+      {/* MODAL EDIT ROSTER PIKET */}
       {editingDuty && (
         <Modal
           isOpen={Boolean(editingDuty)}
           onClose={() => setEditingDuty(null)}
-          title={`Ubah Jadwal Piket: ${editingDuty.hari}`}
+          title={`Ubah Jadwal: ${editingDuty.hari} (${editDutyJenis})`}
+          size="medium"
           footer={
             <>
               <button type="button" className="btn btn-secondary" onClick={() => setEditingDuty(null)}>
@@ -1860,39 +2132,143 @@ _Tim Pengelola Studio Creative Corner_`;
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => {
-                  updateDutyRoster(editingDuty.id, {
-                    petugas: dutyStaffText.split(',').map((s) => s.trim()).filter(Boolean),
-                    jamOperasional: dutyHoursText
-                  });
-                  setEditingDuty(null);
-                }}
+                onClick={handleSaveEditDuty}
               >
                 Simpan Perubahan
               </button>
             </>
           }
         >
-          <div className="form-group">
-            <label className="form-label">Daftar Nama Petugas Piket (Pisahkan dengan koma)</label>
-            <input
-              type="text"
-              className="form-input"
-              value={dutyStaffText}
-              onChange={(e) => setDutyStaffText(e.target.value)}
-              placeholder="Contoh: Rizky Ramadhan, Clara Aurelia"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Jam Operasional Jaga Studio</label>
-            <input
-              type="text"
-              className="form-input"
-              value={dutyHoursText}
-              onChange={(e) => setDutyHoursText(e.target.value)}
-              placeholder="Contoh: 14:00 - 17:00"
-            />
-          </div>
+          <form onSubmit={handleSaveEditDuty}>
+            {/* 1. Pilih Versi Piket */}
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label className="form-label" style={{ fontWeight: 700 }}>Versi / Kategori Piket</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div
+                  onClick={() => setEditDutyJenis('Piket 5S')}
+                  style={{
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    border: editDutyJenis === 'Piket 5S' ? '2px solid #4338CA' : '1px solid #E2E8F0',
+                    background: editDutyJenis === 'Piket 5S' ? '#EEF2FF' : '#F8FAFC',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ fontWeight: 700, color: '#4338CA', fontSize: '0.85rem' }}>🤝 Piket 5S</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Senyum, Salam, Sapa, Sopan, Santun</div>
+                </div>
+
+                <div
+                  onClick={() => setEditDutyJenis('Piket Kebersihan Studio')}
+                  style={{
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    border: editDutyJenis === 'Piket Kebersihan Studio' ? '2px solid #059669' : '1px solid #E2E8F0',
+                    background: editDutyJenis === 'Piket Kebersihan Studio' ? '#ECFDF5' : '#F8FAFC',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <div style={{ fontWeight: 700, color: '#065F46', fontSize: '0.85rem' }}>🧹 Piket Kebersihan</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Kebersihan PC, studio & lemari alat</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
+                <label className="form-label">Hari Operasional</label>
+                <select
+                  className="form-select"
+                  value={editDutyHari}
+                  onChange={(e) => setEditDutyHari(e.target.value)}
+                >
+                  {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map((h) => (
+                    <option key={h} value={h}>{h}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="form-label">Keterangan / Tanggal</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editDutyTanggal}
+                  onChange={(e) => setEditDutyTanggal(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Jam Operasional Jaga Studio (WIB)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={editDutyHoursText}
+                onChange={(e) => setEditDutyHoursText(e.target.value)}
+                placeholder="Contoh: 14:00 - 17:00"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label">Daftar Nama Petugas Piket (Pisahkan dengan koma)</label>
+                <span style={{ fontSize: '0.725rem', color: '#64748B' }}>Klik chip untuk tambah/hapus</span>
+              </div>
+              <input
+                type="text"
+                className="form-input"
+                value={editDutyStaffText}
+                onChange={(e) => setEditDutyStaffText(e.target.value)}
+                placeholder="Contoh: Gladis Elysia, Jonathan Surya"
+                required
+              />
+
+              {/* Quick Pick Member Chips */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.5rem', maxHeight: '110px', overflowY: 'auto', padding: '4px' }}>
+                {members.map((m) => {
+                  const currentList = editDutyStaffText.split(',').map((s) => s.trim()).filter(Boolean);
+                  const isPicked = currentList.includes(m.nama);
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        if (isPicked) {
+                          setEditDutyStaffText(currentList.filter((s) => s !== m.nama).join(', '));
+                        } else {
+                          setEditDutyStaffText([...currentList, m.nama].join(', '));
+                        }
+                      }}
+                      style={{
+                        padding: '0.2rem 0.5rem',
+                        fontSize: '0.725rem',
+                        borderRadius: '999px',
+                        border: isPicked ? '1px solid #3B82F6' : '1px solid #E2E8F0',
+                        background: isPicked ? '#EFF6FF' : '#FFFFFF',
+                        color: isPicked ? '#1D4ED8' : '#475569',
+                        cursor: 'pointer',
+                        fontWeight: isPicked ? 700 : 500
+                      }}
+                    >
+                      {isPicked ? '✓ ' : '+ '} {m.nama} ({m.kelas || m.divisi})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Tanggung Jawab Operasional</label>
+              <textarea
+                className="form-input"
+                rows={2}
+                value={editDutyDescText}
+                onChange={(e) => setEditDutyDescText(e.target.value)}
+                placeholder="Checklist dan tanggung jawab..."
+              />
+            </div>
+          </form>
         </Modal>
       )}
 

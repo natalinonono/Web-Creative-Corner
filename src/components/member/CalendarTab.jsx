@@ -167,9 +167,14 @@ export const CalendarTab = () => {
     return events.filter((ev) => !selectedDateFilter || ev.tanggal === selectedDateFilter);
   }, [events, activeCategoryFilter, selectedDateFilter]);
 
+  const count5S = useMemo(() => dutyRoster.filter((d) => (d.jenisPiket || '').includes('5S')).length, [dutyRoster]);
+  const countKebersihan = useMemo(() => dutyRoster.filter((d) => (d.jenisPiket || '').includes('Kebersihan')).length, [dutyRoster]);
+
   const filteredDutyRoster = useMemo(() => {
-    if (activeCategoryFilter !== 'Semua' && activeCategoryFilter !== 'Piket Studio') return [];
-    return dutyRoster;
+    if (activeCategoryFilter === 'Semua' || activeCategoryFilter === 'Piket Studio') return dutyRoster;
+    if (activeCategoryFilter === 'Piket 5S') return dutyRoster.filter((d) => (d.jenisPiket || '').includes('5S'));
+    if (activeCategoryFilter === 'Piket Kebersihan') return dutyRoster.filter((d) => (d.jenisPiket || '').includes('Kebersihan'));
+    return [];
   }, [dutyRoster, activeCategoryFilter]);
 
   const filteredBorrowingsForTimeline = useMemo(() => {
@@ -201,7 +206,8 @@ export const CalendarTab = () => {
   const categories = [
     { label: 'Semua', count: events.length + dutyRoster.length + activeLoans.length, dotColor: null },
     { label: 'Event Sekolah', count: events.length, dotColor: '#1E3A8A' },
-    { label: 'Piket Studio', count: dutyRoster.length, dotColor: '#059669' },
+    { label: 'Piket 5S', count: count5S, dotColor: '#4338CA' },
+    { label: 'Piket Kebersihan', count: countKebersihan, dotColor: '#059669' },
     { label: 'Peminjaman Aktif', count: activeLoans.length, dotColor: '#D97706' }
   ];
 
@@ -1058,47 +1064,66 @@ export const CalendarTab = () => {
                     );
                   })}
 
-                  {/* 3. REAL PIKET JAGA STUDIO (DUTY ROSTER) */}
-                  {filteredDutyRoster.map((duty) => (
-                    <div
-                      key={duty.id}
-                      style={{
-                        background: '#F0FDF4',
-                        borderRadius: '10px',
-                        padding: '0.85rem 1rem',
-                        border: '1px solid #BBF7D0',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '0.5rem'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669', flexShrink: 0 }}></span>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                            <span style={{ background: '#DCFCE7', color: '#166534', fontSize: '0.675rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px' }}>
-                              PIKET STUDIO
-                            </span>
-                            <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>
-                              {duty.hari} ({duty.tanggal})
-                            </strong>
+                  {/* 3. REAL PIKET JAGA STUDIO (2 VERSI: PIKET 5S & PIKET KEBERSIHAN) */}
+                  {filteredDutyRoster.map((duty) => {
+                    const is5S = (duty.jenisPiket || '').includes('5S');
+                    const dotColor = is5S ? '#4338CA' : '#059669';
+                    const cardBg = is5S ? '#F5F7FF' : '#F0FDF4';
+                    const cardBorder = is5S ? '#C7D2FE' : '#BBF7D0';
+                    const badgeBg = is5S ? '#EEF2FF' : '#DCFCE7';
+                    const badgeText = is5S ? '#4338CA' : '#166534';
+                    const badgeBorder = is5S ? '#C7D2FE' : '#86EFAC';
+                    const dutyTitle = is5S ? '🤝 PIKET 5S (SALAM & SAPA)' : '🧹 PIKET KEBERSIHAN STUDIO';
+
+                    return (
+                      <div
+                        key={duty.id}
+                        style={{
+                          background: cardBg,
+                          borderRadius: '10px',
+                          padding: '0.85rem 1rem',
+                          border: `1px solid ${cardBorder}`,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '0.5rem'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor, flexShrink: 0 }}></span>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                              <span style={{
+                                background: badgeBg,
+                                color: badgeText,
+                                border: `1px solid ${badgeBorder}`,
+                                fontSize: '0.675rem',
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: '4px'
+                              }}>
+                                {dutyTitle}
+                              </span>
+                              <strong style={{ fontSize: '0.875rem', color: '#0F172A' }}>
+                                {duty.hari} ({duty.tanggal})
+                              </strong>
+                            </div>
+                            <p style={{ fontSize: '0.75rem', color: '#475569', margin: '3px 0 0 0' }}>
+                              {duty.tanggungJawab} • Petugas: <strong>{Array.isArray(duty.petugas) ? duty.petugas.join(', ') : duty.petugas}</strong>
+                            </p>
                           </div>
-                          <p style={{ fontSize: '0.75rem', color: '#475569', margin: '2px 0 0 0' }}>
-                            {duty.tanggungJawab} • Petugas: <strong>{Array.isArray(duty.petugas) ? duty.petugas.join(', ') : duty.petugas}</strong>
-                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#475569' }}>
+                            {duty.jamOperasional} WIB
+                          </span>
+                          <StatusBadge status={duty.status} />
                         </div>
                       </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#475569' }}>
-                          {duty.jamOperasional} WIB
-                        </span>
-                        <StatusBadge status={duty.status} />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -111,7 +111,20 @@ export const StudioProvider = ({ children }) => {
   const [events, setEvents] = useState(SEED_EVENTS);
   const [borrowings, setBorrowings] = useState(SEED_BORROWINGS);
   const [creativeTasks, setCreativeTasks] = useState(SEED_CREATIVE_TASKS);
-  const [dutyRoster, setDutyRoster] = useState(SEED_DUTY_ROSTER);
+  const [dutyRoster, setDutyRoster] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= 10 && parsed.some((d) => d.jenisPiket)) {
+          return parsed;
+        }
+      }
+      return SEED_DUTY_ROSTER;
+    } catch {
+      return SEED_DUTY_ROSTER;
+    }
+  });
   const [pcClients, setPcClients] = useState(SEED_PC_CLIENTS);
   const [pcLogs, setPcLogs] = useState(SEED_PC_LOGS);
   const [documents, setDocuments] = useState(SEED_OFFICIAL_DOCUMENTS);
@@ -434,9 +447,10 @@ export const StudioProvider = ({ children }) => {
             return {
               id: d.id,
               hari: d.hari,
-              tanggal: parts[1] || 'Mingguan',
+              tanggal: parts[1] || 'Jadwal Mingguan',
               jamOperasional: parts[0] || d.jam_piket || '14:00 - 17:00',
               tanggungJawab: parts[2] || 'Pemeliharaan kebersihan dan inventarisasi studio',
+              jenisPiket: d.jenis_piket || parts[3] || (parts[2]?.toLowerCase().includes('5s') || parts[2]?.toLowerCase().includes('senyum') ? 'Piket 5S' : 'Piket Kebersihan Studio'),
               petugas: Array.isArray(d.petugas) ? d.petugas : [],
               status: d.status || 'Terjadwal'
             };
@@ -447,7 +461,18 @@ export const StudioProvider = ({ children }) => {
       if (!loadedDuties) {
         try {
           const savedDuties = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
-          if (savedDuties) setDutyRoster(JSON.parse(savedDuties));
+          if (savedDuties) {
+            const parsed = JSON.parse(savedDuties);
+            if (Array.isArray(parsed) && parsed.length >= 10 && parsed.some((d) => d.jenisPiket)) {
+              setDutyRoster(parsed);
+            } else {
+              setDutyRoster(SEED_DUTY_ROSTER);
+              localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
+            }
+          } else {
+            setDutyRoster(SEED_DUTY_ROSTER);
+            localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
+          }
         } catch {}
       }
 
@@ -1624,23 +1649,28 @@ export const StudioProvider = ({ children }) => {
     supabase.from('duty_roster').upsert([{
       id: duty.id,
       hari: duty.hari,
-      jam_piket: `${duty.jamOperasional || '14:00 - 17:00'} | ${duty.tanggal || 'Mingguan'} | ${duty.tanggungJawab || 'Pemeliharaan kebersihan dan inventarisasi studio'}`,
+      jam_piket: `${duty.jamOperasional || '14:00 - 17:00'} | ${duty.tanggal || 'Jadwal Mingguan'} | ${duty.tanggungJawab || 'Tanggung jawab operasional studio'} | ${duty.jenisPiket || 'Piket Kebersihan Studio'}`,
       petugas: Array.isArray(duty.petugas) ? duty.petugas : [],
       status: duty.status || 'Terjadwal'
     }]).then(() => {}).catch(() => {});
   };
 
-  // CRUD Roster Piket
+  // CRUD Roster Piket (Mendukung Piket 5S & Piket Kebersihan Studio)
   const addDutyRoster = (newDuty) => {
     const id = getNextSequentialId(dutyRoster, 'DUTY', 2);
-    const dutyItem = { ...newDuty, id, status: 'Terjadwal' };
+    const dutyItem = { 
+      ...newDuty, 
+      id, 
+      jenisPiket: newDuty.jenisPiket || 'Piket Kebersihan Studio',
+      status: 'Terjadwal' 
+    };
     const nextRoster = [...dutyRoster, dutyItem];
     setDutyRoster(nextRoster);
     try {
       localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(nextRoster));
     } catch {}
     syncDutyToSupabase(dutyItem);
-    showToast(`Jadwal piket baru berhasil ditambahkan.`, 'success');
+    showToast(`Jadwal ${dutyItem.jenisPiket} berhasil ditambahkan.`, 'success');
   };
 
   const updateDutyRoster = (dutyId, updatedRoster) => {
@@ -1660,6 +1690,26 @@ export const StudioProvider = ({ children }) => {
       syncDutyToSupabase(updatedTarget);
     }
     showToast(`Jadwal piket studio berhasil diperbarui.`, 'success');
+  };
+
+  const deleteDutyRoster = (dutyId) => {
+    const nextRoster = dutyRoster.filter((item) => item.id !== dutyId);
+    setDutyRoster(nextRoster);
+    try {
+      localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(nextRoster));
+    } catch {}
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('duty_roster').delete().eq('id', dutyId).then(() => {}).catch(() => {});
+    }
+    showToast('Jadwal piket berhasil dihapus.', 'info');
+  };
+
+  const resetDutyRosterToDefault = () => {
+    setDutyRoster(SEED_DUTY_ROSTER);
+    try {
+      localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
+    } catch {}
+    showToast('Jadwal piket berhasil direset ke roster resmi 2 versi (Piket 5S & Piket Kebersihan Studio).', 'success');
   };
 
   // CRUD Templat Dokumen
@@ -1776,6 +1826,8 @@ export const StudioProvider = ({ children }) => {
         deleteCreativeTask,
         addDutyRoster,
         updateDutyRoster,
+        deleteDutyRoster,
+        resetDutyRosterToDefault,
         updateDocumentTemplate,
         addDocumentTemplate,
         updatePCClient,
