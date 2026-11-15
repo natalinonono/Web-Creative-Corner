@@ -12,7 +12,9 @@ export const STUDENT_EMAIL_SUFFIX = '';
 export const isAdminEmail = (email) => {
   if (!email) return false;
   const clean = email.toLowerCase().trim();
-  return clean === 'admin1.creativecorner@gmail.com' || clean === 'creativecorner@gmail.com';
+  return clean === 'admin1.creativecorner@gmail.com' || 
+         clean === 'creativecorner@gmail.com' || 
+         clean === 'admin2.creativecorner@gmail.com';
 };
 
 // Akun Admin Utama Resmi
@@ -28,9 +30,319 @@ export const DEFAULT_ADMIN_USER = {
   avatar: 'CC'
 };
 
-// Data Master Anggota (Dimulai hanya dengan akun Admin Resmi, tanpa data dummy siswa)
+// Akun Administrator Kedua (Satrio)
+export const ADMIN_2_USER = {
+  id: 'ADM-02',
+  nama: 'Satrio Ernesto Utomo (Admin 2)',
+  email: 'admin2.creativecorner@gmail.com',
+  kelas: 'XI PPLG-B',
+  nomorWa: '6281200000002',
+  divisi: 'Admin',
+  peranUtama: 'Admin',
+  role: 'admin',
+  avatar: 'AD'
+};
+
+// Data Master Anggota Resmi Creative Corner (Angkatan 25 & Angkatan 26)
 export const SEED_MEMBERS = [
-  DEFAULT_ADMIN_USER
+  DEFAULT_ADMIN_USER,
+  ADMIN_2_USER,
+
+  // ==============================================================
+  // ANGKATAN 25 (KELAS XI)
+  // ==============================================================
+  {
+    id: 'MEM-01',
+    nama: 'Muhammad Akbar Ramadhani',
+    kelas: 'XI PPLG-A',
+    angkatan: 'Angkatan 25',
+    divisi: 'Dokumentasi',
+    peranUtama: 'Dokumentasi',
+    email: 'akbar.cc25@gmail.com',
+    nomorWa: '6281200000001',
+    role: 'member',
+    avatar: 'AR',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-02',
+    nama: 'Satrio Ernesto Utomo',
+    kelas: 'XI PPLG-B',
+    angkatan: 'Angkatan 25',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'satrio.cc25@gmail.com',
+    altEmail: 'admin2.creativecorner@gmail.com',
+    nomorWa: '6281200000002',
+    role: 'member',
+    avatar: 'SE',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-03',
+    nama: 'Stefanus Natalino Putra Pratama',
+    kelas: 'XI PPLG-B',
+    angkatan: 'Angkatan 25',
+    divisi: 'Dokumentasi',
+    peranUtama: 'Dokumentasi',
+    email: 'stefanus.cc25@gmail.com',
+    altEmail: 'anggota1.creativecorner@gmail.com',
+    nomorWa: '6281228788912',
+    role: 'member',
+    avatar: 'SN',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-04',
+    nama: 'Jatmiko Bayu Pamungkas',
+    kelas: 'XI PPLG-B',
+    angkatan: 'Angkatan 25',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'bayu.cc25@gmail.com',
+    nomorWa: '6281200000003',
+    role: 'member',
+    avatar: 'JB',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-05',
+    nama: 'Virillos Galih Priatmadja',
+    kelas: 'XI PPLG-B',
+    angkatan: 'Angkatan 25',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'virillos.cc25@gmail.com',
+    nomorWa: '6281200000004',
+    role: 'member',
+    avatar: 'VG',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-06',
+    nama: 'Ubai Hafidzul Ilmi',
+    kelas: 'XI PPLG-B',
+    angkatan: 'Angkatan 25',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'ubai.cc25@gmail.com',
+    nomorWa: '6281200000005',
+    role: 'member',
+    avatar: 'UH',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-07',
+    nama: 'Vania Augusta Ramadhani',
+    kelas: 'XI PPLG-B',
+    angkatan: 'Angkatan 25',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'vania.cc25@gmail.com',
+    nomorWa: '6281200000006',
+    role: 'member',
+    avatar: 'VA',
+    status: 'Tersedia'
+  },
+
+  // ==============================================================
+  // ANGKATAN 26 (KELAS X)
+  // ==============================================================
+  {
+    id: 'MEM-08',
+    nama: 'Muhammad Ilham Nur Hayat',
+    kelas: 'X PPLG-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Videografer',
+    peranUtama: 'Videografer',
+    email: 'ilham.cc26@gmail.com',
+    nomorWa: '6281200000011',
+    role: 'member',
+    avatar: 'MI',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-09',
+    nama: 'Gladis Elysia Salsabila',
+    kelas: 'X PPLG-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'gladis.cc26@gmail.com',
+    nomorWa: '6281200000012',
+    role: 'member',
+    avatar: 'GE',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-10',
+    nama: 'Arya Mustofa',
+    kelas: 'X PPLG-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'arya.cc26@gmail.com',
+    nomorWa: '6281200000013',
+    role: 'member',
+    avatar: 'AM',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-11',
+    nama: 'Grindra Felix Suryawijaya',
+    kelas: 'X PPLG-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'felix.cc26@gmail.com',
+    nomorWa: '6281200000014',
+    role: 'member',
+    avatar: 'GF',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-12',
+    nama: 'Faiz Romadhon Nur Wijanarko',
+    kelas: 'X PPLG-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'faiz.cc26@gmail.com',
+    nomorWa: '6281200000015',
+    role: 'member',
+    avatar: 'FR',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-13',
+    nama: 'Abiyyudhia Falah',
+    kelas: 'X TJKT-B',
+    angkatan: 'Angkatan 26',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'abiyyudhia.cc26@gmail.com',
+    nomorWa: '6281200000016',
+    role: 'member',
+    avatar: 'AF',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-14',
+    nama: 'Zidney Fata El Faza',
+    kelas: 'X TJKT-B',
+    angkatan: 'Angkatan 26',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'zidney.cc26@gmail.com',
+    nomorWa: '6281200000017',
+    role: 'member',
+    avatar: 'ZF',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-15',
+    nama: 'Abrariy Kumara Arkananta',
+    kelas: 'X TJKT-B',
+    angkatan: 'Angkatan 26',
+    divisi: 'Content Creator',
+    peranUtama: 'Content Creator',
+    email: 'abrariy.cc26@gmail.com',
+    nomorWa: '6281200000018',
+    role: 'member',
+    avatar: 'AK',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-16',
+    nama: 'Alfiano Syahri Alfredo',
+    kelas: 'X TJKT-B',
+    angkatan: 'Angkatan 26',
+    divisi: 'Editor',
+    peranUtama: 'Editor',
+    email: 'alfiano.cc26@gmail.com',
+    nomorWa: '6281200000019',
+    role: 'member',
+    avatar: 'AS',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-17',
+    nama: 'Alif Castar Kenta Wicaksono',
+    kelas: 'X TJKT-B',
+    angkatan: 'Angkatan 26',
+    divisi: 'Videografer',
+    peranUtama: 'Videografer',
+    email: 'alifkenta.cc26@gmail.com',
+    nomorWa: '6281200000020',
+    role: 'member',
+    avatar: 'AC',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-18',
+    nama: 'Dwi Aditya Wibowo',
+    kelas: 'X TJKT-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'dwi.aditya.cc26@gmail.com',
+    nomorWa: '6281200000021',
+    role: 'member',
+    avatar: 'DA',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-19',
+    nama: 'Aesar Abi Febrian',
+    kelas: 'X TJKT-A',
+    angkatan: 'Angkatan 26',
+    divisi: 'Videografer',
+    peranUtama: 'Videografer',
+    email: 'aesar.cc26@gmail.com',
+    nomorWa: '6281200000022',
+    role: 'member',
+    avatar: 'AA',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-20',
+    nama: 'Jonathan Surya Kristiawan',
+    kelas: 'X GEO',
+    angkatan: 'Angkatan 26',
+    divisi: 'Content Creator',
+    peranUtama: 'Content Creator',
+    email: 'jonathan.cc26@gmail.com',
+    nomorWa: '6281200000023',
+    role: 'member',
+    avatar: 'JK',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-21',
+    nama: 'Malika Anindita Kiyasatina',
+    kelas: 'X GEO',
+    angkatan: 'Angkatan 26',
+    divisi: 'Public Relation',
+    peranUtama: 'Public Relation',
+    email: 'malika.cc26@gmail.com',
+    nomorWa: '6281200000024',
+    role: 'member',
+    avatar: 'MK',
+    status: 'Tersedia'
+  },
+  {
+    id: 'MEM-22',
+    nama: 'Alif Arrohman',
+    kelas: 'X TKL-B',
+    angkatan: 'Angkatan 26',
+    divisi: 'Desain Grafis',
+    peranUtama: 'Desain Grafis',
+    email: 'alif.arrohman.cc26@gmail.com',
+    nomorWa: '6281200000025',
+    role: 'member',
+    avatar: 'AR',
+    status: 'Tersedia'
+  }
 ];
 
 // Master Peralatan & Perlengkapan Resmi Studio Creative Corner (34 Unit)

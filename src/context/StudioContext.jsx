@@ -48,10 +48,14 @@ export const StudioProvider = ({ children }) => {
   const isAdminEmail = (email) => {
     if (!email) return false;
     const cleanEmail = email.toLowerCase().trim();
-    if (cleanEmail === 'admin1.creativecorner@gmail.com' || cleanEmail === 'creativecorner@gmail.com') {
+    if (
+      cleanEmail === 'admin1.creativecorner@gmail.com' || 
+      cleanEmail === 'creativecorner@gmail.com' ||
+      cleanEmail === 'admin2.creativecorner@gmail.com'
+    ) {
       return true;
     }
-    const foundMember = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail);
+    const foundMember = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail || m.altEmail?.toLowerCase().trim() === cleanEmail);
     return Boolean(foundMember && (foundMember.role === 'admin' || foundMember.divisi === 'Admin' || foundMember.peranUtama === 'Admin'));
   };
 
@@ -212,19 +216,25 @@ export const StudioProvider = ({ children }) => {
 
       // 2. Proses Data Anggota Creative Corner
       if (!memErr && Array.isArray(mems)) {
-        const formattedMems = mems.map((m) => ({
-          id: m.id,
-          nama: m.nama,
-          kelas: m.kelas || 'Angkatan 25',
-          angkatan: m.angkatan || m.kelas || 'Angkatan 25',
-          divisi: m.divisi || m.peran_utama || 'Public Relation',
-          peranUtama: m.peran_utama || m.divisi || 'Public Relation',
-          email: m.email || '',
-          nomorWa: m.whatsapp || m.nomorWa || '6281200000000',
-          avatar: m.avatar || (m.nama ? m.nama.slice(0, 2).toUpperCase() : 'CC'),
-          role: (m.divisi === 'Admin' || m.peran_utama === 'Admin' || isAdminEmail(m.email)) ? 'admin' : 'member',
-          status: m.status || 'Tersedia'
-        }));
+        const formattedMems = mems.map((m) => {
+          const parsedAngkatan = m.angkatan 
+            ? (m.angkatan.toString().includes('Angkatan') ? m.angkatan : `Angkatan ${m.angkatan}`)
+            : (m.kelas?.includes('XI') ? 'Angkatan 25' : m.kelas?.includes('X') ? 'Angkatan 26' : 'Angkatan 25');
+
+          return {
+            id: m.id,
+            nama: m.nama,
+            kelas: m.kelas || (parsedAngkatan === 'Angkatan 25' ? 'XI PPLG-B' : 'X PPLG-A'),
+            angkatan: parsedAngkatan,
+            divisi: m.divisi || m.peran_utama || 'Public Relation',
+            peranUtama: m.peran_utama || m.divisi || 'Public Relation',
+            email: m.email || '',
+            nomorWa: m.whatsapp || m.nomorWa || '6281200000000',
+            avatar: m.avatar || (m.nama ? m.nama.slice(0, 2).toUpperCase() : 'CC'),
+            role: (m.divisi === 'Admin' || m.peran_utama === 'Admin' || isAdminEmail(m.email)) ? 'admin' : 'member',
+            status: m.status || 'Tersedia'
+          };
+        });
         if (!formattedMems.some((m) => m.email?.toLowerCase().trim() === DEFAULT_ADMIN_USER.email.toLowerCase().trim())) {
           formattedMems.unshift(DEFAULT_ADMIN_USER);
         }
@@ -572,6 +582,7 @@ export const StudioProvider = ({ children }) => {
       nama: mem.nama,
       kelas: mem.kelas,
       divisi: mem.divisi || mem.peranUtama || 'Admin',
+      peran_utama: mem.peranUtama || mem.divisi || null,
       email: mem.email,
       whatsapp: mem.nomorWa,
       avatar: mem.avatar,
@@ -686,10 +697,15 @@ export const StudioProvider = ({ children }) => {
   // -------------------------------------------------------------
   // FUNGSI GANTI / LOGIN PENGGUNA DENGAN ATURAN EMAIL
   // -------------------------------------------------------------
-  const switchOrLoginUser = ({ email, nama, kelas, nomorWa, divisi, peranUtama, angkatan }) => {
-    const cleanEmail = email.toLowerCase().trim();
+  const switchOrLoginUser = ({ id, email, nama, kelas, nomorWa, divisi, peranUtama, angkatan }) => {
+    const cleanEmail = (email || '').toLowerCase().trim();
     const isTargetAdmin = isAdminEmail(cleanEmail);
-    const existing = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail);
+    const existing = members.find((m) => 
+      (id && m.id === id) ||
+      (cleanEmail && m.email?.toLowerCase().trim() === cleanEmail) ||
+      (cleanEmail && m.altEmail?.toLowerCase().trim() === cleanEmail) ||
+      (nama && m.nama?.toLowerCase().trim() === nama.toLowerCase().trim())
+    );
 
     const userDivisi = isTargetAdmin ? 'Admin' : (divisi || peranUtama || 'Public Relation');
 
@@ -698,7 +714,7 @@ export const StudioProvider = ({ children }) => {
       targetUser = existing;
     } else {
       targetUser = {
-        id: getNextSequentialId(members, isTargetAdmin ? 'ADM' : 'MEM', 2),
+        id: id || getNextSequentialId(members, isTargetAdmin ? 'ADM' : 'MEM', 2),
         nama: nama || (isTargetAdmin ? 'Admin Studio' : 'Anggota Studio'),
         email: cleanEmail,
         kelas: kelas || (isTargetAdmin ? 'Pengelola Studio' : 'Anggota Tim Studio'),

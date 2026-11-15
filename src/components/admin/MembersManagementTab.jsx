@@ -357,6 +357,7 @@ export const MembersManagementTab = () => {
                   <option value="Editor">Editor</option>
                   <option value="Desain Grafis">Desain Grafis</option>
                   <option value="Content Creator">Content Creator</option>
+                  <option value="Videografer">Videografer</option>
                   {angkatan === '25' && (
                     <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
                   )}

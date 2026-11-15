@@ -47,19 +47,19 @@ export const TopNavbar = () => {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    const email = inputEmail.trim();
-    if (!email) {
-      alert('Silakan masukkan alamat email Anda.');
+    const query = inputEmail.trim();
+    if (!query) {
+      alert('Silakan masukkan alamat email atau nama Anda.');
       return;
     }
 
     if (loginType === 'admin') {
-      if (!isAdminEmail(email)) {
+      if (!isAdminEmail(query)) {
         alert("Akses Admin Ditolak: Alamat email ini tidak terdaftar sebagai Administrator Studio.");
         return;
       }
       switchOrLoginUser({
-        email,
+        email: query,
         nama: inputNama.trim() || 'Administrator Studio',
         kelas: 'Pengelola Studio'
       });
@@ -70,12 +70,23 @@ export const TopNavbar = () => {
     } else {
       // Member Flow (Khusus Anggota Creative Corner)
       if (memberAction === 'login') {
-        const existing = members.find((m) => m.email?.toLowerCase().trim() === email.toLowerCase().trim());
+        const cleanQuery = query.toLowerCase();
+        const existing = members.find((m) => {
+          const mEmail = (m.email || '').toLowerCase().trim();
+          const mAltEmail = (m.altEmail || '').toLowerCase().trim();
+          const mNama = (m.nama || '').toLowerCase().trim();
+          return mEmail === cleanQuery || 
+                 mAltEmail === cleanQuery || 
+                 mNama === cleanQuery || 
+                 (cleanQuery.length >= 3 && mNama.includes(cleanQuery));
+        });
+
         if (!existing) {
-          alert("Alamat email belum terdaftar sebagai anggota Creative Corner.\n\nJika kamu adalah anggota baru di Creative Corner, silakan klik opsi '+ Daftar Anggota Baru'.");
+          alert("Akun anggota tidak ditemukan.\n\nPastikan Anda memasukkan Alamat Email resmi atau Nama Lengkap yang terdaftar.\nJika Anda anggota baru, silakan klik opsi '+ Daftar Anggota Baru'.");
           return;
         }
         switchOrLoginUser({
+          id: existing.id,
           email: existing.email,
           nama: existing.nama,
           kelas: existing.kelas,
@@ -551,16 +562,19 @@ export const TopNavbar = () => {
                 {memberAction === 'login' ? (
                   <>
                     <div className="form-group">
-                      <label className="form-label">Alamat Email Anggota Terdaftar *</label>
+                      <label className="form-label">Email Anggota atau Nama Lengkap Kamu *</label>
                       <input
-                        type="email"
+                        type="text"
                         className="form-input"
                         value={inputEmail}
                         onChange={(e) => setInputEmail(e.target.value)}
-                        placeholder="nama@gmail.com / siswa@sekolah.sch.id"
+                        placeholder="Contoh: akbar.cc25@gmail.com atau Muhammad Akbar"
                         required
                         autoFocus
                       />
+                      <div className="form-hint" style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.35rem' }}>
+                        💡 Tip: Kamu bisa login langsung dengan memasukkan email resmi atau nama lengkapmu.
+                      </div>
                     </div>
 
                     <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.8rem', color: '#64748B' }}>
@@ -645,6 +659,7 @@ export const TopNavbar = () => {
                           <option value="Editor">Editor</option>
                           <option value="Desain Grafis">Desain Grafis</option>
                           <option value="Content Creator">Content Creator</option>
+                          <option value="Videografer">Videografer</option>
                           {inputAngkatan === '25' && (
                             <option value="Dokumentasi">Dokumentasi (Khusus Angkatan 25)</option>
                           )}
