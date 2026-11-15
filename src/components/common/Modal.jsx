@@ -27,9 +27,12 @@ export const Modal = ({ isOpen, onClose, title, children, footer, size = 'defaul
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div 
-        className={`modal-content ${size === 'large' ? 'modal-content-lg' : ''}`}
+        className={`modal-content ${size === 'large' ? 'modal-content-lg' : ''} mobile-bottom-sheet`}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Drag handle khusus tampilan layar HP (Bottom Sheet indicator) */}
+        <div className="mobile-sheet-handle-bar" aria-hidden="true" />
+
         <div className="modal-header">
           <h3 className="modal-title">{title}</h3>
           <button 

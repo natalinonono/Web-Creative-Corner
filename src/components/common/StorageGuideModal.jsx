@@ -74,7 +74,7 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
   return (
     <div className="modal-overlay" style={{ zIndex: 110 }}>
       <div 
-        className="modal-content modal-content-lg" 
+        className="modal-content modal-content-lg mobile-bottom-sheet" 
         style={{ 
           maxWidth: '920px', 
           maxHeight: '92vh',
@@ -83,6 +83,9 @@ export const StorageGuideModal = ({ isOpen, onClose, initialTab = 'sop' }) => {
           border: '1px solid #E2E8F0'
         }}
       >
+        {/* Drag handle khusus tampilan layar HP (Bottom Sheet indicator) */}
+        <div className="mobile-sheet-handle-bar" aria-hidden="true" />
+
         {/* MODAL HEADER */}
         <div 
           className="modal-header" 

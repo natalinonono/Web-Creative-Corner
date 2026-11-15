@@ -31,11 +31,14 @@ export const TopNavbar = () => {
     pcClients,
     isAdminEmail,
     members,
-    openStorageGuide
+    openStorageGuide,
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    loginType,
+    setLoginType,
+    openLoginModal
   } = useStudio();
 
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [loginType, setLoginType] = useState('member'); // 'member' | 'admin'
   const [memberAction, setMemberAction] = useState('login'); // 'login' | 'register'
 
   // Form State Login & Registrasi

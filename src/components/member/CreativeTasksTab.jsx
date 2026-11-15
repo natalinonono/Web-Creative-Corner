@@ -129,16 +129,15 @@ export const CreativeTasksTab = () => {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Category Filter */}
-          <div style={{ display: 'flex', gap: '0.35rem' }}>
+          <div className="catalog-filter-chips">
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
-                className={`btn btn-sm ${activeCategoryFilter === cat ? 'btn-primary' : 'btn-secondary'}`}
+                className={`filter-chip-btn ${activeCategoryFilter === cat ? 'active' : ''}`}
                 onClick={() => setActiveCategoryFilter(cat)}
-                style={{ fontSize: '0.775rem' }}
               >
                 {cat}
               </button>
@@ -158,25 +157,14 @@ export const CreativeTasksTab = () => {
       </div>
 
       {/* KANBAN BOARD 4 KOLOM */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '1.25rem',
-        alignItems: 'start'
-      }}>
+      <div className="kanban-board-grid">
         {stages.map((stage) => {
           const tasksInStage = filteredTasks.filter((t) => t.status === stage);
 
           return (
             <div
               key={stage}
-              style={{
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: '12px',
-                padding: '1rem',
-                minHeight: '400px'
-              }}
+              className="kanban-column"
             >
               {/* Column Header */}
               <div style={{

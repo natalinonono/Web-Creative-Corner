@@ -1063,6 +1063,91 @@ code, .font-mono {
 }
 
 /* ====================================================================
+   MOBILE-FIRST COMPONENTS (BOTTOM NAV, SHEET, CHIPS & DOCK)
+==================================================================== */
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-sheet-handle-bar {
+  display: none;
+}
+
+.catalog-filter-chips {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 2px 2px 6px 2px;
+}
+
+.catalog-filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.45rem 0.85rem;
+  min-height: 38px;
+  border-radius: 20px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-chip-btn:active {
+  transform: scale(0.96);
+}
+
+.filter-chip-btn.active {
+  background: #1E3A8A;
+  color: #FFFFFF;
+  border-color: #1E3A8A;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.kanban-board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.kanban-column {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 400px;
+}
+
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ====================================================================
    RESPONSIVE DESIGN (LAPTOP, TABLET & MOBILE HP)
 ==================================================================== */
 
@@ -1117,13 +1202,105 @@ code, .font-mono {
     overflow-x: hidden;
   }
 
+  /* 1. BOTTOM NAVIGATION DOCK (KHUSUS LAYAR HP <= 768px) */
+  .mobile-bottom-nav {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 990;
+    background: rgba(11, 25, 44, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    padding-bottom: env(safe-area-inset-bottom, 4px);
+  }
+
+  .mobile-bottom-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 60px;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 4px;
+  }
+
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: #94A3B8;
+    cursor: pointer;
+    padding: 4px 2px;
+    min-height: 48px;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-item:active {
+    transform: scale(0.92);
+  }
+
+  .mobile-nav-item.active {
+    color: #FFFFFF;
+  }
+
+  .mobile-nav-item.active .mobile-nav-icon-box {
+    background: rgba(30, 58, 138, 0.85);
+    color: #85F8C4;
+    border: 1px solid rgba(133, 248, 196, 0.4);
+    box-shadow: 0 2px 10px rgba(30, 58, 138, 0.5);
+  }
+
+  .mobile-nav-icon-box {
+    width: 38px;
+    height: 28px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-nav-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .mobile-nav-pc-badge {
+    position: absolute;
+    top: -3px;
+    right: -4px;
+    background: #10B981;
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 9999px;
+    border: 1.5px solid #0B192C;
+    line-height: 1;
+  }
+
+  /* 2. TOP NAVBAR RINGKAS & STICKY */
   .top-navbar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     align-items: center;
     justify-content: space-between;
-    padding: 0.45rem 0.75rem !important;
-    gap: 0.35rem 0;
+    padding: 0.35rem 0.85rem !important;
+    height: 52px !important;
+    min-height: 52px !important;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -1167,6 +1344,10 @@ code, .font-mono {
     gap: 0.35rem;
   }
 
+  #btn-open-storage-sop {
+    display: none !important;
+  }
+
   .nav-login-label-desktop {
     display: none !important;
   }
@@ -1188,34 +1369,11 @@ code, .font-mono {
   }
 
   .role-switcher-container {
-    order: 3;
-    width: 100% !important;
-    margin-top: 0.2rem;
-    display: flex;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
-    white-space: nowrap;
-    padding: 2px !important;
-    gap: 2px !important;
-    background: var(--navy-surface);
-    border-radius: var(--radius-sm);
-  }
-
-  .role-switcher-container::-webkit-scrollbar {
     display: none !important;
   }
 
-  .role-switcher-btn {
-    flex-shrink: 0 !important;
-    padding: 0.35rem 0.65rem !important;
-    font-size: 0.75rem !important;
-    border-radius: var(--radius-xs);
-    gap: 0.35rem !important;
-  }
-
   .main-content {
-    padding: 0.75rem 0.65rem !important;
+    padding: 0.75rem 0.65rem calc(78px + env(safe-area-inset-bottom, 14px)) 0.65rem !important;
   }
 
   .portal-hero-banner {
@@ -1334,43 +1492,72 @@ code, .font-mono {
 
   .form-input, .form-select, .form-textarea {
     font-size: 16px !important;
-    padding: 0.55rem 0.75rem !important;
+    min-height: 46px !important;
+    border-radius: 10px !important;
+    padding: 0.65rem 0.85rem !important;
   }
 
   .btn {
-    min-height: 38px;
+    min-height: 44px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
   }
 
+  .btn-sm {
+    min-height: 38px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+
+  /* MODAL MOBILE BOTTOM SHEET */
   .modal-overlay {
-    padding: 0.5rem;
+    padding: 0 !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
   }
 
   .modal-content,
-  .modal-content-lg {
-    width: 96vw !important;
-    max-width: 96vw !important;
-    max-height: 94vh !important;
-    margin: 0 auto !important;
-    border-radius: var(--radius-lg) !important;
+  .modal-content-lg,
+  .mobile-bottom-sheet {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: 88vh !important;
+    margin: 0 !important;
+    border-radius: 22px 22px 0 0 !important;
+    border-bottom: none !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35) !important;
+    animation: slideUpSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    padding-bottom: env(safe-area-inset-bottom, 16px) !important;
+  }
+
+  .mobile-sheet-handle-bar {
+    display: block !important;
+    width: 44px;
+    height: 5px;
+    background: #CBD5E1;
+    border-radius: 9999px;
+    margin: 10px auto 4px auto;
+    flex-shrink: 0;
   }
 
   .modal-header {
-    padding: 0.75rem 0.85rem !important;
+    padding: 0.85rem 1rem !important;
   }
 
   .modal-title {
-    font-size: 0.95rem !important;
+    font-size: 1rem !important;
   }
 
   .modal-body {
-    padding: 0.85rem !important;
-    max-height: calc(94vh - 110px) !important;
+    padding: 1rem !important;
+    max-height: calc(88vh - 120px) !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .modal-footer {
-    padding: 0.65rem 0.85rem !important;
+    padding: 0.75rem 1rem !important;
     flex-direction: column-reverse !important;
-    gap: 0.45rem !important;
+    gap: 0.5rem !important;
   }
 
   .modal-footer .btn {
@@ -1394,8 +1581,35 @@ code, .font-mono {
     padding: 1rem 0.85rem;
   }
 
+  /* COUNTDOWN TIMER PC RESPONSIVE DENGAN CLAMP */
   .countdown-digits {
-    font-size: clamp(2rem, 9vw, 3.25rem);
+    font-size: clamp(2.5rem, 13vw, 4.25rem) !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .countdown-container {
+    padding: 1.25rem 0.75rem !important;
+    border-radius: 14px !important;
+    background: #F8FAFC !important;
+    border: 1.5px solid #E2E8F0 !important;
+    margin: 0.85rem 0 !important;
+  }
+
+  /* KATALOG GRID 1 KOLOM PENUH DI HP */
+  .catalog-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  /* KANBAN TUGAS KREATIF DI HP */
+  .kanban-board-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .kanban-column {
+    min-height: auto !important;
+    padding: 0.85rem !important;
   }
 
   .table-container,
@@ -1411,8 +1625,10 @@ code, .font-mono {
     min-width: 500px;
   }
 
-  div[style*="position: fixed"][style*="bottom: 24px"] {
-    bottom: 12px !important;
+  /* NOTIFIKASI TOAST MELAYANG DI ATAS BILAH NAVIGASI BAWAH */
+  div[style*="position: fixed"][style*="bottom: 24px"],
+  div[style*="position: 'fixed'"][style*="bottom: '24px'"] {
+    bottom: calc(75px + env(safe-area-inset-bottom, 8px)) !important;
     right: 12px !important;
     left: 12px !important;
     max-width: calc(100vw - 24px) !important;

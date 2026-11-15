@@ -128,6 +128,18 @@ export const StudioProvider = ({ children }) => {
     setIsStorageGuideOpen(false);
   };
 
+  // Modal Login State (Bisa dipicu dari TopNavbar, MobileBottomNav, atau tombol aksi lainnya)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginType, setLoginType] = useState('member'); // 'member' | 'admin'
+
+  const openLoginModal = (type = 'member') => {
+    setLoginType(type);
+    setIsLoginModalOpen(true);
+  };
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+  };
+
   // Battery Charging Tracking (SOP Aturan #1: Rekam waktu cas baterai)
   const [batteryCharges, setBatteryCharges] = useState(() => {
     try {
@@ -1782,7 +1794,14 @@ export const StudioProvider = ({ children }) => {
         batteryCharges,
         startBatteryCharge,
         stopBatteryCharge,
-        deleteBatteryCharge
+        deleteBatteryCharge,
+        // Login Modal Controls
+        isLoginModalOpen,
+        setIsLoginModalOpen,
+        loginType,
+        setLoginType,
+        openLoginModal,
+        closeLoginModal
       }}
     >
       {children}

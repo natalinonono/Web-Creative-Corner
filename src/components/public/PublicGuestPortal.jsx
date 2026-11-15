@@ -69,6 +69,7 @@ export const PublicGuestPortal = () => {
   // Search & Filter Alat
   const [catalogSearch, setCatalogSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [selectedLocation, setSelectedLocation] = useState('Semua'); // 'Semua' | 'Box Coklat' | 'Box Biru' | 'Lemari Studio'
 
   // Status Pencarian Resi Tiket
   const [searchQuery, setSearchQuery] = useState('');
@@ -198,7 +199,16 @@ export const PublicGuestPortal = () => {
       (eq.kategori && eq.kategori.toLowerCase().includes(catalogSearch.toLowerCase())) ||
       (eq.spesifikasi && eq.spesifikasi.toLowerCase().includes(catalogSearch.toLowerCase()));
     
-    if (selectedCategory === 'Semua') return matchesSearch;
+    if (!matchesSearch) return false;
+
+    if (selectedLocation !== 'Semua') {
+      const locStr = `${eq.lokasiRak || ''} ${eq.wadah || ''}`.toLowerCase();
+      if (selectedLocation === 'Box Coklat' && !locStr.includes('coklat')) return false;
+      if (selectedLocation === 'Box Biru' && !locStr.includes('biru')) return false;
+      if (selectedLocation === 'Lemari Studio' && !locStr.includes('lemari')) return false;
+    }
+    
+    if (selectedCategory === 'Semua') return true;
     if (selectedCategory === 'Kamera') {
       return matchesSearch && (eq.kategori || '').toLowerCase().includes('kamera');
     }
@@ -1110,34 +1120,38 @@ export const PublicGuestPortal = () => {
             </div>
           </div>
 
+          {/* Filter Wadah / Lokasi Penyimpanan (Box Coklat, Box Biru, Lemari) */}
+          <div className="catalog-filter-chips" style={{ marginBottom: '0.65rem' }}>
+            <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#64748B', display: 'flex', alignItems: 'center', gap: '4px', alignSelf: 'center', marginRight: '4px', textTransform: 'uppercase' }}>
+              📍 Wadah:
+            </span>
+            {['Semua', 'Box Coklat', 'Box Biru', 'Lemari Studio'].map((loc) => (
+              <button
+                key={`katalog-loc-${loc}`}
+                type="button"
+                className={`filter-chip-btn ${selectedLocation === loc ? 'active' : ''}`}
+                onClick={() => setSelectedLocation(loc)}
+              >
+                {loc === 'Semua' ? 'Semua Lokasi' : loc === 'Box Coklat' ? '📦 Box Coklat' : loc === 'Box Biru' ? '📦 Box Biru' : '🚪 Lemari Studio'}
+              </button>
+            ))}
+          </div>
+
           {/* Filter Kategori untuk Katalog */}
-          <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+          <div className="catalog-filter-chips" style={{ marginBottom: '1.25rem' }}>
             {categories.map((cat) => (
               <button
                 key={`katalog-cat-${cat}`}
                 type="button"
+                className={`filter-chip-btn ${selectedCategory === cat ? 'active' : ''}`}
                 onClick={() => setSelectedCategory(cat)}
-                style={{
-                  padding: '0.4rem 0.85rem',
-                  borderRadius: '6px',
-                  border: selectedCategory === cat ? '1px solid #1E3A8A' : '1px solid #CBD5E1',
-                  background: selectedCategory === cat ? '#EFF6FF' : '#FFFFFF',
-                  color: selectedCategory === cat ? '#1E3A8A' : '#475569',
-                  fontSize: '0.785rem',
-                  fontWeight: selectedCategory === cat ? 700 : 500,
-                  cursor: 'pointer'
-                }}
               >
                 {cat}
               </button>
             ))}
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '1rem'
-          }}>
+          <div className="catalog-grid">
             {filteredEquipment.map((eq) => {
               const isAvailable = eq.status === 'Tersedia';
               const itemReq = isCameraItem(eq) ? getCameraRequirements(eq) : null;

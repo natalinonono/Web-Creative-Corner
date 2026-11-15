@@ -6,6 +6,7 @@ import { MemberPortal } from './components/member/MemberPortal';
 import { PCKioskClient } from './components/kiosk/PCKioskClient';
 import { AdminPortal } from './components/admin/AdminPortal';
 import { StorageGuideModal } from './components/common/StorageGuideModal';
+import { MobileBottomNav } from './components/common/MobileBottomNav';
 import { CheckCircle2, AlertTriangle, ShieldCheck, User, LogIn, ArrowRight, KeyRound, UserPlus, Sparkles } from 'lucide-react';
 
 // Tampilan Saat Akses Admin Belum Terverifikasi Email 'creativecorner'
@@ -401,6 +402,9 @@ const AppContent = () => {
         onClose={closeStorageGuide} 
         initialTab={storageGuideTab} 
       />
+
+      {/* Bilah Navigasi Bawah Khusus Layar HP (Mobile-First Thumb Friendly) */}
+      <MobileBottomNav />
 
       {/* Toast Notification Pop-up */}
       {toast && (
