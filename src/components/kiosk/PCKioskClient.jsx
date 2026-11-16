@@ -388,10 +388,10 @@ export const PCKioskClient = () => {
                   fontWeight: 600,
                   padding: '2px 6px',
                   borderRadius: '4px',
-                  background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#DB2777' : '#2563EB',
+                  background: (pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '#7C3AED' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#DB2777' : '#2563EB',
                   color: '#FFFFFF'
                 }}>
-                  {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain (PC Tengah)' : '🎬 Editor Video'}
+                  {(pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '💻 Laptop Admin (Uji Coba)' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain (PC Tengah)' : '🎬 Editor Video'}
                 </span>
                 <span style={{
                   width: '8px',
@@ -441,10 +441,10 @@ export const PCKioskClient = () => {
                 fontWeight: 700,
                 padding: '3px 8px',
                 borderRadius: '999px',
-                background: (currentPC.peruntukan === 'Desain Grafis' || currentPC.id === 'PC-03' || currentPC.id === 'PC-04') ? '#DB2777' : '#2563EB',
+                background: (currentPC.peruntukan === 'Laptop Admin' || currentPC.id === 'PC-05') ? '#7C3AED' : (currentPC.peruntukan === 'Desain Grafis' || currentPC.id === 'PC-03' || currentPC.id === 'PC-04') ? '#DB2777' : '#2563EB',
                 color: '#FFFFFF'
               }}>
-                {(currentPC.peruntukan === 'Desain Grafis' || currentPC.id === 'PC-03' || currentPC.id === 'PC-04') ? '🎨 Workstation Desain Grafis (PC Tengah)' : '🎬 Workstation Editor Video'}
+                {(currentPC.peruntukan === 'Laptop Admin' || currentPC.id === 'PC-05') ? '💻 Laptop Admin Workstation (Uji Coba - Pongo 725)' : (currentPC.peruntukan === 'Desain Grafis' || currentPC.id === 'PC-03' || currentPC.id === 'PC-04') ? '🎨 Workstation Desain Grafis (PC Tengah)' : '🎬 Workstation Editor Video'}
               </span>
             </div>
             {currentPC.namaUnit && (

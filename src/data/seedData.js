@@ -467,6 +467,24 @@ export const SEED_MEMBERS = [
     pcId: 'PC-04',
     avatar: 'P4',
     status: 'Tersedia'
+  },
+  {
+    id: 'PC-ACC-05',
+    nama: 'Laptop Admin (Uji Coba - Pongo 725 RTX 2050)',
+    kelas: 'Workstation Laptop Admin',
+    angkatan: 'Studio PC',
+    divisi: 'Admin',
+    peranUtama: 'Admin',
+    email: 'laptop.admin@gmail.com',
+    altEmail: 'stefanusnatalino930@gmail.com',
+    password: 'admin#laptop',
+    acceptedPasswords: ['admin#laptop', 'adminlaptop', 'laptopadmin', 'pc5#admin', 'admin123', 'stefanus123', 'creativecorner123', 'natalino123'],
+    nomorWa: '6281200000095',
+    role: 'admin',
+    isPC: true,
+    pcId: 'PC-05',
+    avatar: 'LP',
+    status: 'Tersedia'
   }
 ];
 
@@ -920,6 +938,19 @@ export const SEED_EQUIPMENT = [
     baterai: null,
     status: 'Tersedia',
     terkunciOlehEventId: null
+  },
+  {
+    id: 'EQ-35',
+    kode: 'EQ-35',
+    nama: 'Laptop Admin (Uji Coba - Pongo 725 RTX 2050)',
+    kategori: 'Komputer & Workstation',
+    lokasiRak: 'Meja Utama Studio (Mobile Admin)',
+    wadah: 'Tas Laptop Admin',
+    spesifikasi: '12th Gen Intel Core i7-12650H @ 2.30GHz | RAM 16GB DDR4 3200 MT/s | NVIDIA GeForce RTX 2050 4GB | Storage SSD NVMe 512GB (477GB) | Windows 11 Pro 25H2 (Pongo 725)',
+    kondisiFisik: 'Sangat Baik (Unit Uji Coba Admin)',
+    baterai: 100,
+    status: 'Tersedia',
+    terkunciOlehEventId: null
   }
 ];
 
@@ -1240,6 +1271,17 @@ export const SEED_PC_CLIENTS = [
     emailAkun: 'pc4.desain@gmail.com',
     passwordAkun: 'pc4#desain',
     spesifikasi: 'AMD Ryzen 5 3600 @ 3.60GHz | RAM 16GB | AMD Radeon RX 580 8GB | Storage SSD NVMe 1 TB | Workstation Layout & Desain Vektor',
+    status: 'Tersedia',
+    penggunaAktif: null
+  },
+  {
+    id: 'PC-05',
+    namaUnit: 'Laptop Admin (Uji Coba - Pongo 725 RTX 2050)',
+    peruntukan: 'Laptop Admin',
+    posisi: 'Meja Utama Studio / Mobile Admin',
+    emailAkun: 'laptop.admin@gmail.com',
+    passwordAkun: 'admin#laptop',
+    spesifikasi: '12th Gen Intel Core i7-12650H @ 2.30GHz | RAM 16GB DDR4 3200 MT/s | NVIDIA GeForce RTX 2050 4GB | Storage SSD NVMe 512GB (477GB) | Windows 11 Pro 25H2',
     status: 'Tersedia',
     penggunaAktif: null
   }

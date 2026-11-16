@@ -519,13 +519,13 @@ while ($true) {
                       fontSize: '0.7rem',
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
-                      color: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8',
+                      background: (pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '#F3E8FF' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
+                      color: (pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '#7E22CE' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.25rem'
                     }}>
-                      {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
+                      {(pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '💻 Laptop Admin (Uji Coba)' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
                     </span>
                     <span style={{ fontSize: '0.7rem', color: '#64748B' }}>
                       {pc.posisi || 'Studio Creative Corner'}
@@ -534,11 +534,11 @@ while ($true) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '0.72rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748B' }}>Email Akun:</span>
-                      <code style={{ color: '#1E3A8A', fontWeight: 600 }}>{pc.emailAkun || (pc.id === 'PC-01' ? 'pc1.editor@gmail.com' : pc.id === 'PC-02' ? 'pc2.editor@gmail.com' : pc.id === 'PC-03' ? 'pc3.desain@gmail.com' : 'pc4.desain@gmail.com')}</code>
+                      <code style={{ color: '#1E3A8A', fontWeight: 600 }}>{pc.emailAkun || (pc.id === 'PC-01' ? 'pc1.editor@gmail.com' : pc.id === 'PC-02' ? 'pc2.editor@gmail.com' : pc.id === 'PC-03' ? 'pc3.desain@gmail.com' : pc.id === 'PC-04' ? 'pc4.desain@gmail.com' : 'laptop.admin@gmail.com')}</code>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748B' }}>Kata Sandi:</span>
-                      <code style={{ color: '#059669', fontWeight: 700 }}>{pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : 'pc4#desain')}</code>
+                      <code style={{ color: '#059669', fontWeight: 700 }}>{pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : pc.id === 'PC-04' ? 'pc4#desain' : 'admin#laptop')}</code>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', borderTop: '1px dashed #E2E8F0', paddingTop: '2px' }}>
                       <span style={{ color: '#64748B' }}>Hak Akses:</span>
@@ -1320,7 +1320,7 @@ while ($true) {
                 style={{ fontSize: '0.775rem', padding: '0.35rem 0.75rem' }}
                 onClick={() => setAccountsFilterTab('pc')}
               >
-                🖥️ Akun 4 PC Kiosk
+                🖥️ Akun PC & Laptop Kiosk ({pcClients.length})
               </button>
               <button
                 type="button"
@@ -1364,8 +1364,8 @@ while ($true) {
                   {accountsFilterTab === 'pc' && (
                     <>
                       {pcClients.map((pc) => {
-                        const email = pc.emailAkun || (pc.id === 'PC-01' ? 'pc1.editor@gmail.com' : pc.id === 'PC-02' ? 'pc2.editor@gmail.com' : pc.id === 'PC-03' ? 'pc3.desain@gmail.com' : 'pc4.desain@gmail.com');
-                        const pass = pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : 'pc4#desain');
+                        const email = pc.emailAkun || (pc.id === 'PC-01' ? 'pc1.editor@gmail.com' : pc.id === 'PC-02' ? 'pc2.editor@gmail.com' : pc.id === 'PC-03' ? 'pc3.desain@gmail.com' : pc.id === 'PC-04' ? 'pc4.desain@gmail.com' : 'laptop.admin@gmail.com');
+                        const pass = pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : pc.id === 'PC-04' ? 'pc4#desain' : 'admin#laptop');
                         const isCopied = copiedPCId === pc.id;
 
                         return (
@@ -1381,10 +1381,10 @@ while ($true) {
                                   fontWeight: 700,
                                   padding: '2px 6px',
                                   borderRadius: '4px',
-                                  background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
-                                  color: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8'
+                                  background: (pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '#F3E8FF' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
+                                  color: (pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '#7E22CE' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8'
                                 }}>
-                                  {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
+                                  {(pc.peruntukan === 'Laptop Admin' || pc.id === 'PC-05') ? '💻 Laptop Admin (Uji Coba)' : (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
                                 </span>
                                 <span style={{
                                   fontSize: '0.675rem',

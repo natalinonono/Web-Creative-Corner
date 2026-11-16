@@ -446,7 +446,7 @@ export const StudioProvider = ({ children }) => {
           return {
             id: pc.id,
             namaUnit: pc.nama_unit || seedMatch?.namaUnit,
-            peruntukan: pc.peruntukan || seedMatch?.peruntukan || (pc.id === 'PC-03' || pc.id === 'PC-04' ? 'Desain Grafis' : 'Editor Video'),
+            peruntukan: pc.peruntukan || seedMatch?.peruntukan || (pc.id === 'PC-03' || pc.id === 'PC-04' ? 'Desain Grafis' : pc.id === 'PC-05' ? 'Laptop Admin' : 'Editor Video'),
             posisi: pc.posisi || seedMatch?.posisi || 'Studio Creative Corner',
             emailAkun: pc.email_akun || seedMatch?.emailAkun,
             passwordAkun: pc.password_akun || seedMatch?.passwordAkun,

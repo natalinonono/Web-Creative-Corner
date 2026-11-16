@@ -122,6 +122,7 @@ const KioskAccessRestricted = ({ onGoPublic }) => {
     if (detectedPC === 'PC-02') return 'pc2.editor@gmail.com';
     if (detectedPC === 'PC-03') return 'pc3.desain@gmail.com';
     if (detectedPC === 'PC-04') return 'pc4.desain@gmail.com';
+    if (detectedPC === 'PC-05' || detectedPC.includes('LAPTOP')) return 'laptop.admin@gmail.com';
     return '';
   })();
 
