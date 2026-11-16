@@ -95,31 +95,45 @@ title Memulai Kiosk Creative Corner - ${pcId}
 echo ===================================================================
 echo   MEMULAI SISTEM KIOSK CREATIVE CORNER STUDIO - ${pcId}
 echo ===================================================================
-echo Menunggu koneksi jaringan dan startup sistem Windows selesai (5 detik)...
-timeout /t 5 /nobreak >nul
+echo Menyiapkan browser dan koneksi ke workstation studio...
 
-set TARGET_URL=${origin}/?mode=kiosk^&pc=${pcId}
+set "TARGET_URL=${origin}/?mode=kiosk&pc=${pcId}"
 
-:: 1. Cek Google Chrome di Program Files
+:: 1. Cek Google Chrome di Program Files 64-bit
 if exist "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe" (
     echo Menjalankan Google Chrome Kiosk Fullscreen...
-    start "" "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe" --kiosk --incognito "%TARGET_URL%"
+    start "" "%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe" --kiosk --user-data-dir="%TEMP%\\cc_kiosk_${pcId}" "%TARGET_URL%"
     goto SELESAI
 )
+:: 2. Cek Google Chrome di Program Files (x86) 32-bit
 if exist "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe" (
     echo Menjalankan Google Chrome (x86) Kiosk Fullscreen...
-    start "" "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe" --kiosk --incognito "%TARGET_URL%"
+    start "" "%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe" --kiosk --user-data-dir="%TEMP%\\cc_kiosk_${pcId}" "%TARGET_URL%"
     goto SELESAI
 )
+:: 3. Cek Google Chrome di LocalAppData
 if exist "%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe" (
     echo Menjalankan Google Chrome Local Kiosk Fullscreen...
-    start "" "%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe" --kiosk --incognito "%TARGET_URL%"
+    start "" "%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe" --kiosk --user-data-dir="%TEMP%\\cc_kiosk_${pcId}" "%TARGET_URL%"
     goto SELESAI
 )
 
-:: 2. Jika Chrome tidak ada, jalankan Microsoft Edge Kiosk Mode
-echo Google Chrome tidak ditemukan, menjalankan Microsoft Edge Kiosk Fullscreen...
-start msedge.exe --kiosk "%TARGET_URL%" --edge-kiosk-type=fullscreen --no-first-run
+:: 4. Cek Microsoft Edge di Program Files (x86)
+if exist "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe" (
+    echo Menjalankan Microsoft Edge Kiosk Fullscreen...
+    start "" "%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe" --kiosk "%TARGET_URL%" --edge-kiosk-type=fullscreen --user-data-dir="%TEMP%\\cc_edge_${pcId}" --no-first-run
+    goto SELESAI
+)
+:: 5. Cek Microsoft Edge di Program Files 64-bit
+if exist "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe" (
+    echo Menjalankan Microsoft Edge Kiosk Fullscreen...
+    start "" "%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe" --kiosk "%TARGET_URL%" --edge-kiosk-type=fullscreen --user-data-dir="%TEMP%\\cc_edge_${pcId}" --no-first-run
+    goto SELESAI
+)
+
+:: 6. Fallback jika path spesifik tidak ditemukan: buka browser default sistem
+echo Membuka browser bawaan sistem...
+start "" "%TARGET_URL%"
 
 :SELESAI
 echo Kiosk Creative Corner berhasil diluncurkan!
