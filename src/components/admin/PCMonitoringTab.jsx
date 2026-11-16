@@ -26,7 +26,11 @@ import {
   Sparkles,
   Terminal,
   FileCode,
-  Check
+  Check,
+  KeyRound,
+  Users,
+  ShieldCheck,
+  Mail
 } from 'lucide-react';
 
 export const PCMonitoringTab = () => {
@@ -37,11 +41,16 @@ export const PCMonitoringTab = () => {
     extendPCSession,
     updatePCClient,
     addPCClient,
-    deletePCClient
+    deletePCClient,
+    members
   } = useStudio();
 
   const [logSearchQuery, setLogSearchQuery] = useState('');
   const [selectedPCFilter, setSelectedPCFilter] = useState('Semua');
+
+  // Modal State Daftar Akun & Password Resmi Studio
+  const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
+  const [accountsFilterTab, setAccountsFilterTab] = useState('pc'); // 'pc' | 'ang25' | 'ang26' | 'admin'
 
   // Modal State Edit PC
   const [editingPC, setEditingPC] = useState(null);
@@ -204,6 +213,21 @@ exit
           <button
             type="button"
             className="btn btn-secondary"
+            onClick={() => setIsAccountsModalOpen(true)}
+            style={{
+              borderColor: '#CBD5E1',
+              background: '#FFFFFF',
+              color: '#0F172A',
+              fontWeight: 700
+            }}
+          >
+            <KeyRound size={16} color="#1E3A8A" />
+            <span>Daftar Akun & Kata Sandi Studio</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-secondary"
             onClick={() => setIsStartupGuideOpen(true)}
             style={{
               borderColor: '#60A5FA',
@@ -277,6 +301,46 @@ exit
                     <span className="badge-dot"></span>
                     {isActive ? (isNearTimeout ? 'Waktu Hampir Habis' : 'Sedang Aktif') : isMaintenance ? 'Perbaikan / Rusak' : 'Kosong / Siap Pakai'}
                   </span>
+                </div>
+
+                {/* Peruntukan & Kredensial Akun Kiosk */}
+                <div style={{
+                  fontSize: '0.75rem',
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '6px',
+                  padding: '0.5rem 0.65rem',
+                  marginBottom: '0.65rem',
+                  lineHeight: '1.4'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                    <span style={{
+                      fontWeight: 700,
+                      fontSize: '0.7rem',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
+                      color: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
+                    }}>
+                      {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>
+                      {pc.posisi || 'Studio Creative Corner'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '0.72rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748B' }}>Email Akun:</span>
+                      <code style={{ color: '#1E3A8A', fontWeight: 600 }}>{pc.emailAkun || (pc.id === 'PC-01' ? 'pc1.editor@gmail.com' : pc.id === 'PC-02' ? 'pc2.editor@gmail.com' : pc.id === 'PC-03' ? 'pc3.desain@gmail.com' : 'pc4.desain@gmail.com')}</code>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748B' }}>Kata Sandi:</span>
+                      <code style={{ color: '#059669', fontWeight: 700 }}>{pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : 'pc4#desain')}</code>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Spesifikasi Teknis yang Dapat Diubah Admin */}
@@ -996,6 +1060,303 @@ exit
                   <strong>Login Otomatis Tanpa Password Windows:</strong> Jika ingin PC langsung masuk ke desktop tanpa meminta ketik PIN/Password Windows saat dinyalakan, tekan <strong>Win + R</strong>, ketik <strong>netplwiz</strong>, lalu hilangkan centang pada <em>"Users must enter a user name and password to use this computer"</em>.
                 </li>
               </ul>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* MODAL DAFTAR AKUN & KATA SANDI RESMI STUDIO */}
+      {isAccountsModalOpen && (
+        <Modal
+          isOpen={isAccountsModalOpen}
+          onClose={() => setIsAccountsModalOpen(false)}
+          title="Daftar Akun & Kata Sandi Resmi Studio Creative Corner"
+          footer={
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setIsAccountsModalOpen(false)}
+            >
+              Tutup Referensi
+            </button>
+          }
+        >
+          <div>
+            <div style={{
+              background: '#EFF6FF',
+              border: '1px solid #BFDBFE',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              marginBottom: '1rem',
+              fontSize: '0.8rem',
+              color: '#1E3A8A',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <KeyRound size={18} color="#2563EB" style={{ flexShrink: 0 }} />
+              <div>
+                <strong>Buku Referensi Kredensial Studio:</strong> Hanya akun-akun di bawah ini yang dapat login ke website Creative Corner. Anggota dan unit PC wajib memasukkan kata sandi yang sesuai.
+              </div>
+            </div>
+
+            {/* Sub-tab Filter */}
+            <div style={{
+              display: 'flex',
+              gap: '0.4rem',
+              background: '#F1F5F9',
+              padding: '4px',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              flexWrap: 'wrap'
+            }}>
+              <button
+                type="button"
+                className={`btn btn-sm ${accountsFilterTab === 'pc' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ fontSize: '0.775rem', padding: '0.35rem 0.75rem' }}
+                onClick={() => setAccountsFilterTab('pc')}
+              >
+                🖥️ Akun 4 PC Kiosk
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${accountsFilterTab === 'ang26' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ fontSize: '0.775rem', padding: '0.35rem 0.75rem' }}
+                onClick={() => setAccountsFilterTab('ang26')}
+              >
+                🌟 Angkatan 26 / Kelas X (15)
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${accountsFilterTab === 'ang25' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ fontSize: '0.775rem', padding: '0.35rem 0.75rem' }}
+                onClick={() => setAccountsFilterTab('ang25')}
+              >
+                👥 Angkatan 25 / Kelas XI (7)
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${accountsFilterTab === 'admin' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ fontSize: '0.775rem', padding: '0.35rem 0.75rem' }}
+                onClick={() => setAccountsFilterTab('admin')}
+              >
+                🛡️ Admin Studio (2)
+              </button>
+            </div>
+
+            {/* List Akun */}
+            <div className="table-container" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+              <table className="custom-table" style={{ fontSize: '0.8rem' }}>
+                <thead>
+                  <tr>
+                    <th>Nama Pengguna / Unit</th>
+                    <th>Peran / Peruntukan</th>
+                    <th>Alamat Email</th>
+                    <th>Kata Sandi</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accountsFilterTab === 'pc' && (
+                    <>
+                      {pcClients.map((pc) => {
+                        const email = pc.emailAkun || (pc.id === 'PC-01' ? 'pc1.editor@gmail.com' : pc.id === 'PC-02' ? 'pc2.editor@gmail.com' : pc.id === 'PC-03' ? 'pc3.desain@gmail.com' : 'pc4.desain@gmail.com');
+                        const pass = pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : 'pc4#desain');
+                        const isCopied = copiedPCId === pc.id;
+
+                        return (
+                          <tr key={pc.id}>
+                            <td>
+                              <strong>{pc.id}</strong>
+                              <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{pc.namaUnit}</div>
+                            </td>
+                            <td>
+                              <span style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
+                                color: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8'
+                              }}>
+                                {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
+                              </span>
+                            </td>
+                            <td>
+                              <code style={{ color: '#1E3A8A' }}>{email}</code>
+                            </td>
+                            <td>
+                              <code style={{ color: '#059669', fontWeight: 700 }}>{pass}</code>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '0.2rem 0.5rem', fontSize: '0.72rem' }}
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`Email: ${email}\nPassword: ${pass}`);
+                                  setCopiedPCId(pc.id);
+                                  setTimeout(() => setCopiedPCId(null), 2000);
+                                }}
+                              >
+                                {isCopied ? <Check size={12} color="#059669" /> : <Copy size={12} />}
+                                <span>{isCopied ? 'Tersalin' : 'Salin'}</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {accountsFilterTab === 'ang26' && (
+                    <>
+                      {members.filter((m) => m.angkatan === 'Angkatan 26' && !m.isPC).map((m) => {
+                        const isCopied = copiedPCId === m.id;
+                        return (
+                          <tr key={m.id}>
+                            <td>
+                              <strong>{m.nama}</strong>
+                              <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{m.kelas}</div>
+                            </td>
+                            <td>
+                              <span style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 600,
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                background: '#F1F5F9',
+                                color: '#334155'
+                              }}>
+                                {m.divisi || m.peranUtama}
+                              </span>
+                            </td>
+                            <td>
+                              <code style={{ color: '#1E3A8A' }}>{m.email}</code>
+                            </td>
+                            <td>
+                              <code style={{ color: '#059669', fontWeight: 700 }}>{m.password}</code>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '0.2rem 0.5rem', fontSize: '0.72rem' }}
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`Email: ${m.email}\nPassword: ${m.password}`);
+                                  setCopiedPCId(m.id);
+                                  setTimeout(() => setCopiedPCId(null), 2000);
+                                }}
+                              >
+                                {isCopied ? <Check size={12} color="#059669" /> : <Copy size={12} />}
+                                <span>{isCopied ? 'Tersalin' : 'Salin'}</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {accountsFilterTab === 'ang25' && (
+                    <>
+                      {members.filter((m) => m.angkatan === 'Angkatan 25' && !m.isPC && m.role !== 'admin').map((m) => {
+                        const isCopied = copiedPCId === m.id;
+                        return (
+                          <tr key={m.id}>
+                            <td>
+                              <strong>{m.nama}</strong>
+                              <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{m.kelas}</div>
+                            </td>
+                            <td>
+                              <span style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 600,
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                background: '#F1F5F9',
+                                color: '#334155'
+                              }}>
+                                {m.divisi || m.peranUtama}
+                              </span>
+                            </td>
+                            <td>
+                              <code style={{ color: '#1E3A8A' }}>{m.email}</code>
+                            </td>
+                            <td>
+                              <code style={{ color: '#059669', fontWeight: 700 }}>{m.password}</code>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '0.2rem 0.5rem', fontSize: '0.72rem' }}
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`Email: ${m.email}\nPassword: ${m.password}`);
+                                  setCopiedPCId(m.id);
+                                  setTimeout(() => setCopiedPCId(null), 2000);
+                                }}
+                              >
+                                {isCopied ? <Check size={12} color="#059669" /> : <Copy size={12} />}
+                                <span>{isCopied ? 'Tersalin' : 'Salin'}</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  )}
+
+                  {accountsFilterTab === 'admin' && (
+                    <>
+                      {members.filter((m) => m.role === 'admin' || m.divisi === 'Admin').map((m) => {
+                        const isCopied = copiedPCId === m.id;
+                        return (
+                          <tr key={m.id}>
+                            <td>
+                              <strong>{m.nama}</strong>
+                              <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{m.kelas}</div>
+                            </td>
+                            <td>
+                              <span style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                background: '#EFF6FF',
+                                color: '#1E3A8A'
+                              }}>
+                                Administrator Studio
+                              </span>
+                            </td>
+                            <td>
+                              <code style={{ color: '#1E3A8A' }}>{m.email}</code>
+                            </td>
+                            <td>
+                              <code style={{ color: '#059669', fontWeight: 700 }}>{m.password}</code>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '0.2rem 0.5rem', fontSize: '0.72rem' }}
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`Email: ${m.email}\nPassword: ${m.password}`);
+                                  setCopiedPCId(m.id);
+                                  setTimeout(() => setCopiedPCId(null), 2000);
+                                }}
+                              >
+                                {isCopied ? <Check size={12} color="#059669" /> : <Copy size={12} />}
+                                <span>{isCopied ? 'Tersalin' : 'Salin'}</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </Modal>

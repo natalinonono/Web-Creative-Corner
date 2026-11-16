@@ -1162,8 +1162,17 @@ _Tim Pengelola Studio Creative Corner_`;
               <div style={{ padding: '2.5rem', textAlign: 'center', background: '#F8FAFC', color: '#64748B' }}>
                 <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>Belum Ada Roster Piket ({selectedDutyFilter})</div>
                 <p style={{ fontSize: '0.8rem', marginBottom: '0.75rem', color: '#64748B' }}>
-                  Klik tombol 'Tambah Roster Piket' di atas untuk menyusun jadwal jaga anggota studio.
+                  Klik tombol 'Tambah Roster Piket' di atas untuk menyusun jadwal jaga anggota studio, atau klik tombol di bawah untuk memuat jadwal resmi.
                 </p>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', margin: '0.5rem auto 0' }}
+                  onClick={resetDutyRosterToDefault}
+                >
+                  <RotateCcw size={14} />
+                  <span>Muat Roster Resmi Creative Corner (Piket 5S & Piket Kebersihan Studio)</span>
+                </button>
               </div>
             ) : (
               <div className="table-container">

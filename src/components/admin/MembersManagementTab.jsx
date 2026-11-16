@@ -187,6 +187,11 @@ export const MembersManagementTab = () => {
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.825rem', color: isAdmin ? '#1E3A8A' : '#334155', fontWeight: isAdmin ? 700 : 400 }}>
                         {m.email}
                       </span>
+                      {m.password && (
+                        <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '2px' }}>
+                          Sandi: <code style={{ color: '#059669', fontWeight: 700 }}>{m.password}</code>
+                        </div>
+                      )}
                     </td>
                     <td>
                       <span className={`badge ${isAdmin ? 'badge-emerald' : 'badge-blue'}`}>

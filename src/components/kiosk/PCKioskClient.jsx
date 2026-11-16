@@ -285,22 +285,32 @@ export const PCKioskClient = () => {
                 }}
                 id={`btn-select-${pc.id}`}
                 style={{
-                  padding: '0.5rem 1rem',
+                  padding: '0.5rem 0.85rem',
                   borderRadius: '8px',
-                  border: isSelected ? '2px solid #60A5FA' : '1px solid transparent',
-                  background: isSelected ? '#1E3A8A' : 'transparent',
+                  border: isSelected ? '2px solid #60A5FA' : '1px solid rgba(255, 255, 255, 0.15)',
+                  background: isSelected ? '#1E3A8A' : 'rgba(255, 255, 255, 0.05)',
                   color: '#FFFFFF',
                   fontWeight: 700,
                   fontSize: '0.85rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
+                  gap: '0.45rem',
                   transition: 'all 0.2s'
                 }}
               >
                 <Monitor size={15} />
-                <span>{pc.namaUnit ? `${pc.id} • ${pc.namaUnit}` : pc.id}</span>
+                <span>{pc.id}</span>
+                <span style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#DB2777' : '#2563EB',
+                  color: '#FFFFFF'
+                }}>
+                  {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain (PC Tengah)' : '🎬 Editor Video'}
+                </span>
                 <span style={{
                   width: '8px',
                   height: '8px',
@@ -343,8 +353,20 @@ export const PCKioskClient = () => {
             <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>
               Formulir Sesi Masuk {currentPC.id}
             </h2>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.35rem' }}>
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                padding: '3px 8px',
+                borderRadius: '999px',
+                background: (currentPC.peruntukan === 'Desain Grafis' || currentPC.id === 'PC-03' || currentPC.id === 'PC-04') ? '#DB2777' : '#2563EB',
+                color: '#FFFFFF'
+              }}>
+                {(currentPC.peruntukan === 'Desain Grafis' || currentPC.id === 'PC-03' || currentPC.id === 'PC-04') ? '🎨 Workstation Desain Grafis (PC Tengah)' : '🎬 Workstation Editor Video'}
+              </span>
+            </div>
             {currentPC.namaUnit && (
-              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#93C5FD', marginTop: '0.15rem' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#93C5FD', marginTop: '0.25rem' }}>
                 {currentPC.namaUnit}
               </div>
             )}

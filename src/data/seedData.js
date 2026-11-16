@@ -22,6 +22,8 @@ export const DEFAULT_ADMIN_USER = {
   id: 'ADM-01',
   nama: 'Pengelola Creative Corner',
   email: 'admin1.creativecorner@gmail.com',
+  password: 'admin1#creativecorner',
+  acceptedPasswords: ['admin1#creativecorner', 'admin1#cc', 'creativecorner123', 'admin123'],
   kelas: 'Guru Pembina & Koordinator Studio',
   nomorWa: '6281200000000',
   divisi: 'Admin',
@@ -35,6 +37,8 @@ export const ADMIN_2_USER = {
   id: 'ADM-02',
   nama: 'Satrio Ernesto Utomo (Admin 2)',
   email: 'admin2.creativecorner@gmail.com',
+  password: 'admin2#creativecorner',
+  acceptedPasswords: ['admin2#creativecorner', 'admin2#cc', 'satrio#cc25'],
   kelas: 'XI PPLG-B',
   nomorWa: '6281200000002',
   divisi: 'Admin',
@@ -59,6 +63,8 @@ export const SEED_MEMBERS = [
     divisi: 'Dokumentasi',
     peranUtama: 'Dokumentasi',
     email: 'akbar.cc25@gmail.com',
+    password: 'akbar#cc25',
+    acceptedPasswords: ['akbar#cc25', 'akbar123'],
     nomorWa: '6281200000001',
     role: 'member',
     avatar: 'AR',
@@ -73,6 +79,8 @@ export const SEED_MEMBERS = [
     peranUtama: 'Editor',
     email: 'satrio.cc25@gmail.com',
     altEmail: 'admin2.creativecorner@gmail.com',
+    password: 'satrio#cc25',
+    acceptedPasswords: ['satrio#cc25', 'admin2#creativecorner', 'admin2#cc'],
     nomorWa: '6281200000002',
     role: 'member',
     avatar: 'SE',
@@ -87,6 +95,8 @@ export const SEED_MEMBERS = [
     peranUtama: 'Dokumentasi',
     email: 'stefanus.cc25@gmail.com',
     altEmail: 'anggota1.creativecorner@gmail.com',
+    password: 'stefanus#cc25',
+    acceptedPasswords: ['stefanus#cc25', 'anggota1#cc', 'natalino#cc25'],
     nomorWa: '6281228788912',
     role: 'member',
     avatar: 'SN',
@@ -100,6 +110,8 @@ export const SEED_MEMBERS = [
     divisi: 'Editor',
     peranUtama: 'Editor',
     email: 'bayu.cc25@gmail.com',
+    password: 'bayu#cc25',
+    acceptedPasswords: ['bayu#cc25', 'jatmiko#cc25'],
     nomorWa: '6281200000003',
     role: 'member',
     avatar: 'JB',
@@ -113,6 +125,8 @@ export const SEED_MEMBERS = [
     divisi: 'Editor',
     peranUtama: 'Editor',
     email: 'virillos.cc25@gmail.com',
+    password: 'virillos#cc25',
+    acceptedPasswords: ['virillos#cc25', 'galih#cc25'],
     nomorWa: '6281200000004',
     role: 'member',
     avatar: 'VG',
@@ -126,6 +140,8 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'ubai.cc25@gmail.com',
+    password: 'ubai#cc25',
+    acceptedPasswords: ['ubai#cc25', 'hafidzul#cc25'],
     nomorWa: '6281200000005',
     role: 'member',
     avatar: 'UH',
@@ -139,6 +155,8 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'vania.cc25@gmail.com',
+    password: 'vania#cc25',
+    acceptedPasswords: ['vania#cc25', 'augusta#cc25'],
     nomorWa: '6281200000006',
     role: 'member',
     avatar: 'VA',
@@ -156,6 +174,8 @@ export const SEED_MEMBERS = [
     divisi: 'Videografer',
     peranUtama: 'Videografer',
     email: 'ilham.cc26@gmail.com',
+    password: 'ilham#cc26',
+    acceptedPasswords: ['ilham#cc26', 'ilham123'],
     nomorWa: '6281200000011',
     role: 'member',
     avatar: 'MI',
@@ -169,6 +189,8 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'gladis.cc26@gmail.com',
+    password: 'gladis#cc26',
+    acceptedPasswords: ['gladis#cc26', 'elys#cc26', 'gladis123'],
     nomorWa: '6281200000012',
     role: 'member',
     avatar: 'GE',
@@ -182,6 +204,8 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'arya.cc26@gmail.com',
+    password: 'arya#cc26',
+    acceptedPasswords: ['arya#cc26', 'mustofa#cc26'],
     nomorWa: '6281200000013',
     role: 'member',
     avatar: 'AM',
@@ -195,6 +219,8 @@ export const SEED_MEMBERS = [
     divisi: 'Editor',
     peranUtama: 'Editor',
     email: 'felix.cc26@gmail.com',
+    password: 'felix#cc26',
+    acceptedPasswords: ['felix#cc26', 'pelik#cc26', 'grindra#cc26'],
     nomorWa: '6281200000014',
     role: 'member',
     avatar: 'GF',
@@ -208,6 +234,8 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'faiz.cc26@gmail.com',
+    password: 'faiz#cc26',
+    acceptedPasswords: ['faiz#cc26', 'romadhon#cc26'],
     nomorWa: '6281200000015',
     role: 'member',
     avatar: 'FR',
@@ -221,6 +249,8 @@ export const SEED_MEMBERS = [
     divisi: 'Editor',
     peranUtama: 'Editor',
     email: 'abiyyudhia.cc26@gmail.com',
+    password: 'abiyyu#cc26',
+    acceptedPasswords: ['abiyyu#cc26', 'biyu#cc26', 'abiyyudhia#cc26'],
     nomorWa: '6281200000016',
     role: 'member',
     avatar: 'AF',
@@ -234,6 +264,8 @@ export const SEED_MEMBERS = [
     divisi: 'Editor',
     peranUtama: 'Editor',
     email: 'zidney.cc26@gmail.com',
+    password: 'zidney#cc26',
+    acceptedPasswords: ['zidney#cc26', 'fata#cc26'],
     nomorWa: '6281200000017',
     role: 'member',
     avatar: 'ZF',
@@ -247,6 +279,8 @@ export const SEED_MEMBERS = [
     divisi: 'Content Creator',
     peranUtama: 'Content Creator',
     email: 'abrariy.cc26@gmail.com',
+    password: 'arka#cc26',
+    acceptedPasswords: ['arka#cc26', 'abrariy#cc26'],
     nomorWa: '6281200000018',
     role: 'member',
     avatar: 'AK',
@@ -260,6 +294,8 @@ export const SEED_MEMBERS = [
     divisi: 'Editor',
     peranUtama: 'Editor',
     email: 'alfiano.cc26@gmail.com',
+    password: 'redo#cc26',
+    acceptedPasswords: ['redo#cc26', 'alfiano#cc26', 'alfredo#cc26'],
     nomorWa: '6281200000019',
     role: 'member',
     avatar: 'AS',
@@ -273,6 +309,8 @@ export const SEED_MEMBERS = [
     divisi: 'Videografer',
     peranUtama: 'Videografer',
     email: 'alifkenta.cc26@gmail.com',
+    password: 'alifkenta#cc26',
+    acceptedPasswords: ['alifkenta#cc26', 'alip#cc26', 'kenta#cc26'],
     nomorWa: '6281200000020',
     role: 'member',
     avatar: 'AC',
@@ -286,6 +324,8 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'dwi.aditya.cc26@gmail.com',
+    password: 'dwi#cc26',
+    acceptedPasswords: ['dwi#cc26', 'aditya#cc26'],
     nomorWa: '6281200000021',
     role: 'member',
     avatar: 'DA',
@@ -299,6 +339,8 @@ export const SEED_MEMBERS = [
     divisi: 'Videografer',
     peranUtama: 'Videografer',
     email: 'aesar.cc26@gmail.com',
+    password: 'aesar#cc26',
+    acceptedPasswords: ['aesar#cc26', 'abi#cc26'],
     nomorWa: '6281200000022',
     role: 'member',
     avatar: 'AA',
@@ -312,6 +354,8 @@ export const SEED_MEMBERS = [
     divisi: 'Content Creator',
     peranUtama: 'Content Creator',
     email: 'jonathan.cc26@gmail.com',
+    password: 'jonathan#cc26',
+    acceptedPasswords: ['jonathan#cc26', 'surya#cc26'],
     nomorWa: '6281200000023',
     role: 'member',
     avatar: 'JK',
@@ -325,6 +369,8 @@ export const SEED_MEMBERS = [
     divisi: 'Public Relation',
     peranUtama: 'Public Relation',
     email: 'malika.cc26@gmail.com',
+    password: 'kiyasa#cc26',
+    acceptedPasswords: ['kiyasa#cc26', 'malika#cc26', 'anindita#cc26'],
     nomorWa: '6281200000024',
     role: 'member',
     avatar: 'MK',
@@ -338,9 +384,83 @@ export const SEED_MEMBERS = [
     divisi: 'Desain Grafis',
     peranUtama: 'Desain Grafis',
     email: 'alif.arrohman.cc26@gmail.com',
+    password: 'tulip#cc26',
+    acceptedPasswords: ['tulip#cc26', 'alif#cc26', 'arrohman#cc26'],
     nomorWa: '6281200000025',
     role: 'member',
     avatar: 'AR',
+    status: 'Tersedia'
+  },
+
+  // ==============================================================
+  // AKUN WORKSTATION PC KIOSK STUDIO (4 UNIT RESMI)
+  // ==============================================================
+  {
+    id: 'PC-ACC-01',
+    nama: 'PC1-STUDIO (Editor Video #1)',
+    kelas: 'Workstation Studio (Dekat Pintu)',
+    angkatan: 'Studio PC',
+    divisi: 'Editor Video Workstation',
+    peranUtama: 'Editor Video',
+    email: 'pc1.editor@gmail.com',
+    password: 'pc1#editor',
+    acceptedPasswords: ['pc1#editor', 'editorpc1', 'pc1editor'],
+    nomorWa: '6281200000091',
+    role: 'member',
+    isPC: true,
+    pcId: 'PC-01',
+    avatar: 'P1',
+    status: 'Tersedia'
+  },
+  {
+    id: 'PC-ACC-02',
+    nama: 'DEKSTOP-7TVS43B (Editor Video #2)',
+    kelas: 'Workstation Studio (Backup)',
+    angkatan: 'Studio PC',
+    divisi: 'Editor Video Workstation',
+    peranUtama: 'Editor Video',
+    email: 'pc2.editor@gmail.com',
+    password: 'pc2#editor',
+    acceptedPasswords: ['pc2#editor', 'editorpc2', 'pc2editor'],
+    nomorWa: '6281200000092',
+    role: 'member',
+    isPC: true,
+    pcId: 'PC-02',
+    avatar: 'P2',
+    status: 'Tersedia'
+  },
+  {
+    id: 'PC-ACC-03',
+    nama: 'PC3-STUDIO (Desain Grafis #1 - PC Tengah A)',
+    kelas: 'Workstation Studio (PC Tengah A)',
+    angkatan: 'Studio PC',
+    divisi: 'Desain Grafis Workstation',
+    peranUtama: 'Desain Grafis',
+    email: 'pc3.desain@gmail.com',
+    password: 'pc3#desain',
+    acceptedPasswords: ['pc3#desain', 'desainpc3', 'pc3desain'],
+    nomorWa: '6281200000093',
+    role: 'member',
+    isPC: true,
+    pcId: 'PC-03',
+    avatar: 'P3',
+    status: 'Tersedia'
+  },
+  {
+    id: 'PC-ACC-04',
+    nama: 'PC4-STUDIO (Desain Grafis #2 - PC Tengah B)',
+    kelas: 'Workstation Studio (PC Tengah B)',
+    angkatan: 'Studio PC',
+    divisi: 'Desain Grafis Workstation',
+    peranUtama: 'Desain Grafis',
+    email: 'pc4.desain@gmail.com',
+    password: 'pc4#desain',
+    acceptedPasswords: ['pc4#desain', 'desainpc4', 'pc4desain'],
+    nomorWa: '6281200000094',
+    role: 'member',
+    isPC: true,
+    pcId: 'PC-04',
+    avatar: 'P4',
     status: 'Tersedia'
   }
 ];
@@ -1072,23 +1192,68 @@ export const SEED_DUTY_ROSTER = [
   }
 ];
 
-// Slot Klien Workstation PC Resmi Creative Corner (2 Unit Aktif Studio)
+// Slot Klien Workstation PC Resmi Creative Corner (4 Unit Aktif Studio: 2 Editor Video & 2 Desain Grafis PC Tengah)
 export const SEED_PC_CLIENTS = [
   {
     id: 'PC-01',
-    namaUnit: 'PC1-STUDIO (Dekat Pintu)',
+    namaUnit: 'PC1-STUDIO (Editor Video #1 - Dekat Pintu)',
+    peruntukan: 'Editor Video',
+    posisi: 'Dekat Pintu Studio',
+    emailAkun: 'pc1.editor@gmail.com',
+    passwordAkun: 'pc1#editor',
     spesifikasi: 'Intel Core i5-8400 @ 2.80GHz | RAM 32GB | NVIDIA GeForce GT 1030 2GB | Storage 2,75 TB | Windows 11 Pro',
     status: 'Tersedia',
     penggunaAktif: null
   },
   {
     id: 'PC-02',
-    namaUnit: 'DEKSTOP-7TVS43B (Backup)',
+    namaUnit: 'DEKSTOP-7TVS43B (Editor Video #2 - Backup)',
+    peruntukan: 'Editor Video',
+    posisi: 'Baris Editor Studio',
+    emailAkun: 'pc2.editor@gmail.com',
+    passwordAkun: 'pc2#editor',
     spesifikasi: 'Intel Core i7-9700 @ 3.00GHz | RAM 8GB | NVIDIA GeForce GT 730 5,9GB & Intel UHD Graphics 630 3,9GB | Storage 1,38 TB',
+    status: 'Tersedia',
+    penggunaAktif: null
+  },
+  {
+    id: 'PC-03',
+    namaUnit: 'PC3-STUDIO (PC Tengah A - Desain Grafis #1)',
+    peruntukan: 'Desain Grafis',
+    posisi: 'Meja Tengah A',
+    emailAkun: 'pc3.desain@gmail.com',
+    passwordAkun: 'pc3#desain',
+    spesifikasi: 'Intel Core i5-10400F @ 2.90GHz | RAM 16GB | NVIDIA GeForce GTX 1650 4GB | Storage SSD NVMe 1 TB | Workstation Desain & Ilustrasi',
+    status: 'Tersedia',
+    penggunaAktif: null
+  },
+  {
+    id: 'PC-04',
+    namaUnit: 'PC4-STUDIO (PC Tengah B - Desain Grafis #2)',
+    peruntukan: 'Desain Grafis',
+    posisi: 'Meja Tengah B',
+    emailAkun: 'pc4.desain@gmail.com',
+    passwordAkun: 'pc4#desain',
+    spesifikasi: 'AMD Ryzen 5 3600 @ 3.60GHz | RAM 16GB | AMD Radeon RX 580 8GB | Storage SSD NVMe 1 TB | Workstation Layout & Desain Vektor',
     status: 'Tersedia',
     penggunaAktif: null
   }
 ];
+
+// Helper Verifikasi Password Akun Creative Corner (Exact Match & Toleransi Bersahabat)
+export const verifyPassword = (inputPass, expectedPass, member) => {
+  if (!inputPass) return false;
+  const cleanInput = inputPass.trim().toLowerCase();
+  if (expectedPass && expectedPass.toLowerCase() === cleanInput) return true;
+  if (member?.password && member.password.toLowerCase() === cleanInput) return true;
+  if (Array.isArray(member?.acceptedPasswords)) {
+    if (member.acceptedPasswords.some((p) => p.toLowerCase() === cleanInput)) return true;
+  }
+  // Toleransi jika user lupa menulis tanda '#'
+  if (expectedPass && expectedPass.toLowerCase().replace(/#/g, '') === cleanInput) return true;
+  if (member?.password && member.password.toLowerCase().replace(/#/g, '') === cleanInput) return true;
+  return false;
+};
 
 // Arsip Log Aktivitas PC (Dimulai Kosong)
 export const SEED_PC_LOGS = [];

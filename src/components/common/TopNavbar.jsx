@@ -14,7 +14,10 @@ import {
   Users,
   ChevronRight,
   UserPlus,
-  Sparkles
+  Sparkles,
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Modal } from './Modal';
 
@@ -26,6 +29,7 @@ export const TopNavbar = () => {
     setPublicTab,
     currentUser, 
     switchOrLoginUser, 
+    authenticateUser,
     registerMember,
     logoutUser,
     pcClients,
@@ -43,6 +47,8 @@ export const TopNavbar = () => {
 
   // Form State Login & Registrasi
   const [inputEmail, setInputEmail] = useState('');
+  const [inputPassword, setInputPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [inputNama, setInputNama] = useState('');
   const [inputWa, setInputWa] = useState('');
   const [inputAngkatan, setInputAngkatan] = useState('25');
@@ -56,74 +62,61 @@ export const TopNavbar = () => {
       return;
     }
 
+    if (memberAction === 'register' && loginType !== 'admin') {
+      if (!inputNama.trim()) {
+        alert('Silakan masukkan Nama Lengkap Anda.');
+        return;
+      }
+      if (!inputWa.trim()) {
+        alert('Silakan masukkan Nomor WhatsApp aktif Anda.');
+        return;
+      }
+      if (!inputPassword.trim()) {
+        alert('Silakan buat kata sandi untuk akun Anda.');
+        return;
+      }
+      registerMember({
+        nama: inputNama.trim(),
+        email: query,
+        nomorWa: inputWa.trim(),
+        angkatan: inputAngkatan,
+        divisi: inputDivisi,
+        password: inputPassword.trim()
+      });
+      setIsLoginModalOpen(false);
+      setInputEmail('');
+      setInputNama('');
+      setInputWa('');
+      setInputPassword('');
+      return;
+    }
+
+    if (!inputPassword.trim()) {
+      alert('Silakan masukkan kata sandi akun Anda.');
+      return;
+    }
+
     if (loginType === 'admin') {
       if (!isAdminEmail(query)) {
         alert("Akses Admin Ditolak: Alamat email ini tidak terdaftar sebagai Administrator Studio.");
         return;
       }
-      switchOrLoginUser({
-        email: query,
-        nama: inputNama.trim() || 'Administrator Studio',
-        kelas: 'Pengelola Studio'
-      });
-      setCurrentRole('admin');
-      setIsLoginModalOpen(false);
-      setInputEmail('');
-      setInputNama('');
-    } else {
-      // Member Flow (Khusus Anggota Creative Corner)
-      if (memberAction === 'login') {
-        const cleanQuery = query.toLowerCase();
-        const existing = members.find((m) => {
-          const mEmail = (m.email || '').toLowerCase().trim();
-          const mAltEmail = (m.altEmail || '').toLowerCase().trim();
-          const mNama = (m.nama || '').toLowerCase().trim();
-          return mEmail === cleanQuery || 
-                 mAltEmail === cleanQuery || 
-                 mNama === cleanQuery || 
-                 (cleanQuery.length >= 3 && mNama.includes(cleanQuery));
-        });
-
-        if (!existing) {
-          alert("Akun anggota tidak ditemukan.\n\nPastikan Anda memasukkan Alamat Email resmi atau Nama Lengkap yang terdaftar.\nJika Anda anggota baru, silakan klik opsi '+ Daftar Anggota Baru'.");
-          return;
-        }
-        switchOrLoginUser({
-          id: existing.id,
-          email: existing.email,
-          nama: existing.nama,
-          kelas: existing.kelas,
-          nomorWa: existing.nomorWa,
-          divisi: existing.divisi,
-          angkatan: existing.angkatan
-        });
-        setCurrentRole('member');
-        setIsLoginModalOpen(false);
-        setInputEmail('');
-        setInputNama('');
-      } else {
-        // Registrasi Anggota Baru Creative Corner
-        if (!inputNama.trim()) {
-          alert('Silakan masukkan Nama Lengkap Anda.');
-          return;
-        }
-        if (!inputWa.trim()) {
-          alert('Silakan masukkan Nomor WhatsApp aktif Anda.');
-          return;
-        }
-        registerMember({
-          nama: inputNama.trim(),
-          email,
-          nomorWa: inputWa.trim(),
-          angkatan: inputAngkatan,
-          divisi: inputDivisi
-        });
-        setIsLoginModalOpen(false);
-        setInputEmail('');
-        setInputNama('');
-        setInputWa('');
-      }
     }
+
+    const authResult = authenticateUser({
+      emailOrQuery: query,
+      password: inputPassword.trim()
+    });
+
+    if (!authResult.success) {
+      alert(authResult.message);
+      return;
+    }
+
+    setIsLoginModalOpen(false);
+    setInputEmail('');
+    setInputNama('');
+    setInputPassword('');
   };
 
   const isUserAdmin = currentUser && isAdminEmail(currentUser.email);
@@ -580,6 +573,46 @@ export const TopNavbar = () => {
                       </div>
                     </div>
 
+                    <div className="form-group">
+                      <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Kata Sandi Akun *</span>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 'normal' }}>
+                          Format: [panggilan]#cc[angkatan]
+                        </span>
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          className="form-input"
+                          style={{ paddingRight: '2.5rem' }}
+                          value={inputPassword}
+                          onChange={(e) => setInputPassword(e.target.value)}
+                          placeholder="Masukkan kata sandi..."
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: '#64748B',
+                            padding: '4px',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                          title={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
                     <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.8rem', color: '#64748B' }}>
                       Belum mendaftar sebagai anggota Creative Corner?{' '}
                       <button
@@ -628,6 +661,40 @@ export const TopNavbar = () => {
                         placeholder="Contoh: 081234567890"
                         required
                       />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Buat Kata Sandi Akun *</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          className="form-input"
+                          style={{ paddingRight: '2.5rem' }}
+                          value={inputPassword}
+                          onChange={(e) => setInputPassword(e.target.value)}
+                          placeholder="Contoh: password123 atau nama#cc26"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: '#64748B',
+                            padding: '4px',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="form-grid-dual">
@@ -713,6 +780,40 @@ export const TopNavbar = () => {
                     required
                     autoFocus
                   />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Kata Sandi Administrator *</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className="form-input"
+                      style={{ paddingRight: '2.5rem' }}
+                      value={inputPassword}
+                      onChange={(e) => setInputPassword(e.target.value)}
+                      placeholder="Masukkan kata sandi administrator..."
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#64748B',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="form-group">

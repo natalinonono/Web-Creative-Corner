@@ -7,12 +7,14 @@ import { PCKioskClient } from './components/kiosk/PCKioskClient';
 import { AdminPortal } from './components/admin/AdminPortal';
 import { StorageGuideModal } from './components/common/StorageGuideModal';
 import { MobileBottomNav } from './components/common/MobileBottomNav';
-import { CheckCircle2, AlertTriangle, ShieldCheck, User, LogIn, ArrowRight, KeyRound, UserPlus, Sparkles } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ShieldCheck, User, LogIn, ArrowRight, KeyRound, UserPlus, Sparkles, Lock, Eye, EyeOff, Monitor } from 'lucide-react';
 
-// Tampilan Saat Akses Admin Belum Terverifikasi Email 'creativecorner'
+// Tampilan Saat Akses Admin Belum Terverifikasi Email & Password
 const AdminAccessRestricted = ({ onGoPublic }) => {
   const [emailInput, setEmailInput] = useState('');
-  const { switchOrLoginUser, isAdminEmail } = useStudio();
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const { authenticateUser, isAdminEmail } = useStudio();
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -20,11 +22,10 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
       alert("Akses ditolak: Alamat email ini tidak terdaftar sebagai Administrator Studio.");
       return;
     }
-    switchOrLoginUser({ 
-      email: emailInput.trim(), 
-      nama: 'Admin Creative Corner', 
-      kelas: 'Pengelola Studio' 
-    });
+    const res = authenticateUser({ emailOrQuery: emailInput.trim(), password: passwordInput.trim() });
+    if (!res.success) {
+      alert(res.message);
+    }
   };
 
   return (
@@ -36,7 +37,7 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
         Akses Khusus Administrator Studio
       </h2>
       <p style={{ fontSize: '0.825rem', color: '#64748B', lineHeight: '1.5', marginBottom: '1.25rem' }}>
-        Portal Pengelola hanya dapat diakses oleh akun email resmi Administrator Studio yang telah terdaftar.
+        Portal Pengelola hanya dapat diakses oleh akun email dan kata sandi resmi Administrator Studio yang telah terdaftar.
       </p>
 
       <form onSubmit={handleAdminLogin} style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
@@ -52,9 +53,138 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
             autoFocus
           />
         </div>
+
+        <div className="form-group">
+          <label className="form-label">Kata Sandi Administrator *</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              className="form-input"
+              style={{ paddingRight: '2.5rem' }}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              placeholder="Masukkan kata sandi administrator..."
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#64748B',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+
         <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.7rem' }}>
           <ShieldCheck size={16} />
           <span>Verifikasi & Masuk Portal Pengelola</span>
+        </button>
+      </form>
+
+      <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', display: 'flex', justifyContent: 'center' }}>
+        <button
+          type="button"
+          className="btn btn-secondary btn-sm"
+          onClick={onGoPublic}
+        >
+          Kembali ke Formulir Peminjaman (Tanpa Login)
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Tampilan Saat Akses Kiosk Belum Login
+const KioskAccessRestricted = ({ onGoPublic }) => {
+  const [loginInput, setLoginInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const { authenticateUser } = useStudio();
+
+  const handleKioskLogin = (e) => {
+    e.preventDefault();
+    const res = authenticateUser({ emailOrQuery: loginInput.trim(), password: passwordInput.trim() });
+    if (!res.success) {
+      alert(res.message);
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: '520px', margin: '3rem auto', textAlign: 'center', padding: '2rem', background: '#FFFFFF', borderRadius: '10px', border: '1px solid #CBD5E1', boxShadow: 'var(--shadow-md)' }}>
+      <div style={{ width: '48px', height: '48px', background: '#EFF6FF', borderRadius: '8px', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+        <Monitor size={28} color="#1E3A8A" />
+      </div>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+        Akses Workstation PC Kiosk Creative Corner
+      </h2>
+      <p style={{ fontSize: '0.825rem', color: '#64748B', lineHeight: '1.5', marginBottom: '1.25rem' }}>
+        Fitur Kiosk PC hanya dapat diakses setelah login menggunakan akun anggota Creative Corner atau akun unit PC resmi (PC 1, PC 2, PC 3, PC 4).
+      </p>
+
+      <form onSubmit={handleKioskLogin} style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
+        <div className="form-group">
+          <label className="form-label">Email Akun Anggota atau Akun Unit PC *</label>
+          <input
+            type="text"
+            className="form-input"
+            value={loginInput}
+            onChange={(e) => setLoginInput(e.target.value)}
+            placeholder="Contoh: pc1.editor@gmail.com atau email anggota..."
+            required
+            autoFocus
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Kata Sandi Akun *</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              className="form-input"
+              style={{ paddingRight: '2.5rem' }}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              placeholder="Masukkan kata sandi akun..."
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#64748B',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', marginTop: '0.5rem' }}>
+          <LogIn size={16} />
+          <span>Login & Buka Workstation Kiosk</span>
         </button>
       </form>
 
@@ -75,11 +205,13 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
 const MemberLoginPrompt = ({ onGoPublic }) => {
   const [memberAction, setMemberAction] = useState('login'); // 'login' | 'register'
   const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [namaInput, setNamaInput] = useState('');
   const [waInput, setWaInput] = useState('');
   const [angkatanInput, setAngkatanInput] = useState('25');
   const [divisiInput, setDivisiInput] = useState('Public Relation');
-  const { switchOrLoginUser, registerMember, members } = useStudio();
+  const { authenticateUser, registerMember } = useStudio();
 
   const handleMemberSubmit = (e) => {
     e.preventDefault();
@@ -88,21 +220,19 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
       alert('Silakan masukkan alamat email Anda.');
       return;
     }
+    if (!passwordInput.trim()) {
+      alert('Silakan masukkan kata sandi akun Anda.');
+      return;
+    }
 
     if (memberAction === 'login') {
-      const existing = members.find((m) => m.email?.toLowerCase().trim() === email.toLowerCase());
-      if (!existing) {
-        alert("Alamat email belum terdaftar sebagai anggota Creative Corner.\n\nJika kamu adalah anggota baru di Creative Corner, silakan pilih tab '+ Daftar Anggota Baru'.");
-        return;
-      }
-      switchOrLoginUser({
-        email: existing.email,
-        nama: existing.nama,
-        kelas: existing.kelas,
-        nomorWa: existing.nomorWa,
-        divisi: existing.divisi,
-        angkatan: existing.angkatan
+      const authRes = authenticateUser({
+        emailOrQuery: email,
+        password: passwordInput.trim()
       });
+      if (!authRes.success) {
+        alert(authRes.message);
+      }
     } else {
       // Registrasi Baru Khusus Anggota Creative Corner
       if (!namaInput.trim()) {
@@ -118,7 +248,8 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
         email,
         nomorWa: waInput.trim(),
         angkatan: angkatanInput,
-        divisi: divisiInput
+        divisi: divisiInput,
+        password: passwordInput.trim()
       });
     }
   };
@@ -231,6 +362,45 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
               />
             </div>
 
+            <div className="form-group">
+              <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Kata Sandi Akun *</span>
+                <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 'normal' }}>
+                  Format: [panggilan]#cc[angkatan]
+                </span>
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-input"
+                  style={{ paddingRight: '2.5rem' }}
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Masukkan kata sandi akun..."
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#64748B',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.75rem', marginTop: '0.5rem' }}>
               <LogIn size={16} />
               <span>Masuk Portal Anggota</span>
@@ -284,6 +454,40 @@ const MemberLoginPrompt = ({ onGoPublic }) => {
                 placeholder="Contoh: 081234567890"
                 required
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Buat Kata Sandi Akun *</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-input"
+                  style={{ paddingRight: '2.5rem' }}
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Contoh: password123 atau nama#cc26"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#64748B',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
             <div className="form-grid-dual">
@@ -385,7 +589,9 @@ const AppContent = () => {
           currentUser ? <MemberPortal /> : <MemberLoginPrompt onGoPublic={() => setCurrentRole('public')} />
         )}
 
-        {currentRole === 'kiosk' && <PCKioskClient />}
+        {currentRole === 'kiosk' && (
+          currentUser ? <PCKioskClient /> : <KioskAccessRestricted onGoPublic={() => setCurrentRole('public')} />
+        )}
 
         {currentRole === 'admin' && (
           (currentUser && isAdminEmail(currentUser.email)) ? (

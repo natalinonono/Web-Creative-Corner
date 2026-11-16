@@ -15,7 +15,8 @@ import {
   SEED_OFFICIAL_DOCUMENTS,
   STUDIO_SOP_RULES,
   STUDIO_STORAGE_SYSTEM,
-  SEED_BATTERY_CHARGES
+  SEED_BATTERY_CHARGES,
+  verifyPassword
 } from '../data/seedData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { normalizePhoneNumber } from '../utils/phoneUtils';
@@ -116,7 +117,7 @@ export const StudioProvider = ({ children }) => {
       const saved = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed.some((d) => d.id?.startsWith('DUTY-5S-') && d.tanggungJawab?.includes('gerbang sekolah'))) {
+        if (Array.isArray(parsed) && parsed.length >= 8 && parsed.some((d) => (d.jenisPiket || '').includes('5S'))) {
           return parsed;
         }
       }
@@ -125,7 +126,20 @@ export const StudioProvider = ({ children }) => {
       return SEED_DUTY_ROSTER;
     }
   });
-  const [pcClients, setPcClients] = useState(SEED_PC_CLIENTS);
+  const [pcClients, setPcClients] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cc_pc_clients_v4');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= 4) {
+          return parsed;
+        }
+      }
+      return SEED_PC_CLIENTS;
+    } catch {
+      return SEED_PC_CLIENTS;
+    }
+  });
   const [pcLogs, setPcLogs] = useState(SEED_PC_LOGS);
   const [documents, setDocuments] = useState(SEED_OFFICIAL_DOCUMENTS);
 
@@ -239,30 +253,45 @@ export const StudioProvider = ({ children }) => {
         supabase.from('loan_records').select('*').order('tanggal_pengajuan', { ascending: false })
       ]);
 
-      // 2. Proses Data Anggota Creative Corner
+      // 2. Proses Data Anggota Creative Corner & Akun PC
       if (!memErr && Array.isArray(mems)) {
         const formattedMems = mems.map((m) => {
           const parsedAngkatan = m.angkatan 
             ? (m.angkatan.toString().includes('Angkatan') ? m.angkatan : `Angkatan ${m.angkatan}`)
             : (m.kelas?.includes('XI') ? 'Angkatan 25' : m.kelas?.includes('X') ? 'Angkatan 26' : 'Angkatan 25');
 
+          const seedMatch = SEED_MEMBERS.find((sm) => 
+            sm.email?.toLowerCase().trim() === (m.email || '').toLowerCase().trim() ||
+            sm.nama?.toLowerCase().trim() === (m.nama || '').toLowerCase().trim()
+          );
+
           return {
             id: m.id,
             nama: m.nama,
-            kelas: m.kelas || (parsedAngkatan === 'Angkatan 25' ? 'XI PPLG-B' : 'X PPLG-A'),
+            kelas: m.kelas || seedMatch?.kelas || (parsedAngkatan === 'Angkatan 25' ? 'XI PPLG-B' : 'X PPLG-A'),
             angkatan: parsedAngkatan,
-            divisi: m.divisi || m.peran_utama || 'Public Relation',
-            peranUtama: m.peran_utama || m.divisi || 'Public Relation',
-            email: m.email || '',
-            nomorWa: m.whatsapp || m.nomorWa || '6281200000000',
+            divisi: m.divisi || m.peran_utama || seedMatch?.divisi || 'Public Relation',
+            peranUtama: m.peran_utama || m.divisi || seedMatch?.peranUtama || 'Public Relation',
+            email: m.email || seedMatch?.email || '',
+            altEmail: m.altEmail || seedMatch?.altEmail || '',
+            password: m.password || seedMatch?.password || 'creativecorner123',
+            acceptedPasswords: m.acceptedPasswords || seedMatch?.acceptedPasswords || [],
+            isPC: Boolean(m.isPC || seedMatch?.isPC),
+            pcId: m.pcId || seedMatch?.pcId || null,
+            nomorWa: m.whatsapp || m.nomorWa || seedMatch?.nomorWa || '6281200000000',
             avatar: m.avatar || (m.nama ? m.nama.slice(0, 2).toUpperCase() : 'CC'),
             role: (m.divisi === 'Admin' || m.peran_utama === 'Admin' || isAdminEmail(m.email)) ? 'admin' : 'member',
             status: m.status || 'Tersedia'
           };
         });
-        if (!formattedMems.some((m) => m.email?.toLowerCase().trim() === DEFAULT_ADMIN_USER.email.toLowerCase().trim())) {
-          formattedMems.unshift(DEFAULT_ADMIN_USER);
-        }
+
+        // Pastikan semua akun resmi SEED_MEMBERS (Admin, 22 Anggota & 4 PC Kiosk) selalu ada
+        SEED_MEMBERS.forEach((seedM) => {
+          if (!formattedMems.some((m) => m.email?.toLowerCase().trim() === seedM.email.toLowerCase().trim())) {
+            formattedMems.push(seedM);
+          }
+        });
+
         setMembers(formattedMems);
       }
 
@@ -404,17 +433,34 @@ export const StudioProvider = ({ children }) => {
         setCreativeTasks(mappedTasks);
       }
 
-      // 7. Workstation PC Kiosk
+      // 7. Workstation PC Kiosk (4 Unit: 2 Editor Video & 2 Desain Grafis)
       const { data: pcs, error: pcErr } = await supabase.from('pc_clients').select('*').order('id', { ascending: true });
       if (!pcErr && Array.isArray(pcs) && pcs.length > 0) {
-        const mappedPCs = pcs.map((pc) => ({
-          id: pc.id,
-          namaUnit: pc.nama_unit,
-          spesifikasi: pc.spesifikasi,
-          status: pc.status,
-          penggunaAktif: pc.pengguna_aktif
-        }));
+        const mappedPCs = pcs.map((pc) => {
+          const seedMatch = SEED_PC_CLIENTS.find((sp) => sp.id === pc.id);
+          return {
+            id: pc.id,
+            namaUnit: pc.nama_unit || seedMatch?.namaUnit,
+            peruntukan: pc.peruntukan || seedMatch?.peruntukan || (pc.id === 'PC-03' || pc.id === 'PC-04' ? 'Desain Grafis' : 'Editor Video'),
+            posisi: pc.posisi || seedMatch?.posisi || 'Studio Creative Corner',
+            emailAkun: pc.email_akun || seedMatch?.emailAkun,
+            passwordAkun: pc.password_akun || seedMatch?.passwordAkun,
+            spesifikasi: pc.spesifikasi || seedMatch?.spesifikasi,
+            status: pc.status,
+            penggunaAktif: pc.pengguna_aktif
+          };
+        });
+
+        // Pastikan PC-03 dan PC-04 (Desain Grafis) selalu masuk
+        SEED_PC_CLIENTS.forEach((seedPC) => {
+          if (!mappedPCs.some((p) => p.id === seedPC.id)) {
+            mappedPCs.push(seedPC);
+          }
+        });
+
         setPcClients(mappedPCs);
+      } else {
+        setPcClients(SEED_PC_CLIENTS);
       }
 
       // 8. Log Pemakaian PC
@@ -434,11 +480,11 @@ export const StudioProvider = ({ children }) => {
         setPcLogs(mappedLogs);
       }
 
-      // 9. Roster Piket (Jika tabel ada di Supabase, fallback ke localStorage bila belum dibuat)
+      // 9. Roster Piket (2 Versi: Piket 5S & Piket Kebersihan Studio)
       let loadedDuties = false;
       try {
         const { data: duties, error: dutyErr } = await supabase.from('duty_roster').select('*');
-        if (!dutyErr && Array.isArray(duties)) {
+        if (!dutyErr && Array.isArray(duties) && duties.length >= 8) {
           loadedDuties = true;
           const mappedDuties = duties.map((d) => {
             const parts = typeof d.jam_piket === 'string' && d.jam_piket.includes('|')
@@ -463,16 +509,17 @@ export const StudioProvider = ({ children }) => {
           const savedDuties = localStorage.getItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK);
           if (savedDuties) {
             const parsed = JSON.parse(savedDuties);
-            if (Array.isArray(parsed) && parsed.length > 0 && parsed.some((d) => d.id?.startsWith('DUTY-5S-') && d.tanggungJawab?.includes('gerbang sekolah'))) {
+            if (Array.isArray(parsed) && parsed.length >= 8 && parsed.some((d) => (d.jenisPiket || '').includes('5S'))) {
               setDutyRoster(parsed);
-            } else {
-              setDutyRoster(SEED_DUTY_ROSTER);
-              localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
+              loadedDuties = true;
             }
-          } else {
-            setDutyRoster(SEED_DUTY_ROSTER);
-            localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
           }
+        } catch {}
+      }
+      if (!loadedDuties) {
+        setDutyRoster(SEED_DUTY_ROSTER);
+        try {
+          localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
         } catch {}
       }
 
@@ -772,14 +819,73 @@ export const StudioProvider = ({ children }) => {
     if (isTargetAdmin) {
       setCurrentRole('admin');
       showToast(`Login berhasil sebagai Administrator (${targetUser.email}). Akses penuh Portal Pengelola aktif.`, 'success');
+    } else if (targetUser.isPC || targetUser.email?.startsWith('pc')) {
+      setCurrentRole('kiosk');
+      showToast(`Login berhasil sebagai ${targetUser.nama}. Masuk ke Workstation Kiosk.`, 'success');
     } else {
       setCurrentRole('member');
       showToast(`Login berhasil sebagai Anggota Creative Corner (${targetUser.nama}). Beralih ke Portal Anggota.`, 'success');
     }
   };
 
+  // -------------------------------------------------------------
+  // FUNGSI AUTENTIKASI PENGGUNA RESMI (LOGIN EMAIL & KATA SANDI)
+  // -------------------------------------------------------------
+  const authenticateUser = ({ emailOrQuery, password }) => {
+    const query = (emailOrQuery || '').trim();
+    const cleanPassword = (password || '').trim();
+    if (!query) {
+      return { success: false, message: 'Silakan masukkan alamat email atau nama akun Anda.' };
+    }
+    if (!cleanPassword) {
+      return { success: false, message: 'Silakan masukkan kata sandi akun Anda.' };
+    }
+
+    const cleanQuery = query.toLowerCase();
+    const found = members.find((m) => {
+      const mEmail = (m.email || '').toLowerCase().trim();
+      const mAltEmail = (m.altEmail || '').toLowerCase().trim();
+      const mNama = (m.nama || '').toLowerCase().trim();
+      return mEmail === cleanQuery || 
+             mAltEmail === cleanQuery || 
+             mNama === cleanQuery ||
+             (cleanQuery.length >= 4 && mNama.includes(cleanQuery));
+    });
+
+    if (!found) {
+      return { 
+        success: false, 
+        message: 'Akun tidak ditemukan. Pastikan email atau nama yang dimasukkan sudah terdaftar resmi di Creative Corner.' 
+      };
+    }
+
+    const isMatch = verifyPassword(cleanPassword, found.password, found);
+    if (!isMatch) {
+      return { 
+        success: false, 
+        message: 'Kata sandi tidak sesuai. Periksa kembali kata sandi akun Anda.' 
+      };
+    }
+
+    setCurrentUser(found);
+    setActiveMemberId(found.id);
+
+    if (found.role === 'admin' || isAdminEmail(found.email)) {
+      setCurrentRole('admin');
+      showToast(`Login berhasil sebagai Administrator (${found.nama || found.email}). Akses Portal Pengelola aktif.`, 'success');
+    } else if (found.isPC || found.email?.startsWith('pc')) {
+      setCurrentRole('kiosk');
+      showToast(`Login berhasil sebagai ${found.nama}. Masuk ke Workstation Kiosk.`, 'success');
+    } else {
+      setCurrentRole('member');
+      showToast(`Login berhasil sebagai ${found.nama} (${found.divisi || found.peranUtama}). Masuk ke Portal Anggota.`, 'success');
+    }
+
+    return { success: true, user: found };
+  };
+
   // Pendaftaran Anggota Baru khusus Creative Corner
-  const registerMember = ({ nama, email, nomorWa, angkatan, divisi }) => {
+  const registerMember = ({ nama, email, nomorWa, angkatan, divisi, password }) => {
     const cleanEmail = email.toLowerCase().trim();
     const isTargetAdmin = isAdminEmail(cleanEmail);
     const existing = members.find((m) => m.email?.toLowerCase().trim() === cleanEmail);
@@ -794,6 +900,7 @@ export const StudioProvider = ({ children }) => {
 
     const finalAngkatan = angkatan ? (angkatan.includes('Angkatan') ? angkatan : `Angkatan ${angkatan}`) : 'Angkatan 25';
     const userDivisi = isTargetAdmin ? 'Admin' : (divisi || 'Public Relation');
+    const autoPass = password || `${(nama.trim().split(' ')[0] || 'cc').toLowerCase()}#cc26`;
 
     const newMember = {
       id: getNextSequentialId(members, isTargetAdmin ? 'ADM' : 'MEM', 2),
@@ -804,6 +911,8 @@ export const StudioProvider = ({ children }) => {
       nomorWa: normalizePhoneNumber(nomorWa),
       divisi: userDivisi,
       peranUtama: userDivisi,
+      password: autoPass,
+      acceptedPasswords: [autoPass, 'creativecorner123'],
       role: isTargetAdmin ? 'admin' : 'member',
       status: 'Tersedia',
       avatar: (nama.trim() || 'CC').slice(0, 2).toUpperCase()
@@ -814,7 +923,7 @@ export const StudioProvider = ({ children }) => {
     setCurrentUser(newMember);
     setActiveMemberId(newMember.id);
     setCurrentRole(newMember.role === 'admin' ? 'admin' : 'member');
-    showToast(`Pendaftaran berhasil! Selamat bergabung di Creative Corner, ${newMember.nama}.`, 'success');
+    showToast(`Pendaftaran berhasil! Selamat bergabung di Creative Corner, ${newMember.nama}. Kata sandi akun Anda: ${autoPass}`, 'success');
     return { success: true, member: newMember, isNew: true };
   };
 
@@ -1709,6 +1818,11 @@ export const StudioProvider = ({ children }) => {
     try {
       localStorage.setItem(STORAGE_KEYS.DUTY_ROSTER_FALLBACK, JSON.stringify(SEED_DUTY_ROSTER));
     } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      SEED_DUTY_ROSTER.forEach((duty) => {
+        syncDutyToSupabase(duty);
+      });
+    }
     showToast('Jadwal piket berhasil direset ke roster resmi 2 versi (Piket 5S & Piket Kebersihan Studio).', 'success');
   };
 
@@ -1786,6 +1900,8 @@ export const StudioProvider = ({ children }) => {
         publicTab,
         setPublicTab,
         switchOrLoginUser,
+        authenticateUser,
+        verifyPassword,
         registerMember,
         logoutUser,
         submitPublicLoan,
