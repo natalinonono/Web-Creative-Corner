@@ -402,7 +402,7 @@ export const StudioProvider = ({ children }) => {
             terkunciOlehEventId: item.status === 'Terkunci Event' && lockingEventForEq ? lockingEventForEq.id : null
           };
         });
-        // Pastikan seluruh peralatan seed (termasuk EQ-35 Laptop Admin) selalu masuk
+        // Pastikan seluruh peralatan seed selalu masuk
         SEED_EQUIPMENT.forEach((seedEq) => {
           if (!mappedEq.some((e) => e.id === seedEq.id)) {
             mappedEq.push(seedEq);

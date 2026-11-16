@@ -938,19 +938,6 @@ export const SEED_EQUIPMENT = [
     baterai: null,
     status: 'Tersedia',
     terkunciOlehEventId: null
-  },
-  {
-    id: 'EQ-35',
-    kode: 'EQ-35',
-    nama: 'Laptop Admin (Uji Coba - Pongo 725 RTX 2050)',
-    kategori: 'Komputer & Workstation',
-    lokasiRak: 'Meja Utama Studio (Mobile Admin)',
-    wadah: 'Tas Laptop Admin',
-    spesifikasi: '12th Gen Intel Core i7-12650H @ 2.30GHz | RAM 16GB DDR4 3200 MT/s | NVIDIA GeForce RTX 2050 4GB | Storage SSD NVMe 512GB (477GB) | Windows 11 Pro 25H2 (Pongo 725)',
-    kondisiFisik: 'Sangat Baik (Unit Uji Coba Admin)',
-    baterai: 100,
-    status: 'Tersedia',
-    terkunciOlehEventId: null
   }
 ];
 
