@@ -58,6 +58,60 @@ export const PCKioskClient = () => {
 
   // State Fullscreen
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [sessionStarting, setSessionStarting] = useState(false);
+
+  // Audio Chime untuk Peringatan Sisa Waktu 2 Menit
+  const playWarningChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // Nada D5
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15); // Nada A5
+      gain.gain.setValueAtTime(0.35, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.85);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.85);
+    } catch {}
+  };
+
+  // Proteksi Keyboard: Blokir Alt+F4, Ctrl+W, Ctrl+Q, F11, Escape
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Blokir Alt + F4
+      if (e.altKey && (e.key === 'F4' || e.keyCode === 115)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Blokir Ctrl + W / Ctrl + Shift + W
+      if (e.ctrlKey && (e.key === 'w' || e.key === 'W' || e.keyCode === 87)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Blokir Ctrl + Q
+      if (e.ctrlKey && (e.key === 'q' || e.key === 'Q' || e.keyCode === 81)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Blokir Escape dan F11
+      if (e.key === 'Escape' || e.key === 'F11' || e.keyCode === 27 || e.keyCode === 122) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, []);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -81,29 +135,47 @@ export const PCKioskClient = () => {
   const currentPC = pcClients.find((pc) => pc.id === selectedPCId) || pcClients[0];
   const isActive = Boolean(currentPC && currentPC.status === 'Aktif' && currentPC.penggunaAktif);
 
+  // Deteksi apakah waktu telah habis (sisaDetik <= 0 atau parameter url expired=true)
+  const isTimeExpired = Boolean(
+    isActive && (
+      (currentPC?.penggunaAktif?.sisaDetik !== undefined && currentPC.penggunaAktif.sisaDetik <= 0) ||
+      (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('expired') === 'true')
+    )
+  );
+
+  // Helper untuk menutup jendela Kiosk agar desktop langsung terbuka untuk editing
+  const handleCloseKioskWindow = () => {
+    try {
+      window.open('', '_self', '');
+      window.close();
+    } catch {}
+  };
+
   // Window beforeunload lock protection simulation
   useEffect(() => {
     const handleBeforeUnload = (e) => {
-      if (isActive) {
+      // Hanya tahan jika bukan sedang proses tutup yang sah dari tombol mulai/perpanjang sesi
+      if (isActive && !sessionStarting) {
         e.preventDefault();
-        e.returnValue = 'Sesi Klien PC Creative Corner sedang aktif. Meninggalkan halaman akan mengunci workstation!';
+        e.returnValue = 'Sesi Klien PC Creative Corner sedang aktif. Menutup jendela akan mengunci workstation!';
         return e.returnValue;
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isActive]);
+  }, [isActive, sessionStarting]);
 
-  // Otomatis deteksi sisa durasi <= 5 menit (300 detik) untuk memunculkan modal peringatan
+  // Otomatis deteksi sisa durasi <= 2 menit (120 detik) untuk memunculkan modal peringatan & bunyikan alarm
   useEffect(() => {
-    if (isActive) {
+    if (isActive && !isTimeExpired) {
       const sisaDetik = currentPC.penggunaAktif.sisaDetik;
-      if (sisaDetik > 0 && sisaDetik <= 300 && warningDismissedForId !== selectedPCId) {
+      if (sisaDetik > 0 && sisaDetik <= 120 && warningDismissedForId !== selectedPCId) {
         setShowWarningModal(true);
+        playWarningChime();
       }
     }
-  }, [isActive, currentPC?.penggunaAktif?.sisaDetik, warningDismissedForId, selectedPCId]);
+  }, [isActive, isTimeExpired, currentPC?.penggunaAktif?.sisaDetik, warningDismissedForId, selectedPCId]);
 
   // Handle pergantian siswa pada form masuk jika ada daftar anggota
   const handleMemberSelect = (e) => {
@@ -139,6 +211,8 @@ export const PCKioskClient = () => {
 
     const finalKeperluan = keperluan.trim() || 'Editing Video & Produksi Kreatif';
 
+    setSessionStarting(true);
+
     startPCSession({
       pcId: currentPC?.id || selectedPCId,
       namaSiswa,
@@ -149,6 +223,11 @@ export const PCKioskClient = () => {
     });
 
     setWarningDismissedForId(null);
+
+    // Otomatis tutup jendela Kiosk setelah mengisi data agar desktop langsung terbuka untuk editing
+    setTimeout(() => {
+      handleCloseKioskWindow();
+    }, 700);
   };
 
   // Format detik menjadi MM:SS
@@ -591,9 +670,163 @@ export const PCKioskClient = () => {
             </form>
           </div>
         </div>
+      ) : isTimeExpired ? (
+        /* =======================================================
+           2. LAYAR KUNCI WAKTU HABIS (TIMEOUT LOCKSCREEN)
+        ======================================================= */
+        <div className="kiosk-card" style={{ maxWidth: '680px', border: '3px solid #E11D48', boxShadow: '0 10px 40px rgba(225, 29, 72, 0.4)' }}>
+          <div className="kiosk-card-header" style={{ background: '#881337', borderBottom: '2px solid #E11D48' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <AlertTriangle size={24} color="#FECDD3" />
+                <span style={{ fontWeight: 800, fontSize: '1.15rem', color: '#FFFFFF' }}>
+                  WAKTU PEMAKAIAN TELAH HABIS: {currentPC.id}
+                </span>
+              </div>
+              <span style={{
+                background: '#BE123C',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: '#FFE4E6'
+              }}>
+                Workstation Terkunci Otomatis
+              </span>
+            </div>
+          </div>
+
+          <div className="kiosk-card-body" style={{ textAlign: 'center' }}>
+            {/* Banner Keamanan File Editan */}
+            <div style={{
+              background: '#F0FDF4',
+              border: '2px solid #86EFAC',
+              borderRadius: '10px',
+              padding: '0.85rem 1.15rem',
+              fontSize: '0.85rem',
+              color: '#166534',
+              marginBottom: '1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              textAlign: 'left'
+            }}>
+              <CheckCircle2 size={24} color="#16A34A" style={{ flexShrink: 0 }} />
+              <div>
+                <strong style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.15rem' }}>
+                  Aplikasi Editing Anda Tetap Aman Berjalan di Latar Belakang!
+                </strong>
+                File proyek Anda (Adobe Premiere Pro / Photoshop) tidak ditutup paksa. Seluruh hasil karya Anda aman tidak hilang.
+              </div>
+            </div>
+
+            {/* Informasi Pengguna & Keperluan */}
+            <div style={{
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: '10px',
+              padding: '1rem',
+              marginBottom: '1.5rem',
+              textAlign: 'left',
+              display: 'grid',
+              gridTemplateColumns: '1.2fr 1fr',
+              gap: '0.75rem',
+              fontSize: '0.85rem'
+            }}>
+              <div>
+                <span style={{ color: '#64748B', fontSize: '0.75rem' }}>Pengguna Workstation:</span>
+                <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '1.05rem' }}>
+                  {currentPC.penggunaAktif.nama}
+                </div>
+                <div style={{ color: '#475569', fontSize: '0.8rem' }}>{currentPC.penggunaAktif.kelas}</div>
+              </div>
+
+              <div>
+                <span style={{ color: '#64748B', fontSize: '0.75rem' }}>Proyek Kreatif Terhubung:</span>
+                <div style={{ fontWeight: 700, color: '#1E3A8A' }}>
+                  {currentPC.penggunaAktif.keperluan}
+                </div>
+                <div style={{ color: '#E11D48', fontSize: '0.75rem', fontWeight: 700 }}>
+                  ● Status: Durasi Berakhir (Terkunci)
+                </div>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.875rem', color: '#334155', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+              Untuk dapat menutup layar ini atau melanjutkan aktivitas editing, silakan pilih salah satu opsi di bawah:
+            </p>
+
+            {/* Opsi 1 & 2 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {/* Opsi Tambah Waktu */}
+              <div style={{
+                background: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+                borderRadius: '10px',
+                padding: '1rem',
+                textAlign: 'left'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                  <span style={{ fontWeight: 800, color: '#1E3A8A', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Clock size={16} color="#2563EB" />
+                    <span>Opsi A: Tambah Waktu (Lanjut Ngedit)</span>
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Layar Kiosk langsung otomatis tertutup</span>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  {[15, 30, 60].map((mins) => (
+                    <button
+                      key={mins}
+                      type="button"
+                      className="btn btn-primary"
+                      style={{ padding: '0.65rem 0.25rem', fontSize: '0.85rem' }}
+                      onClick={() => {
+                        extendPCSession(selectedPCId, mins);
+                        setTimeout(() => handleCloseKioskWindow(), 600);
+                      }}
+                    >
+                      +{mins} Menit
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Opsi Selesai Pakai */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '1rem',
+                textAlign: 'left'
+              }}>
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <CheckCircle2 size={16} color="#059669" />
+                    <span>Opsi B: Konfirmasi Kegiatan Telah Selesai</span>
+                  </span>
+                  <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.2rem' }}>
+                    Pastikan Anda telah menyimpan (Save) seluruh file editing Anda sebelum mengakhiri sesi secara resmi.
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ background: '#0F172A', borderColor: '#0F172A', width: '100%', padding: '0.75rem', fontSize: '0.9rem' }}
+                  onClick={() => setEndSessionModalOpen(true)}
+                  id="btn-expired-end-session"
+                >
+                  <Lock size={16} />
+                  <span>Konfirmasi Selesai & Kunci Workstation</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       ) : (
         /* =======================================================
-           2. SESI AKTIF & JENDELA TERKUNCI (LIVE WORKSTATION)
+           3. SESI AKTIF & JENDELA TERKUNCI (LIVE WORKSTATION)
         ======================================================= */
         <div className="kiosk-card" style={{ maxWidth: '640px' }}>
           <div className="kiosk-card-header" style={{ background: '#0F172A', borderBottom: '2px solid #1E3A8A' }}>
@@ -624,21 +857,21 @@ export const PCKioskClient = () => {
 
           <div className="kiosk-card-body" style={{ textAlign: 'center' }}>
             <div style={{
-              background: '#FFFBEB',
-              border: '1px solid #FDE68A',
+              background: '#EFF6FF',
+              border: '1px solid #BFDBFE',
               borderRadius: '8px',
               padding: '0.65rem 1rem',
               fontSize: '0.8rem',
-              color: '#92400E',
+              color: '#1E3A8A',
               marginBottom: '1.5rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.65rem',
               textAlign: 'left'
             }}>
-              <ShieldAlert size={20} color="#D97706" style={{ flexShrink: 0 }} />
+              <CheckCircle2 size={20} color="#2563EB" style={{ flexShrink: 0 }} />
               <div>
-                <strong>Perhatian:</strong> Jendela peramban terproteksi selama sesi aktif. Anda tidak dapat menutup tab sebelum mengakhiri sesi secara resmi.
+                <strong>Sesi Aktif:</strong> Workstation terbuka untuk digunakan. Jendela Kiosk dapat disembunyikan agar Anda dapat fokus mengedit di Premiere Pro / Photoshop.
               </div>
             </div>
 
@@ -705,6 +938,18 @@ export const PCKioskClient = () => {
               borderTop: '1px solid #E2E8F0',
               paddingTop: '1.25rem'
             }}>
+              {/* Tombol Sembunyikan Kiosk & Kembali ke Desktop */}
+              <button
+                type="button"
+                className="btn btn-secondary"
+                style={{ width: '100%', padding: '0.75rem', background: '#F1F5F9', color: '#1E293B', fontWeight: 700 }}
+                onClick={handleCloseKioskWindow}
+                id="btn-hide-kiosk-desktop"
+              >
+                <Minimize size={16} />
+                <span>Sembunyikan Kiosk & Kembali ke Desktop (Lanjut Ngedit)</span>
+              </button>
+
               <div style={{ display: 'flex', gap: '0.65rem' }}>
                 <button
                   type="button"
@@ -807,11 +1052,12 @@ export const PCKioskClient = () => {
             </div>
 
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
-              Sisa Durasi Kurang dari 5 Menit!
+              ⚠️ Sisa Durasi Kurang dari 2 Menit!
             </h3>
 
-            <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '1.25rem' }}>
-              Halo <strong>{currentPC.penggunaAktif.nama}</strong>, durasi pemakaian Anda pada <strong>{currentPC.id}</strong> tersisa <strong>{formatTime(sisaDetik)}</strong>. Harap simpan file editing Anda atau pilih perpanjangan durasi.
+            <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+              Halo <strong>{currentPC.penggunaAktif.nama}</strong>, waktu pemakaian Anda pada <strong>{currentPC.id}</strong> tersisa <strong>{formatTime(sisaDetik)}</strong>.<br />
+              <strong style={{ color: '#E11D48' }}>Segera SIMPAN (Ctrl+S) file proyek editing Anda di Premiere / Photoshop</strong> sekarang, atau pilih perpanjangan durasi di bawah.
             </p>
 
             <div style={{
