@@ -201,6 +201,13 @@ _Tim Pengelola Studio Creative Corner_`;
         return;
       }
     }
+    if (assignedVideoId && assignedVideoId !== 'MANUAL') {
+      const mv = members.find((m) => m.id === assignedVideoId);
+      if (!isMemberVideographer(mv)) {
+        alert(`Aturan Tugas Studio: ${mv.nama} bukan dari divisi Videografer. Tugas Video HANYA boleh diisi oleh anggota dengan role Videografer.`);
+        return;
+      }
+    }
 
     const DITUGASKAN_ADMIN = 'creativecorner@gmail.com (Administrator Studio)';
     const personil = [];
@@ -442,6 +449,13 @@ _Tim Pengelola Studio Creative Corner_`;
       const ml = members.find((m) => m.id === editAssignedLiveReportId);
       if (isMemberVideographer(ml)) {
         alert(`Aturan Tugas Studio: ${ml.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Live Report HP).`);
+        return;
+      }
+    }
+    if (editAssignedVideoId && editAssignedVideoId !== 'MANUAL') {
+      const mv = members.find((m) => m.id === editAssignedVideoId);
+      if (!isMemberVideographer(mv)) {
+        alert(`Aturan Tugas Studio: ${mv.nama} bukan dari divisi Videografer. Tugas Video HANYA boleh diisi oleh anggota dengan role Videografer.`);
         return;
       }
     }
@@ -1581,17 +1595,17 @@ _Tim Pengelola Studio Creative Corner_`;
                 onChange={(e) => setAssignedVideoId(e.target.value)}
               >
                 <option value="">-- Tanpa Petugas Video --</option>
-                <optgroup label="Divisi Videografer (Sesuai Spesialisasi)">
+                <optgroup label="🎬 Khusus Divisi Videografer (Dapat Dipilih)">
                   {members.filter((m) => isMemberVideographer(m)).map((m) => (
                     <option key={m.id} value={m.id}>
                       🎬 {m.nama} ({m.kelas} • Videografer)
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="Anggota Lainnya (Jika Diperlukan)">
+                <optgroup label="⛔ Bukan Videografer (Khusus Foto / Live Report)">
                   {members.filter((m) => !isMemberVideographer(m)).map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
+                    <option key={m.id} value={m.id} disabled>
+                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) ⛔ (Khusus Foto/Live Report)
                     </option>
                   ))}
                 </optgroup>
@@ -1970,17 +1984,17 @@ _Tim Pengelola Studio Creative Corner_`;
                   onChange={(e) => setEditAssignedVideoId(e.target.value)}
                 >
                   <option value="">-- Tanpa Petugas Video --</option>
-                  <optgroup label="Divisi Videografer (Sesuai Spesialisasi)">
+                  <optgroup label="🎬 Khusus Divisi Videografer (Dapat Dipilih)">
                     {members.filter((m) => isMemberVideographer(m)).map((m) => (
                       <option key={m.id} value={m.id}>
-                        🎬 {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
+                        🎬 {m.nama} ({m.kelas} • Videografer)
                       </option>
                     ))}
                   </optgroup>
-                  <optgroup label="Anggota Lainnya (Jika Diperlukan)">
+                  <optgroup label="⛔ Bukan Videografer (Khusus Foto / Live Report)">
                     {members.filter((m) => !isMemberVideographer(m)).map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
+                      <option key={m.id} value={m.id} disabled>
+                        {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) ⛔ (Khusus Foto/Live Report)
                       </option>
                     ))}
                   </optgroup>
