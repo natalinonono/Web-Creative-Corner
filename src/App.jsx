@@ -22,7 +22,7 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
       alert("Akses ditolak: Alamat email ini tidak terdaftar sebagai Administrator Studio.");
       return;
     }
-    const res = authenticateUser({ emailOrQuery: emailInput.trim(), password: passwordInput.trim() });
+    const res = authenticateUser({ emailOrQuery: emailInput.trim(), password: passwordInput.trim(), preferredRole: 'admin' });
     if (!res.success) {
       alert(res.message);
     }
@@ -132,7 +132,7 @@ const KioskAccessRestricted = ({ onGoPublic }) => {
 
   const handleKioskLogin = (e) => {
     e.preventDefault();
-    const res = authenticateUser({ emailOrQuery: loginInput.trim(), password: passwordInput.trim() });
+    const res = authenticateUser({ emailOrQuery: loginInput.trim(), password: passwordInput.trim(), preferredRole: 'kiosk' });
     if (!res.success) {
       alert(res.message);
     }

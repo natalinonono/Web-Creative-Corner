@@ -52,7 +52,12 @@ export const StudioProvider = ({ children }) => {
     if (
       cleanEmail === 'admin1.creativecorner@gmail.com' || 
       cleanEmail === 'creativecorner@gmail.com' ||
-      cleanEmail === 'admin2.creativecorner@gmail.com'
+      cleanEmail === 'admin2.creativecorner@gmail.com' ||
+      cleanEmail === 'pc1.editor@gmail.com' ||
+      cleanEmail === 'pc2.editor@gmail.com' ||
+      cleanEmail === 'pc3.desain@gmail.com' ||
+      cleanEmail === 'pc4.desain@gmail.com' ||
+      (cleanEmail.startsWith('pc') && (cleanEmail.endsWith('.editor@gmail.com') || cleanEmail.endsWith('.desain@gmail.com')))
     ) {
       return true;
     }
@@ -831,7 +836,7 @@ export const StudioProvider = ({ children }) => {
   // -------------------------------------------------------------
   // FUNGSI AUTENTIKASI PENGGUNA RESMI (LOGIN EMAIL & KATA SANDI)
   // -------------------------------------------------------------
-  const authenticateUser = ({ emailOrQuery, password }) => {
+  const authenticateUser = ({ emailOrQuery, password, preferredRole }) => {
     const query = (emailOrQuery || '').trim();
     const cleanPassword = (password || '').trim();
     if (!query) {
@@ -870,9 +875,16 @@ export const StudioProvider = ({ children }) => {
     setCurrentUser(found);
     setActiveMemberId(found.id);
 
-    if (found.role === 'admin' || isAdminEmail(found.email)) {
-      setCurrentRole('admin');
-      showToast(`Login berhasil sebagai Administrator (${found.nama || found.email}). Akses Portal Pengelola aktif.`, 'success');
+    const isUserAdminRole = found.role === 'admin' || isAdminEmail(found.email);
+
+    if (isUserAdminRole) {
+      if (preferredRole === 'kiosk' || (currentRole === 'kiosk' && preferredRole !== 'admin')) {
+        setCurrentRole('kiosk');
+        showToast(`Login berhasil sebagai Administrator Workstation (${found.nama}). Akses Kiosk & Panel Pengelola aktif.`, 'success');
+      } else {
+        setCurrentRole('admin');
+        showToast(`Login berhasil sebagai Administrator (${found.nama || found.email}). Akses Portal Pengelola aktif.`, 'success');
+      }
     } else if (found.isPC || found.email?.startsWith('pc')) {
       setCurrentRole('kiosk');
       showToast(`Login berhasil sebagai ${found.nama}. Masuk ke Workstation Kiosk.`, 'success');

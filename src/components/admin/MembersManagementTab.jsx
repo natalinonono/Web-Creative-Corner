@@ -195,7 +195,7 @@ export const MembersManagementTab = () => {
                     </td>
                     <td>
                       <span className={`badge ${isAdmin ? 'badge-emerald' : 'badge-blue'}`}>
-                        {isAdmin ? 'Administrator' : 'Anggota Siswa'}
+                        {isAdmin ? (m.isPC ? 'Admin Workstation' : 'Administrator') : 'Anggota Siswa'}
                       </span>
                     </td>
                     <td>

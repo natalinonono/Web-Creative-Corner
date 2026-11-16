@@ -14,7 +14,12 @@ export const isAdminEmail = (email) => {
   const clean = email.toLowerCase().trim();
   return clean === 'admin1.creativecorner@gmail.com' || 
          clean === 'creativecorner@gmail.com' || 
-         clean === 'admin2.creativecorner@gmail.com';
+         clean === 'admin2.creativecorner@gmail.com' ||
+         clean === 'pc1.editor@gmail.com' ||
+         clean === 'pc2.editor@gmail.com' ||
+         clean === 'pc3.desain@gmail.com' ||
+         clean === 'pc4.desain@gmail.com' ||
+         (clean.startsWith('pc') && (clean.endsWith('.editor@gmail.com') || clean.endsWith('.desain@gmail.com')));
 };
 
 // Akun Admin Utama Resmi
@@ -393,20 +398,20 @@ export const SEED_MEMBERS = [
   },
 
   // ==============================================================
-  // AKUN WORKSTATION PC KIOSK STUDIO (4 UNIT RESMI)
+  // AKUN WORKSTATION PC KIOSK STUDIO (4 UNIT RESMI - HAK AKSES ADMINISTRATOR)
   // ==============================================================
   {
     id: 'PC-ACC-01',
     nama: 'PC1-STUDIO (Editor Video #1)',
-    kelas: 'Workstation Studio (Dekat Pintu)',
+    kelas: 'Workstation Studio (Admin)',
     angkatan: 'Studio PC',
-    divisi: 'Editor Video Workstation',
-    peranUtama: 'Editor Video',
+    divisi: 'Admin',
+    peranUtama: 'Admin',
     email: 'pc1.editor@gmail.com',
     password: 'pc1#editor',
-    acceptedPasswords: ['pc1#editor', 'editorpc1', 'pc1editor'],
+    acceptedPasswords: ['pc1#editor', 'editorpc1', 'pc1editor', 'admin123', 'creativecorner123'],
     nomorWa: '6281200000091',
-    role: 'member',
+    role: 'admin',
     isPC: true,
     pcId: 'PC-01',
     avatar: 'P1',
@@ -415,15 +420,15 @@ export const SEED_MEMBERS = [
   {
     id: 'PC-ACC-02',
     nama: 'DEKSTOP-7TVS43B (Editor Video #2)',
-    kelas: 'Workstation Studio (Backup)',
+    kelas: 'Workstation Studio (Admin)',
     angkatan: 'Studio PC',
-    divisi: 'Editor Video Workstation',
-    peranUtama: 'Editor Video',
+    divisi: 'Admin',
+    peranUtama: 'Admin',
     email: 'pc2.editor@gmail.com',
     password: 'pc2#editor',
-    acceptedPasswords: ['pc2#editor', 'editorpc2', 'pc2editor'],
+    acceptedPasswords: ['pc2#editor', 'editorpc2', 'pc2editor', 'admin123', 'creativecorner123'],
     nomorWa: '6281200000092',
-    role: 'member',
+    role: 'admin',
     isPC: true,
     pcId: 'PC-02',
     avatar: 'P2',
@@ -432,15 +437,15 @@ export const SEED_MEMBERS = [
   {
     id: 'PC-ACC-03',
     nama: 'PC3-STUDIO (Desain Grafis #1 - PC Tengah A)',
-    kelas: 'Workstation Studio (PC Tengah A)',
+    kelas: 'Workstation Studio (Admin)',
     angkatan: 'Studio PC',
-    divisi: 'Desain Grafis Workstation',
-    peranUtama: 'Desain Grafis',
+    divisi: 'Admin',
+    peranUtama: 'Admin',
     email: 'pc3.desain@gmail.com',
     password: 'pc3#desain',
-    acceptedPasswords: ['pc3#desain', 'desainpc3', 'pc3desain'],
+    acceptedPasswords: ['pc3#desain', 'desainpc3', 'pc3desain', 'admin123', 'creativecorner123'],
     nomorWa: '6281200000093',
-    role: 'member',
+    role: 'admin',
     isPC: true,
     pcId: 'PC-03',
     avatar: 'P3',
@@ -449,15 +454,15 @@ export const SEED_MEMBERS = [
   {
     id: 'PC-ACC-04',
     nama: 'PC4-STUDIO (Desain Grafis #2 - PC Tengah B)',
-    kelas: 'Workstation Studio (PC Tengah B)',
+    kelas: 'Workstation Studio (Admin)',
     angkatan: 'Studio PC',
-    divisi: 'Desain Grafis Workstation',
-    peranUtama: 'Desain Grafis',
+    divisi: 'Admin',
+    peranUtama: 'Admin',
     email: 'pc4.desain@gmail.com',
     password: 'pc4#desain',
-    acceptedPasswords: ['pc4#desain', 'desainpc4', 'pc4desain'],
+    acceptedPasswords: ['pc4#desain', 'desainpc4', 'pc4desain', 'admin123', 'creativecorner123'],
     nomorWa: '6281200000094',
-    role: 'member',
+    role: 'admin',
     isPC: true,
     pcId: 'PC-04',
     avatar: 'P4',

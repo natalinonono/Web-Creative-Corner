@@ -340,6 +340,10 @@ exit
                       <span style={{ color: '#64748B' }}>Kata Sandi:</span>
                       <code style={{ color: '#059669', fontWeight: 700 }}>{pc.passwordAkun || (pc.id === 'PC-01' ? 'pc1#editor' : pc.id === 'PC-02' ? 'pc2#editor' : pc.id === 'PC-03' ? 'pc3#desain' : 'pc4#desain')}</code>
                     </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', borderTop: '1px dashed #E2E8F0', paddingTop: '2px' }}>
+                      <span style={{ color: '#64748B' }}>Hak Akses:</span>
+                      <span style={{ color: '#059669', fontWeight: 700, fontSize: '0.7rem' }}>🛡️ Administrator Studio</span>
+                    </div>
                   </div>
                 </div>
 
@@ -1171,16 +1175,28 @@ exit
                               <div style={{ fontSize: '0.72rem', color: '#64748B' }}>{pc.namaUnit}</div>
                             </td>
                             <td>
-                              <span style={{
-                                fontSize: '0.72rem',
-                                fontWeight: 700,
-                                padding: '2px 6px',
-                                borderRadius: '4px',
-                                background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
-                                color: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8'
-                              }}>
-                                {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
-                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-start' }}>
+                                <span style={{
+                                  fontSize: '0.72rem',
+                                  fontWeight: 700,
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  background: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#FCE7F3' : '#DBEAFE',
+                                  color: (pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '#BE185D' : '#1D4ED8'
+                                }}>
+                                  {(pc.peruntukan === 'Desain Grafis' || pc.id === 'PC-03' || pc.id === 'PC-04') ? '🎨 Desain Grafis (PC Tengah)' : '🎬 Editor Video'}
+                                </span>
+                                <span style={{
+                                  fontSize: '0.675rem',
+                                  fontWeight: 700,
+                                  color: '#059669',
+                                  background: '#ECFDF5',
+                                  padding: '1px 5px',
+                                  borderRadius: '3px'
+                                }}>
+                                  🛡️ Administrator Studio
+                                </span>
+                              </div>
                             </td>
                             <td>
                               <code style={{ color: '#1E3A8A' }}>{email}</code>

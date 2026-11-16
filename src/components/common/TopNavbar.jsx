@@ -105,7 +105,8 @@ export const TopNavbar = () => {
 
     const authResult = authenticateUser({
       emailOrQuery: query,
-      password: inputPassword.trim()
+      password: inputPassword.trim(),
+      preferredRole: loginType === 'admin' ? 'admin' : undefined
     });
 
     if (!authResult.success) {
