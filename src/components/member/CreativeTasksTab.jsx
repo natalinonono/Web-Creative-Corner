@@ -25,6 +25,11 @@ export const CreativeTasksTab = () => {
     nomorWa: '6281234567890'
   };
 
+  const isUserVideographer = Boolean(
+    (currentMember?.divisi || '').toLowerCase().includes('video') ||
+    (currentMember?.peranUtama || '').toLowerCase().includes('video')
+  );
+
   const getDefaultDate = (offsetDays) => {
     const d = new Date();
     d.setDate(d.getDate() + offsetDays);
@@ -376,18 +381,32 @@ export const CreativeTasksTab = () => {
 
           <div className="form-grid-dual">
             <div className="form-group">
-              <label className="form-label">Kategori Kreatif *</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ margin: 0 }}>Kategori Kreatif *</label>
+                {isUserVideographer && (
+                  <span style={{ fontSize: '0.675rem', color: '#B45309', fontWeight: 700, background: '#FEF3C7', padding: '1px 6px', borderRadius: '4px' }}>
+                    🎬 Role Videografer (Fokus Video)
+                  </span>
+                )}
+              </div>
               <select
                 className="form-select"
+                style={{ marginTop: '0.4rem' }}
                 value={kategori}
                 onChange={(e) => setKategori(e.target.value)}
               >
-                <option value="Editing Video">Editing Video</option>
-                <option value="Desain Grafis">Desain Grafis</option>
-                <option value="Pembuatan Naskah/Konsep">Pembuatan Naskah/Konsep</option>
-                <option value="Fotografi & Retouching">Fotografi & Retouching</option>
-                <option value="Animasi & Motion Graphics">Animasi & Motion Graphics</option>
-                <option value="MANUAL">+ Kategori Lainnya (Tulis Manual)...</option>
+                <option value="Editing Video">🎬 Editing Video & Highlight</option>
+                {!isUserVideographer ? (
+                  <>
+                    <option value="Desain Grafis">🎨 Desain Grafis</option>
+                    <option value="Pembuatan Naskah/Konsep">📝 Pembuatan Naskah/Konsep</option>
+                    <option value="Fotografi & Retouching">📷 Fotografi & Retouching</option>
+                    <option value="Animasi & Motion Graphics">✨ Animasi & Motion Graphics</option>
+                    <option value="MANUAL">+ Kategori Lainnya (Tulis Manual)...</option>
+                  </>
+                ) : (
+                  <option value="Produksi Video Lapangan">🎥 Produksi Video Lapangan</option>
+                )}
               </select>
               {kategori === 'MANUAL' && (
                 <div style={{ marginTop: '0.5rem' }}>

@@ -49,6 +49,14 @@ export const EventCoverageTab = () => {
   // Filter Status Agenda Liputan
   const [statusFilter, setStatusFilter] = useState('Semua');
 
+  // Helper: Cek apakah anggota memiliki spesialisasi/role Videografer
+  const isMemberVideographer = (member) => {
+    if (!member) return false;
+    const div = (member.divisi || '').toLowerCase();
+    const role = (member.peranUtama || '').toLowerCase();
+    return div.includes('video') || role.includes('video');
+  };
+
   // Modal State untuk Penjadwalan Liputan Sekolah
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
@@ -168,6 +176,30 @@ _Tim Pengelola Studio Creative Corner_`;
     if (!judul.trim() || !tanggal) {
       alert('Judul liputan sekolah dan tanggal pelaksanaan wajib diisi.');
       return;
+    }
+
+    // Validasi Aturan Role: Videografer HANYA bisa mengisi tugas Video.
+    // Selain Videografer dapat memilih Kamera Foto 1/2 atau Live Report (HP).
+    if (assignedFoto1Id && assignedFoto1Id !== 'MANUAL') {
+      const m1 = members.find((m) => m.id === assignedFoto1Id);
+      if (isMemberVideographer(m1)) {
+        alert(`Aturan Tugas Studio: ${m1.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Kamera Foto 1).`);
+        return;
+      }
+    }
+    if (assignedFoto2Id && assignedFoto2Id !== 'MANUAL') {
+      const m2 = members.find((m) => m.id === assignedFoto2Id);
+      if (isMemberVideographer(m2)) {
+        alert(`Aturan Tugas Studio: ${m2.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Foto 2).`);
+        return;
+      }
+    }
+    if (assignedLiveReportId && assignedLiveReportId !== 'MANUAL') {
+      const ml = members.find((m) => m.id === assignedLiveReportId);
+      if (isMemberVideographer(ml)) {
+        alert(`Aturan Tugas Studio: ${ml.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Live Report HP).`);
+        return;
+      }
     }
 
     const DITUGASKAN_ADMIN = 'creativecorner@gmail.com (Administrator Studio)';
@@ -389,6 +421,29 @@ _Tim Pengelola Studio Creative Corner_`;
     if (!editJudul.trim() || !editTanggal) {
       alert('Judul liputan sekolah dan tanggal pelaksanaan wajib diisi.');
       return;
+    }
+
+    // Validasi Aturan Role: Videografer HANYA bisa mengisi tugas Video.
+    if (editAssignedFoto1Id && editAssignedFoto1Id !== 'MANUAL') {
+      const m1 = members.find((m) => m.id === editAssignedFoto1Id);
+      if (isMemberVideographer(m1)) {
+        alert(`Aturan Tugas Studio: ${m1.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Kamera Foto 1).`);
+        return;
+      }
+    }
+    if (editAssignedFoto2Id && editAssignedFoto2Id !== 'MANUAL') {
+      const m2 = members.find((m) => m.id === editAssignedFoto2Id);
+      if (isMemberVideographer(m2)) {
+        alert(`Aturan Tugas Studio: ${m2.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Foto 2).`);
+        return;
+      }
+    }
+    if (editAssignedLiveReportId && editAssignedLiveReportId !== 'MANUAL') {
+      const ml = members.find((m) => m.id === editAssignedLiveReportId);
+      if (isMemberVideographer(ml)) {
+        alert(`Aturan Tugas Studio: ${ml.nama} memiliki role Videografer dan HANYA bisa ditugaskan untuk tugas Video (tidak bisa mengisi Live Report HP).`);
+        return;
+      }
     }
 
     const personil = [];
@@ -1408,27 +1463,48 @@ _Tim Pengelola Studio Creative Corner_`;
               <p style={{ fontSize: '0.775rem', color: '#15803D', margin: '2px 0 0' }}>
                 Admin studio menentukan petugas dokumentasi: <strong>Kamera Foto 1</strong>, <strong>Foto 2</strong>, <strong>Video</strong>, dan <strong>Live Report (HP)</strong>.
               </p>
+              <div style={{
+                marginTop: '0.35rem',
+                fontSize: '0.735rem',
+                background: '#FEF3C7',
+                border: '1px solid #FCD34D',
+                borderRadius: '6px',
+                padding: '3px 8px',
+                color: '#92400E',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}>
+                <span>⚖️ <strong>Aturan Penugasan:</strong> Role <em>Videografer</em> hanya dapat ditugaskan untuk tugas <strong>Video</strong>. Anggota selain Videografer dapat memilih <strong>Kamera Foto 1/2</strong> atau <strong>Live Report (HP)</strong>.</span>
+              </div>
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
             {/* 1. Kamera Foto 1 */}
             <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E3A8A', fontWeight: 700 }}>
-                <Camera size={15} color="#2563EB" />
-                <span>1. Kamera Foto 1</span>
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E3A8A', fontWeight: 700, margin: 0 }}>
+                  <Camera size={15} color="#2563EB" />
+                  <span>1. Kamera Foto 1</span>
+                </label>
+                <span style={{ fontSize: '0.675rem', color: '#0369A1', fontWeight: 600 }}>Non-Videografer</span>
+              </div>
               <select
                 className="form-select"
+                style={{ marginTop: '0.4rem' }}
                 value={assignedFoto1Id}
                 onChange={(e) => setAssignedFoto1Id(e.target.value)}
               >
                 <option value="">-- Tanpa Kamera Foto 1 --</option>
-                {members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                  </option>
-                ))}
+                {members.map((m) => {
+                  const isVideo = isMemberVideographer(m);
+                  return (
+                    <option key={m.id} value={m.id} disabled={isVideo}>
+                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) {isVideo ? '⛔ (Khusus Video Saja)' : ''}
+                    </option>
+                  );
+                })}
                 <option value="MANUAL">+ Tulis Nama Manual...</option>
               </select>
               {assignedFoto1Id === 'MANUAL' && (
@@ -1448,21 +1524,28 @@ _Tim Pengelola Studio Creative Corner_`;
 
             {/* 2. Foto 2 */}
             <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369A1', fontWeight: 700 }}>
-                <Camera size={15} color="#0284C7" />
-                <span>2. Foto 2</span>
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369A1', fontWeight: 700, margin: 0 }}>
+                  <Camera size={15} color="#0284C7" />
+                  <span>2. Foto 2</span>
+                </label>
+                <span style={{ fontSize: '0.675rem', color: '#0369A1', fontWeight: 600 }}>Non-Videografer</span>
+              </div>
               <select
                 className="form-select"
+                style={{ marginTop: '0.4rem' }}
                 value={assignedFoto2Id}
                 onChange={(e) => setAssignedFoto2Id(e.target.value)}
               >
                 <option value="">-- Tanpa Foto 2 --</option>
-                {members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                  </option>
-                ))}
+                {members.map((m) => {
+                  const isVideo = isMemberVideographer(m);
+                  return (
+                    <option key={m.id} value={m.id} disabled={isVideo}>
+                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) {isVideo ? '⛔ (Khusus Video Saja)' : ''}
+                    </option>
+                  );
+                })}
                 <option value="MANUAL">+ Tulis Nama Manual...</option>
               </select>
               {assignedFoto2Id === 'MANUAL' && (
@@ -1482,21 +1565,36 @@ _Tim Pengelola Studio Creative Corner_`;
 
             {/* 3. Video */}
             <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B45309', fontWeight: 700 }}>
-                <Video size={15} color="#D97706" />
-                <span>3. Video</span>
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B45309', fontWeight: 700, margin: 0 }}>
+                  <Video size={15} color="#D97706" />
+                  <span>3. Video</span>
+                </label>
+                <span style={{ fontSize: '0.675rem', color: '#B45309', fontWeight: 700, background: '#FEF3C7', padding: '1px 6px', borderRadius: '4px' }}>
+                  🎬 Divisi Videografer
+                </span>
+              </div>
               <select
                 className="form-select"
+                style={{ marginTop: '0.4rem' }}
                 value={assignedVideoId}
                 onChange={(e) => setAssignedVideoId(e.target.value)}
               >
                 <option value="">-- Tanpa Petugas Video --</option>
-                {members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                  </option>
-                ))}
+                <optgroup label="Divisi Videografer (Sesuai Spesialisasi)">
+                  {members.filter((m) => isMemberVideographer(m)).map((m) => (
+                    <option key={m.id} value={m.id}>
+                      🎬 {m.nama} ({m.kelas} • Videografer)
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Anggota Lainnya (Jika Diperlukan)">
+                  {members.filter((m) => !isMemberVideographer(m)).map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
+                    </option>
+                  ))}
+                </optgroup>
                 <option value="MANUAL">+ Tulis Nama Manual...</option>
               </select>
               {assignedVideoId === 'MANUAL' && (
@@ -1516,21 +1614,28 @@ _Tim Pengelola Studio Creative Corner_`;
 
             {/* 4. Live Report (HP) */}
             <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontWeight: 700 }}>
-                <Smartphone size={15} color="#059669" />
-                <span>4. Live Report (HP)</span>
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontWeight: 700, margin: 0 }}>
+                  <Smartphone size={15} color="#059669" />
+                  <span>4. Live Report (HP)</span>
+                </label>
+                <span style={{ fontSize: '0.675rem', color: '#166534', fontWeight: 600 }}>Non-Videografer</span>
+              </div>
               <select
                 className="form-select"
+                style={{ marginTop: '0.4rem' }}
                 value={assignedLiveReportId}
                 onChange={(e) => setAssignedLiveReportId(e.target.value)}
               >
                 <option value="">-- Tanpa Live Report (HP) --</option>
-                {members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                  </option>
-                ))}
+                {members.map((m) => {
+                  const isVideo = isMemberVideographer(m);
+                  return (
+                    <option key={m.id} value={m.id} disabled={isVideo}>
+                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) {isVideo ? '⛔ (Khusus Video Saja)' : ''}
+                    </option>
+                  );
+                })}
                 <option value="MANUAL">+ Tulis Nama Manual...</option>
               </select>
               {assignedLiveReportId === 'MANUAL' && (
@@ -1751,27 +1856,48 @@ _Tim Pengelola Studio Creative Corner_`;
                 <p style={{ fontSize: '0.775rem', color: '#15803D', margin: '2px 0 0' }}>
                   Sesuaikan personil untuk Kamera Foto 1, Foto 2, Video, dan Live Report (HP).
                 </p>
+                <div style={{
+                  marginTop: '0.35rem',
+                  fontSize: '0.735rem',
+                  background: '#FEF3C7',
+                  border: '1px solid #FCD34D',
+                  borderRadius: '6px',
+                  padding: '3px 8px',
+                  color: '#92400E',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}>
+                  <span>⚖️ <strong>Aturan Penugasan:</strong> Role <em>Videografer</em> hanya dapat ditugaskan untuk tugas <strong>Video</strong>. Anggota selain Videografer dapat memilih <strong>Kamera Foto 1/2</strong> atau <strong>Live Report (HP)</strong>.</span>
+                </div>
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
               {/* 1. Kamera Foto 1 */}
               <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E3A8A', fontWeight: 700 }}>
-                  <Camera size={15} color="#2563EB" />
-                  <span>1. Kamera Foto 1</span>
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1E3A8A', fontWeight: 700, margin: 0 }}>
+                    <Camera size={15} color="#2563EB" />
+                    <span>1. Kamera Foto 1</span>
+                  </label>
+                  <span style={{ fontSize: '0.675rem', color: '#0369A1', fontWeight: 600 }}>Non-Videografer</span>
+                </div>
                 <select
                   className="form-select"
+                  style={{ marginTop: '0.4rem' }}
                   value={editAssignedFoto1Id}
                   onChange={(e) => setEditAssignedFoto1Id(e.target.value)}
                 >
                   <option value="">-- Tanpa Kamera Foto 1 --</option>
-                  {members.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                    </option>
-                  ))}
+                  {members.map((m) => {
+                    const isVideo = isMemberVideographer(m);
+                    return (
+                      <option key={m.id} value={m.id} disabled={isVideo}>
+                        {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) {isVideo ? '⛔ (Khusus Video Saja)' : ''}
+                      </option>
+                    );
+                  })}
                   <option value="MANUAL">+ Tulis Nama Manual...</option>
                 </select>
                 {editAssignedFoto1Id === 'MANUAL' && (
@@ -1789,21 +1915,28 @@ _Tim Pengelola Studio Creative Corner_`;
 
               {/* 2. Foto 2 */}
               <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369A1', fontWeight: 700 }}>
-                  <Camera size={15} color="#0284C7" />
-                  <span>2. Foto 2</span>
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369A1', fontWeight: 700, margin: 0 }}>
+                    <Camera size={15} color="#0284C7" />
+                    <span>2. Foto 2</span>
+                  </label>
+                  <span style={{ fontSize: '0.675rem', color: '#0369A1', fontWeight: 600 }}>Non-Videografer</span>
+                </div>
                 <select
                   className="form-select"
+                  style={{ marginTop: '0.4rem' }}
                   value={editAssignedFoto2Id}
                   onChange={(e) => setEditAssignedFoto2Id(e.target.value)}
                 >
                   <option value="">-- Tanpa Foto 2 --</option>
-                  {members.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                    </option>
-                  ))}
+                  {members.map((m) => {
+                    const isVideo = isMemberVideographer(m);
+                    return (
+                      <option key={m.id} value={m.id} disabled={isVideo}>
+                        {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) {isVideo ? '⛔ (Khusus Video Saja)' : ''}
+                      </option>
+                    );
+                  })}
                   <option value="MANUAL">+ Tulis Nama Manual...</option>
                 </select>
                 {editAssignedFoto2Id === 'MANUAL' && (
@@ -1821,21 +1954,36 @@ _Tim Pengelola Studio Creative Corner_`;
 
               {/* 3. Video */}
               <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B45309', fontWeight: 700 }}>
-                  <Video size={15} color="#D97706" />
-                  <span>3. Video</span>
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B45309', fontWeight: 700, margin: 0 }}>
+                    <Video size={15} color="#D97706" />
+                    <span>3. Video</span>
+                  </label>
+                  <span style={{ fontSize: '0.675rem', color: '#B45309', fontWeight: 700, background: '#FEF3C7', padding: '1px 6px', borderRadius: '4px' }}>
+                    🎬 Divisi Videografer
+                  </span>
+                </div>
                 <select
                   className="form-select"
+                  style={{ marginTop: '0.4rem' }}
                   value={editAssignedVideoId}
                   onChange={(e) => setEditAssignedVideoId(e.target.value)}
                 >
                   <option value="">-- Tanpa Petugas Video --</option>
-                  {members.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                    </option>
-                  ))}
+                  <optgroup label="Divisi Videografer (Sesuai Spesialisasi)">
+                    {members.filter((m) => isMemberVideographer(m)).map((m) => (
+                      <option key={m.id} value={m.id}>
+                        🎬 {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Anggota Lainnya (Jika Diperlukan)">
+                    {members.filter((m) => !isMemberVideographer(m)).map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
+                      </option>
+                    ))}
+                  </optgroup>
                   <option value="MANUAL">+ Tulis Nama Manual...</option>
                 </select>
                 {editAssignedVideoId === 'MANUAL' && (
@@ -1853,21 +2001,28 @@ _Tim Pengelola Studio Creative Corner_`;
 
               {/* 4. Live Report (HP) */}
               <div className="form-group" style={{ background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontWeight: 700 }}>
-                  <Smartphone size={15} color="#059669" />
-                  <span>4. Live Report (HP)</span>
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontWeight: 700, margin: 0 }}>
+                    <Smartphone size={15} color="#059669" />
+                    <span>4. Live Report (HP)</span>
+                  </label>
+                  <span style={{ fontSize: '0.675rem', color: '#166534', fontWeight: 600 }}>Non-Videografer</span>
+                </div>
                 <select
                   className="form-select"
+                  style={{ marginTop: '0.4rem' }}
                   value={editAssignedLiveReportId}
                   onChange={(e) => setEditAssignedLiveReportId(e.target.value)}
                 >
                   <option value="">-- Tanpa Live Report (HP) --</option>
-                  {members.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.nama} ({m.kelas} • {m.divisi || m.peranUtama})
-                    </option>
-                  ))}
+                  {members.map((m) => {
+                    const isVideo = isMemberVideographer(m);
+                    return (
+                      <option key={m.id} value={m.id} disabled={isVideo}>
+                        {m.nama} ({m.kelas} • {m.divisi || m.peranUtama}) {isVideo ? '⛔ (Khusus Video Saja)' : ''}
+                      </option>
+                    );
+                  })}
                   <option value="MANUAL">+ Tulis Nama Manual...</option>
                 </select>
                 {editAssignedLiveReportId === 'MANUAL' && (
