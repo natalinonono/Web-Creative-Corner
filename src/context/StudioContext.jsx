@@ -456,7 +456,7 @@ export const StudioProvider = ({ children }) => {
           };
         });
 
-        // Pastikan PC-03 dan PC-04 (Desain Grafis) selalu masuk
+        // Pastikan seluruh PC (PC-01 s/d PC-05) selalu masuk
         SEED_PC_CLIENTS.forEach((seedPC) => {
           if (!mappedPCs.some((p) => p.id === seedPC.id)) {
             mappedPCs.push(seedPC);
@@ -1373,12 +1373,13 @@ export const StudioProvider = ({ children }) => {
       })
     );
 
-    // Sinkronkan sesi aktif ke Supabase Cloud
+    // Sinkronkan sesi aktif ke Supabase Cloud (Upsert agar jika PC baru otomatis terdaftar)
     if (isSupabaseConfigured && supabase) {
-      supabase.from('pc_clients').update({
+      supabase.from('pc_clients').upsert({
+        id: pcId,
         status: 'Aktif',
         pengguna_aktif: sessionData
-      }).eq('id', pcId).then(() => {}).catch(() => {});
+      }).then(() => {}).catch(() => {});
     }
 
     if (tugasTerkaitId) {
@@ -1477,12 +1478,13 @@ export const StudioProvider = ({ children }) => {
       })
     );
 
-    // Kembalikan status PC ke Tersedia di Supabase Cloud
+    // Kembalikan status PC ke Tersedia di Supabase Cloud (Upsert)
     if (isSupabaseConfigured && supabase) {
-      supabase.from('pc_clients').update({
+      supabase.from('pc_clients').upsert({
+        id: pcId,
         status: 'Tersedia',
         pengguna_aktif: null
-      }).eq('id', pcId).then(() => {}).catch(() => {});
+      }).then(() => {}).catch(() => {});
     }
 
     if (sessionData.tugasTerkaitId) {
