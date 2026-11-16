@@ -64,10 +64,11 @@ const generateWordDocumentHtml = (data = {}) => {
     </head>
     <body>
       <div class="kop">
-        <h3>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h3>
-        <h2>SMK / SMA NEGERI UNGGULAN INDONESIA</h2>
+        <h3>PEMERINTAH PROVINSI JAWA TENGAH</h3>
+        <h3>DINAS PENDIDIKAN DAN KEBUDAYAAN</h3>
+        <h2>SMK NEGERI 2 SURAKARTA</h2>
         <h1>KOMUNITAS KREATIF & MULTIMEDIA "CREATIVE CORNER"</h1>
-        <p>Gedung Creative Corner Lt. 2, Jl. Pendidikan No. 45. Email: creativecorner@gmail.com</p>
+        <p>Jl. Hasanudin No. 47, Surakarta, Jawa Tengah. Telp: (0271) 714901 • Email: creativecorner@gmail.com</p>
       </div>
 
       <div class="judul">SURAT PERIZINAN PEMINJAMAN ALAT & INVENTARIS</div>
@@ -195,16 +196,16 @@ export const downloadLoanLetterPdf = (data = {}) => {
 
     // Kop Surat
     doc.setFont('times', 'normal');
-    doc.setFontSize(10);
-    doc.text('KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI', 105, 18, { align: 'center' });
+    doc.setFontSize(9.5);
+    doc.text('PEMERINTAH PROVINSI JAWA TENGAH - DINAS PENDIDIKAN DAN KEBUDAYAAN', 105, 17, { align: 'center' });
     doc.setFont('times', 'bold');
-    doc.setFontSize(11);
-    doc.text('SMK / SMA NEGERI UNGGULAN INDONESIA', 105, 23, { align: 'center' });
+    doc.setFontSize(11.5);
+    doc.text('SMK NEGERI 2 SURAKARTA', 105, 22.5, { align: 'center' });
     doc.setFontSize(13);
-    doc.text('KOMUNITAS KREATIF & MULTIMEDIA "CREATIVE CORNER"', 105, 29, { align: 'center' });
+    doc.text('KOMUNITAS KREATIF & MULTIMEDIA "CREATIVE CORNER"', 105, 28.5, { align: 'center' });
     doc.setFont('times', 'italic');
-    doc.setFontSize(8.5);
-    doc.text('Gedung Creative Corner Lt. 2, Jl. Pendidikan No. 45. Email: creativecorner@gmail.com', 105, 34, { align: 'center' });
+    doc.setFontSize(8);
+    doc.text('Jl. Hasanudin No. 47, Surakarta, Jawa Tengah. Telp: (0271) 714901 • Email: creativecorner@gmail.com', 105, 33.5, { align: 'center' });
 
     // Garis Dobel Kop
     doc.setLineWidth(0.8);

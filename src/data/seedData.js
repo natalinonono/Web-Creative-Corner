@@ -1293,10 +1293,10 @@ export const verifyPassword = (inputPass, expectedPass, member) => {
 export const SEED_PC_LOGS = [];
 
 // Format Standar Surat Peminjaman Alat yang Disediakan Web
-export const FORMAT_SURAT_PEMINJAMAN_TEXT = `KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI
-SMK / SMA NEGERI UNGGULAN
+export const FORMAT_SURAT_PEMINJAMAN_TEXT = `PEMERINTAH PROVINSI JAWA TENGAH - DINAS PENDIDIKAN DAN KEBUDAYAAN
+SMK NEGERI 2 SURAKARTA
 KOMUNITAS KREATIF & MULTIMEDIA "CREATIVE CORNER"
-Jl. Pendidikan No. 45, Kota Pelajar. Telp: (021) 7654321
+Jl. Hasanudin No. 47, Surakarta, Jawa Tengah. Telp: (0271) 714901
 
 SURAT PERIZINAN PEMINJAMAN ALAT
 Nomor: CC-FORM-01/RESMI
@@ -1343,10 +1343,10 @@ export const SEED_OFFICIAL_DOCUMENTS = [
     judul: 'Surat Izin Penggunaan Ruang Creative Corner',
     kategori: 'Penggunaan Ruangan',
     deskripsi: 'Format standar permohonan pemakaian Ruang Studio Utama atau Ruang Editing & Podcast untuk kebutuhan produksi visual.',
-    kontenTemplat: `KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI
-SMK / SMA NEGERI UNGGULAN
+    kontenTemplat: `PEMERINTAH PROVINSI JAWA TENGAH - DINAS PENDIDIKAN DAN KEBUDAYAAN
+SMK NEGERI 2 SURAKARTA
 KOMUNITAS KREATIF & MULTIMEDIA "CREATIVE CORNER"
-Jl. Pendidikan No. 45, Kota Pelajar. Telp: (021) 7654321
+Jl. Hasanudin No. 47, Surakarta, Jawa Tengah. Telp: (0271) 714901
 
 SURAT IZIN PENGGUNAAN RUANG CREATIVE CORNER
 Nomor: CC-FORM-02/RESMI
