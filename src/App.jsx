@@ -132,6 +132,9 @@ const KioskAccessRestricted = ({ onGoPublic }) => {
 
   const handleKioskLogin = (e) => {
     e.preventDefault();
+    if (document.documentElement && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
     const res = authenticateUser({ emailOrQuery: loginInput.trim(), password: passwordInput.trim(), preferredRole: 'kiosk' });
     if (!res.success) {
       alert(res.message);

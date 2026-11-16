@@ -129,6 +129,9 @@ export const PCKioskClient = () => {
 
   const handleStartSession = (e) => {
     e.preventDefault();
+    if (document.documentElement && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
     if (!namaSiswa.trim()) {
       alert('Nama anggota / siswa wajib diisi.');
       return;
