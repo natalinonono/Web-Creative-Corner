@@ -109,7 +109,23 @@ const AdminAccessRestricted = ({ onGoPublic }) => {
 
 // Tampilan Saat Akses Kiosk Belum Login
 const KioskAccessRestricted = ({ onGoPublic }) => {
-  const [loginInput, setLoginInput] = useState('');
+  const detectedPC = (() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get('pc') || '').toUpperCase();
+    }
+    return '';
+  })();
+
+  const defaultEmail = (() => {
+    if (detectedPC === 'PC-01') return 'pc1.editor@gmail.com';
+    if (detectedPC === 'PC-02') return 'pc2.editor@gmail.com';
+    if (detectedPC === 'PC-03') return 'pc3.desain@gmail.com';
+    if (detectedPC === 'PC-04') return 'pc4.desain@gmail.com';
+    return '';
+  })();
+
+  const [loginInput, setLoginInput] = useState(defaultEmail);
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { authenticateUser } = useStudio();
@@ -134,6 +150,24 @@ const KioskAccessRestricted = ({ onGoPublic }) => {
         Fitur Kiosk PC hanya dapat diakses setelah login menggunakan akun anggota Creative Corner atau akun unit PC resmi (PC 1, PC 2, PC 3, PC 4).
       </p>
 
+      {detectedPC && (
+        <div style={{
+          background: '#F0FDF4',
+          border: '1px solid #BBF7D0',
+          borderRadius: '8px',
+          padding: '0.6rem 0.85rem',
+          marginBottom: '1.25rem',
+          fontSize: '0.8rem',
+          color: '#166534',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <span>🖥️ <strong>Terdeteksi:</strong> Workstation {detectedPC}</span>
+          <span style={{ fontSize: '0.72rem', background: '#DCFCE7', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>Siap Digunakan</span>
+        </div>
+      )}
+
       <form onSubmit={handleKioskLogin} style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
         <div className="form-group">
           <label className="form-label">Email Akun Anggota atau Akun Unit PC *</label>
@@ -144,7 +178,7 @@ const KioskAccessRestricted = ({ onGoPublic }) => {
             onChange={(e) => setLoginInput(e.target.value)}
             placeholder="Contoh: pc1.editor@gmail.com atau email anggota..."
             required
-            autoFocus
+            autoFocus={!defaultEmail}
           />
         </div>
 
@@ -159,6 +193,7 @@ const KioskAccessRestricted = ({ onGoPublic }) => {
               onChange={(e) => setPasswordInput(e.target.value)}
               placeholder="Masukkan kata sandi akun..."
               required
+              autoFocus={Boolean(defaultEmail)}
             />
             <button
               type="button"
