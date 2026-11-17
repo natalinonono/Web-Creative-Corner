@@ -1,4 +1,4 @@
-﻿<# :
+<# :
 @echo off
 setlocal
 title Creative Corner Studio Guardian - PC-05
@@ -96,8 +96,23 @@ function Close-KioskBrowserOnly() {
     } catch {}
 }
 
+function Play-VoiceAlarm([string]$audioFileName) {
+    try {
+        $localAudioPath = "$PSScriptRoot\..\public\audio\$audioFileName"
+        if (-not (Test-Path $localAudioPath)) {
+            $localAudioPath = "D:\. ANJAYY PROJECT WEB CC\V3\public\audio\$audioFileName"
+        }
+        if (Test-Path $localAudioPath) {
+            $player = New-Object -ComObject WMPlayer.OCX
+            $player.URL = $localAudioPath
+            $player.controls.play()
+        }
+    } catch {}
+}
+
 function Show-WindowsWarningPopup([string]$studentName, [string]$pcName) {
     try { [System.Media.SystemSounds]::Exclamation.Play() } catch {}
+    Play-VoiceAlarm "peringatan_2_menit.mp3"
     try {
         $wsh = New-Object -ComObject WScript.Shell
         $msg = "Halo $studentName!`n`nSisa waktu pemakaian workstation $pcName tinggal 2 MENIT!`n`nSegera SIMPAN (Save / Ctrl+S) file proyek editing Anda sekarang agar hasil karya tidak hilang!"
@@ -231,6 +246,7 @@ while ($true) {
         if ($now -ge $endTime) {
             Write-Host "Waktu habis (00:00)! Menampilkan Kiosk Pengunci Layar..."
             $state = "EXPIRED"
+            Play-VoiceAlarm "waktu_habis.mp3"
             Close-KioskBrowserOnly
             Start-Sleep -Milliseconds 400
             # Buka kembali Kiosk untuk mengunci layar (Software editing TETAP AMAN di latar belakang)

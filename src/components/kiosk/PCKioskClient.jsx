@@ -60,23 +60,58 @@ export const PCKioskClient = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [sessionStarting, setSessionStarting] = useState(false);
 
-  // Audio Chime untuk Peringatan Sisa Waktu 2 Menit
+  // Suara Alarm Orang (Human Voice) untuk Peringatan Sisa Waktu 2 Menit & Waktu Habis
   const playWarningChime = () => {
+    // 1. Bunyikan nada notifikasi
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // Nada D5
-      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15); // Nada A5
-      gain.gain.setValueAtTime(0.35, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.85);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.85);
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.35, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.85);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.85);
+      }
+    } catch {}
+
+    // 2. Mainkan Suara Orang Asli Bahasa Indonesia: "Perhatian! Waktu pemakaian komputer Anda tinggal 2 menit lagi..."
+    try {
+      const audio = new Audio('/audio/peringatan_2_menit.mp3');
+      audio.play().catch(() => {
+        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const msg = new SpeechSynthesisUtterance('Perhatian! Waktu pemakaian komputer Anda tinggal dua menit lagi. Segera simpan seluruh file proyek editing Anda sekarang!');
+          msg.lang = 'id-ID';
+          msg.rate = 0.95;
+          window.speechSynthesis.speak(msg);
+        }
+      });
+    } catch {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance('Perhatian! Waktu pemakaian komputer Anda tinggal dua menit lagi. Segera simpan seluruh file proyek editing Anda sekarang!');
+        msg.lang = 'id-ID';
+        window.speechSynthesis.speak(msg);
+      }
+    }
+  };
+
+  const playExpiredVoice = () => {
+    try {
+      const audio = new Audio('/audio/waktu_habis.mp3');
+      audio.play().catch(() => {
+        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+          const msg = new SpeechSynthesisUtterance('Perhatian! Waktu pemakaian komputer telah habis. Layar komputer terkunci otomatis.');
+          msg.lang = 'id-ID';
+          window.speechSynthesis.speak(msg);
+        }
+      });
     } catch {}
   };
 
@@ -165,6 +200,13 @@ export const PCKioskClient = () => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isActive, sessionStarting]);
+
+  // Otomatis bunyikan suara orang saat waktu pemakaian habis (Lockscreen Expired)
+  useEffect(() => {
+    if (isTimeExpired) {
+      playExpiredVoice();
+    }
+  }, [isTimeExpired]);
 
   // Otomatis deteksi sisa durasi <= 2 menit (120 detik) atau parameter url warning=true
   useEffect(() => {
