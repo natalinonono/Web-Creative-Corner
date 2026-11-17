@@ -166,11 +166,13 @@ export const PCKioskClient = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isActive, sessionStarting]);
 
-  // Otomatis deteksi sisa durasi <= 2 menit (120 detik) untuk memunculkan modal peringatan & bunyikan alarm
+  // Otomatis deteksi sisa durasi <= 2 menit (120 detik) atau parameter url warning=true
   useEffect(() => {
     if (isActive && !isTimeExpired) {
-      const sisaDetik = currentPC.penggunaAktif.sisaDetik;
-      if (sisaDetik > 0 && sisaDetik <= 120 && warningDismissedForId !== selectedPCId) {
+      const sisaDetik = currentPC?.penggunaAktif?.sisaDetik;
+      const isParamWarning = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('warning') === 'true';
+
+      if ((isParamWarning || (sisaDetik !== undefined && sisaDetik > 0 && sisaDetik <= 120)) && warningDismissedForId !== selectedPCId) {
         setShowWarningModal(true);
         playWarningChime();
       }
@@ -199,7 +201,7 @@ export const PCKioskClient = () => {
     (t) => t.status === 'Belum Dimulai' || t.status === 'Dalam Proses'
   );
 
-  const handleStartSession = (e) => {
+  const handleStartSession = async (e) => {
     e.preventDefault();
     if (document.documentElement && document.documentElement.requestFullscreen && !document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
@@ -213,21 +215,25 @@ export const PCKioskClient = () => {
 
     setSessionStarting(true);
 
-    startPCSession({
-      pcId: currentPC?.id || selectedPCId,
-      namaSiswa,
-      kelas: kelas || 'Umum',
-      keperluan: finalKeperluan,
-      tugasTerkaitId: selectedTaskId || null,
-      durasiMenit: Number(durasiMenit)
-    });
+    try {
+      await startPCSession({
+        pcId: currentPC?.id || selectedPCId,
+        namaSiswa,
+        kelas: kelas || 'Umum',
+        keperluan: finalKeperluan,
+        tugasTerkaitId: selectedTaskId || null,
+        durasiMenit: Number(durasiMenit)
+      });
+    } catch (err) {
+      console.error('Error starting session:', err);
+    }
 
     setWarningDismissedForId(null);
 
-    // Otomatis tutup jendela Kiosk setelah mengisi data agar desktop langsung terbuka untuk editing
+    // Otomatis tutup jendela Kiosk setelah data benar-benar tersimpan di Supabase
     setTimeout(() => {
       handleCloseKioskWindow();
-    }, 700);
+    }, 400);
   };
 
   // Format detik menjadi MM:SS
@@ -1002,12 +1008,14 @@ export const PCKioskClient = () => {
               <button
                 type="button"
                 className="btn btn-secondary"
+                style={{ background: '#0F172A', color: '#FFFFFF', borderColor: '#0F172A' }}
                 onClick={() => {
                   setShowWarningModal(false);
                   setWarningDismissedForId(selectedPCId);
+                  handleCloseKioskWindow();
                 }}
               >
-                Tutup Notifikasi
+                Saya Sudah Simpan (Ctrl+S), Lanjut Ngedit
               </button>
 
               <button
@@ -1025,9 +1033,10 @@ export const PCKioskClient = () => {
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => {
-                  extendPCSession(selectedPCId, 15);
+                onClick={async () => {
+                  await extendPCSession(selectedPCId, 15);
                   setShowWarningModal(false);
+                  setTimeout(() => handleCloseKioskWindow(), 400);
                 }}
                 id="btn-extend-time-15"
               >

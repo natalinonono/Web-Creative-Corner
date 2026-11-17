@@ -52,11 +52,18 @@ function Launch-KioskBrowser([string]$urlParam = "") {
     }
     $userData = "$env:TEMP\cc_kiosk_$PC_ID"
 
+    # Hapus SingletonLock jika ada agar browser tidak terhalang membuka jendela
+    try {
+        if (Test-Path "$userData\SingletonLock") {
+            Remove-Item "$userData\SingletonLock" -Force -ErrorAction SilentlyContinue
+        }
+    } catch {}
+
     if ($BROWSER_EXE) {
         if ($IS_EDGE) {
             Start-Process -FilePath $BROWSER_EXE -ArgumentList @(
+                "--app=$fullUrl",
                 "--kiosk",
-                $fullUrl,
                 "--edge-kiosk-type=fullscreen",
                 "--user-data-dir=$userData",
                 "--no-first-run",
@@ -64,8 +71,8 @@ function Launch-KioskBrowser([string]$urlParam = "") {
             )
         } else {
             Start-Process -FilePath $BROWSER_EXE -ArgumentList @(
+                "--app=$fullUrl",
                 "--kiosk",
-                $fullUrl,
                 "--user-data-dir=$userData",
                 "--no-first-run",
                 "--disable-pinch",
@@ -78,28 +85,23 @@ function Launch-KioskBrowser([string]$urlParam = "") {
 }
 
 function Close-KioskBrowserOnly() {
-    # HANYA tutup jendela browser Chrome/Edge Kiosk.
-    # PENTING: JANGAN SEKALI-KALI MENUTUP Adobe Premiere Pro, Photoshop, After Effects, atau aplikasi editing lainnya!
+    # HANYA tutup proses browser Kiosk Creative Corner untuk PC ini.
+    # JANGAN PERNAH MENUTUP Adobe Premiere Pro, Photoshop, After Effects, atau browser pribadi!
     try {
-        Get-Process -Name chrome, msedge -ErrorAction SilentlyContinue | ForEach-Object {
-            try { $_.CloseMainWindow() | Out-Null } catch {}
+        Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { 
+            $_.CommandLine -match "cc_kiosk_$PC_ID" 
+        } | ForEach-Object {
+            Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
         }
-        Start-Sleep -Milliseconds 600
-        # Bersihkan sisa proses browser Kiosk
-        Get-Process -Name chrome, msedge -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
     } catch {}
 }
 
 function Show-WindowsWarningPopup([string]$studentName, [string]$pcName) {
-    # Mainkan suara notifikasi sistem Windows
     try { [System.Media.SystemSounds]::Exclamation.Play() } catch {}
-
-    # Munculkan pop-up Top-Most di atas aplikasi yang sedang aktif tanpa menutup aplikasi
     try {
         $wsh = New-Object -ComObject WScript.Shell
         $msg = "Halo $studentName!`n`nSisa waktu pemakaian workstation $pcName tinggal 2 MENIT!`n`nSegera SIMPAN (Save / Ctrl+S) file proyek editing Anda sekarang agar hasil karya tidak hilang!"
-        # 48 = Icon Peringatan Kuning, 4096 = System Modal (Selalu di atas layar)
-        $wsh.Popup($msg, 12, "PERINGATAN STUDIO CREATIVE CORNER ($pcName)", 48 + 4096)
+        $wsh.Popup($msg, 8, "PERINGATAN STUDIO CREATIVE CORNER ($pcName)", 48 + 4096)
     } catch {}
 }
 
@@ -124,13 +126,17 @@ $endTime = [DateTime]::MinValue
 $warnTime = [DateTime]::MinValue
 $hasWarned = $false
 $lastDuration = 0
+$status = "Tersedia"
+$pengguna = $null
 
 while ($true) {
     Start-Sleep -Seconds 2
 
     $data = Fetch-SessionData
-    $status = if ($data) { $data.status } else { "Tersedia" }
-    $pengguna = if ($data) { $data.pengguna_aktif } else { $null }
+    if ($data) {
+        $status = $data.status
+        $pengguna = $data.pengguna_aktif
+    }
 
     # -------------------------------------------------------------
     # 1. KONDISI TERKUNCI (STANDBY FORM MASUK)
@@ -144,16 +150,29 @@ while ($true) {
                 Close-KioskBrowserOnly
                 $state = "ACTIVE"
                 $lastDuration = $durMin
-                $endTime = [DateTime]::Now.AddMinutes($durMin)
-                $warnTime = $endTime.AddMinutes(-2) # 2 Menit sebelum habis
+                
+                # Gunakan waktuSelesaiIso jika disediakan web agar presisi
+                if ($pengguna.waktuSelesaiIso) {
+                    try {
+                        $endTime = [DateTime]::Parse($pengguna.waktuSelesaiIso).ToLocalTime()
+                    } catch {
+                        $endTime = [DateTime]::Now.AddMinutes($durMin)
+                    }
+                } else {
+                    $endTime = [DateTime]::Now.AddMinutes($durMin)
+                }
+                
+                $warnTime = $endTime.AddMinutes(-2) # 2 Menit sebelum habis (Menit ke-3 pada timer 5 menit)
                 $hasWarned = $false
                 continue
             }
         }
 
         # Proteksi Anti Alt+F4: Jika siswa coba tutup browser paksa saat terkunci, buka lagi seketika!
-        $browserRunning = Get-Process -Name chrome, msedge -ErrorAction SilentlyContinue
-        if (-not $browserRunning) {
+        $kioskRunning = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { 
+            $_.CommandLine -match "cc_kiosk_$PC_ID" 
+        }
+        if (-not $kioskRunning) {
             Start-Sleep -Milliseconds 400
             Launch-KioskBrowser
         }
@@ -163,8 +182,8 @@ while ($true) {
     # 2. KONDISI SESI AKTIF (SISWA SEDANG MENGEDIT DI DESKTOP)
     # -------------------------------------------------------------
     elseif ($state -eq "ACTIVE") {
-        # Jika sesi diakhiri lebih awal oleh siswa atau admin
-        if ($status -ne "Aktif" -or (-not $pengguna)) {
+        # Jika sesi diakhiri lebih awal oleh siswa atau admin di web
+        if ($data -and ($status -ne "Aktif" -or (-not $pengguna))) {
             Write-Host "Sesi diakhiri lebih awal. Mengunci kembali workstation..."
             $state = "LOCKED"
             Launch-KioskBrowser
@@ -180,23 +199,41 @@ while ($true) {
             $endTime = $endTime.AddMinutes($diff)
             $warnTime = $endTime.AddMinutes(-2)
             $hasWarned = $false
+            Close-KioskBrowserOnly
+        }
+
+        if ($pengguna.waktuSelesaiIso) {
+            try {
+                $endTime = [DateTime]::Parse($pengguna.waktuSelesaiIso).ToLocalTime()
+                $warnTime = $endTime.AddMinutes(-2)
+            } catch {}
         }
 
         $now = [DateTime]::Now
 
-        # Peringatan 2 Menit Sebelum Waktu Habis
+        # Peringatan 2 Menit Sebelum Waktu Habis (SAAT MENIT KE-3 jika durasi 5 menit)
         if ($now -ge $warnTime -and (-not $hasWarned)) {
             $hasWarned = $true
             $namaSiswa = if ($pengguna.nama) { $pengguna.nama } else { "Siswa" }
-            Write-Host "Peringatan 2 Menit dikirim ke layar untuk $namaSiswa..."
+            Write-Host "Peringatan 2 Menit tercapai: Membuka Web Peringatan Kiosk untuk $namaSiswa..."
+            
+            # 1. Mainkan suara notifikasi
+            try { [System.Media.SystemSounds]::Exclamation.Play() } catch {}
+            
+            # 2. Munculkan pop-up modal Windows
             Show-WindowsWarningPopup -studentName $namaSiswa -pcName $PC_ID
+            
+            # 3. BUKA KEMBALI WEB KIOSK DI LAYAR DENGAN NOTIFIKASI PERINGATAN & HITUNG MUNDUR
+            Launch-KioskBrowser "warning=true"
         }
 
-        # Waktu Habis (0 Menit)
+        # Waktu Habis (0 Menit / MENIT KE-5 jika durasi 5 menit)
         if ($now -ge $endTime) {
-            Write-Host "Waktu habis! Menampilkan Kiosk Pengunci Layar..."
+            Write-Host "Waktu habis (00:00)! Menampilkan Kiosk Pengunci Layar..."
             $state = "EXPIRED"
-            # Buka kembali Kiosk untuk mengunci layar (Aplikasi editing Premiere/Photoshop TETAP JALAN di latar belakang)
+            Close-KioskBrowserOnly
+            Start-Sleep -Milliseconds 400
+            # Buka kembali Kiosk untuk mengunci layar (Software editing TETAP AMAN di latar belakang)
             Launch-KioskBrowser "expired=true"
         }
     }
@@ -206,7 +243,7 @@ while ($true) {
     # -------------------------------------------------------------
     elseif ($state -eq "EXPIRED") {
         # Opsi A: Siswa telah klik "Konfirmasi Selesai & Kunci PC"
-        if ($status -ne "Aktif" -or (-not $pengguna)) {
+        if ($data -and ($status -ne "Aktif" -or (-not $pengguna))) {
             Write-Host "Pengguna mengonfirmasi selesai. Mereset ke standby siap pakai..."
             $state = "LOCKED"
             Close-KioskBrowserOnly
@@ -229,12 +266,13 @@ while ($true) {
             continue
         }
 
-        # Proteksi Anti Alt+F4 saat waktu habis: Tidak bisa ditutup tanpa konfirmasi selesai / perpanjang!
-        $browserRunning = Get-Process -Name chrome, msedge -ErrorAction SilentlyContinue
-        if (-not $browserRunning) {
+        # Proteksi Anti Alt+F4 saat waktu habis: Buka kembali jika browser Kiosk tertutup sebelum konfirmasi selesai
+        $kioskRunning = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { 
+            $_.CommandLine -match "cc_kiosk_$PC_ID" 
+        }
+        if (-not $kioskRunning) {
             Start-Sleep -Milliseconds 400
             Launch-KioskBrowser "expired=true"
         }
     }
 }
-

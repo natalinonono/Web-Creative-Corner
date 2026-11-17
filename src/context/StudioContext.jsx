@@ -771,15 +771,25 @@ export const StudioProvider = ({ children }) => {
       setPcClients((prevClients) => {
         let hasChanges = false;
         const updated = prevClients.map((pc) => {
-          if (pc.status === 'Aktif' && pc.penggunaAktif && pc.penggunaAktif.sisaDetik > 0) {
-            hasChanges = true;
-            return {
-              ...pc,
-              penggunaAktif: {
-                ...pc.penggunaAktif,
-                sisaDetik: pc.penggunaAktif.sisaDetik - 1
-              }
-            };
+          if (pc.status === 'Aktif' && pc.penggunaAktif) {
+            let newSisa = pc.penggunaAktif.sisaDetik;
+            if (pc.penggunaAktif.waktuSelesaiIso) {
+              const diffMs = new Date(pc.penggunaAktif.waktuSelesaiIso).getTime() - Date.now();
+              newSisa = Math.max(0, Math.round(diffMs / 1000));
+            } else if (newSisa > 0) {
+              newSisa = newSisa - 1;
+            }
+
+            if (newSisa !== pc.penggunaAktif.sisaDetik) {
+              hasChanges = true;
+              return {
+                ...pc,
+                penggunaAktif: {
+                  ...pc.penggunaAktif,
+                  sisaDetik: newSisa
+                }
+              };
+            }
           }
           return pc;
         });
@@ -1353,17 +1363,21 @@ export const StudioProvider = ({ children }) => {
   };
 
   // TRIGGER 3: Integrasi Sesi Masuk PC dengan Tugas Kreatif Aktif
-  const startPCSession = ({ pcId, namaSiswa, kelas, keperluan, tugasTerkaitId, durasiMenit }) => {
-    const sisaDetik = durasiMenit * 60;
-    const waktuMulai = new Date().toLocaleString('id-ID');
+  const startPCSession = async ({ pcId, namaSiswa, kelas, keperluan, tugasTerkaitId, durasiMenit }) => {
+    const durMin = Number(durasiMenit) || 60;
+    const now = new Date();
+    const waktuMulai = now.toLocaleString('id-ID');
+    const waktuSelesaiIso = new Date(now.getTime() + durMin * 60000).toISOString();
+    const sisaDetik = durMin * 60;
 
     const sessionData = {
       nama: namaSiswa,
       kelas,
       keperluan,
       tugasTerkaitId: tugasTerkaitId || null,
-      durasiMenit,
+      durasiMenit: durMin,
       waktuMulai,
+      waktuSelesaiIso,
       sisaDetik
     };
 
@@ -1380,13 +1394,18 @@ export const StudioProvider = ({ children }) => {
       })
     );
 
-    // Sinkronkan sesi aktif ke Supabase Cloud (Upsert agar jika PC baru otomatis terdaftar)
+    // Sinkronkan sesi aktif ke Supabase Cloud (Tunggu hingga sukses agar tidak terputus saat window ditutup)
     if (isSupabaseConfigured && supabase) {
-      supabase.from('pc_clients').upsert({
-        id: pcId,
-        status: 'Aktif',
-        pengguna_aktif: sessionData
-      }).then(() => {}).catch(() => {});
+      try {
+        await supabase.from('pc_clients').upsert({
+          id: pcId,
+          status: 'Aktif',
+          pengguna_aktif: sessionData,
+          updated_at: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error('Supabase startPCSession sync error:', err);
+      }
     }
 
     if (tugasTerkaitId) {
@@ -1407,20 +1426,28 @@ export const StudioProvider = ({ children }) => {
     }
 
     showToast(`Workstation ${pcId} aktif untuk ${namaSiswa}! Tugas kreatif otomatis "Dalam Proses".`, 'success');
+    return sessionData;
   };
 
-  const extendPCSession = (pcId, additionalMinutes) => {
+  const extendPCSession = async (pcId, additionalMinutes) => {
+    const mins = Number(additionalMinutes) || 15;
+    let updatedSession = null;
+
     setPcClients((prev) =>
       prev.map((pc) => {
         if (pc.id === pcId && pc.penggunaAktif) {
-          const updatedSession = {
+          const currentSisa = pc.penggunaAktif.sisaDetik || 0;
+          const newSisa = currentSisa + mins * 60;
+          const newDurasi = (pc.penggunaAktif.durasiMenit || 0) + mins;
+          const newWaktuSelesaiIso = new Date(Date.now() + newSisa * 1000).toISOString();
+
+          updatedSession = {
             ...pc.penggunaAktif,
-            durasiMenit: pc.penggunaAktif.durasiMenit + additionalMinutes,
-            sisaDetik: pc.penggunaAktif.sisaDetik + additionalMinutes * 60
+            durasiMenit: newDurasi,
+            sisaDetik: newSisa,
+            waktuSelesaiIso: newWaktuSelesaiIso
           };
-          if (isSupabaseConfigured && supabase) {
-            supabase.from('pc_clients').update({ pengguna_aktif: updatedSession }).eq('id', pcId).then(() => {}).catch(() => {});
-          }
+
           return {
             ...pc,
             penggunaAktif: updatedSession
@@ -1429,28 +1456,57 @@ export const StudioProvider = ({ children }) => {
         return pc;
       })
     );
-    showToast(`Durasi sesi pada ${pcId} diperpanjang +${additionalMinutes} menit!`, 'success');
+
+    if (isSupabaseConfigured && supabase && updatedSession) {
+      try {
+        await supabase.from('pc_clients').update({
+          pengguna_aktif: updatedSession,
+          updated_at: new Date().toISOString()
+        }).eq('id', pcId);
+      } catch (err) {
+        console.error('Supabase extendPCSession sync error:', err);
+      }
+    }
+
+    showToast(`Durasi sesi pada ${pcId} diperpanjang +${mins} menit!`, 'success');
+    return updatedSession;
   };
 
-  const simulatePCTimeout = (pcId) => {
+  const simulatePCTimeout = async (pcId) => {
+    let updatedSession = null;
+    const criticalSeconds = 120; // 2 Menit agar langsung memicu peringatan 2 menit
+    const newWaktuSelesaiIso = new Date(Date.now() + criticalSeconds * 1000).toISOString();
+
     setPcClients((prev) =>
       prev.map((pc) => {
         if (pc.id === pcId && pc.penggunaAktif) {
+          updatedSession = {
+            ...pc.penggunaAktif,
+            sisaDetik: criticalSeconds,
+            waktuSelesaiIso: newWaktuSelesaiIso
+          };
           return {
             ...pc,
-            penggunaAktif: {
-              ...pc.penggunaAktif,
-              sisaDetik: 240
-            }
+            penggunaAktif: updatedSession
           };
         }
         return pc;
       })
     );
-    showToast(`Simulasi waktu kritis aktif: Sisa durasi ${pcId} disetel ke 4 menit.`, 'warning');
+
+    if (isSupabaseConfigured && supabase && updatedSession) {
+      try {
+        await supabase.from('pc_clients').update({
+          pengguna_aktif: updatedSession,
+          updated_at: new Date().toISOString()
+        }).eq('id', pcId);
+      } catch (err) {}
+    }
+
+    showToast(`Simulasi waktu kritis aktif: Sisa durasi ${pcId} disetel ke 2 menit!`, 'warning');
   };
 
-  const endPCSession = (pcId, catatan = 'Selesai Tepat Waktu') => {
+  const endPCSession = async (pcId, catatan = 'Selesai Tepat Waktu') => {
     const targetPC = pcClients.find((pc) => pc.id === pcId);
     if (!targetPC || !targetPC.penggunaAktif) return;
 
@@ -1487,11 +1543,16 @@ export const StudioProvider = ({ children }) => {
 
     // Kembalikan status PC ke Tersedia di Supabase Cloud (Upsert)
     if (isSupabaseConfigured && supabase) {
-      supabase.from('pc_clients').upsert({
-        id: pcId,
-        status: 'Tersedia',
-        pengguna_aktif: null
-      }).then(() => {}).catch(() => {});
+      try {
+        await supabase.from('pc_clients').upsert({
+          id: pcId,
+          status: 'Tersedia',
+          pengguna_aktif: null,
+          updated_at: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error('Supabase endPCSession sync error:', err);
+      }
     }
 
     if (sessionData.tugasTerkaitId) {
