@@ -155,6 +155,26 @@ while ($true) {
     }
 
     # -------------------------------------------------------------
+    # 0. DETEKSI PERINTAH SHUT DOWN DARI WEB / KIOSK
+    # -------------------------------------------------------------
+    if ($status -eq "Shutdown") {
+        Write-Host "Perintah Shut Down terdeteksi dari Creative Corner! Mematikan workstation..."
+        try {
+            # Reset status kembali ke Tersedia di Supabase agar esok hari siap pakai
+            $resetBody = @{
+                status = "Tersedia"
+                pengguna_aktif = $null
+                updated_at = (Get-Date).ToUniversalTime().ToString("o")
+            } | ConvertTo-Json
+            Invoke-RestMethod -Uri "$SUPABASE_URL/rest/v1/pc_clients?id=eq.$PC_ID" -Headers $HEADERS -Method Patch -Body $resetBody -ContentType "application/json"
+        } catch {}
+        
+        # Eksekusi shutdown Windows secara aman (3 detik countdown dengan notifikasi sistem)
+        shutdown.exe /s /t 3 /c "Creative Corner Studio: Mematikan workstation secara aman..."
+        exit 0
+    }
+
+    # -------------------------------------------------------------
     # 1. KONDISI TERKUNCI (STANDBY FORM MASUK)
     # -------------------------------------------------------------
     if ($state -eq "LOCKED") {

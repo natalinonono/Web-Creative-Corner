@@ -30,7 +30,8 @@ import {
   KeyRound,
   Users,
   ShieldCheck,
-  Mail
+  Mail,
+  Power
 } from 'lucide-react';
 
 export const PCMonitoringTab = () => {
@@ -42,6 +43,7 @@ export const PCMonitoringTab = () => {
     updatePCClient,
     addPCClient,
     deletePCClient,
+    shutdownPCClient,
     members
   } = useStudio();
 
@@ -694,6 +696,19 @@ while ($true) {
                             <Trash2 size={13} />
                           </button>
                         )}
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ color: '#DC2626', borderColor: '#FECDD3', background: '#FFF1F2' }}
+                          onClick={() => {
+                            if (window.confirm(`REMOTE SHUT DOWN:\n\nKirim perintah matikan workstation ${pc.id} (${pc.namaUnit || ''}) sekarang?\n\nKomputer ini akan shut down otomatis.`)) {
+                              shutdownPCClient(pc.id);
+                            }
+                          }}
+                          title={`Matikan ${pc.id} secara remote`}
+                        >
+                          <Power size={13} color="#DC2626" />
+                        </button>
                       </>
                     )}
                   </div>

@@ -1650,6 +1650,25 @@ export const StudioProvider = ({ children }) => {
     showToast(`Unit workstation ${pcId} berhasil dihapus dari sistem.`, 'info');
   };
 
+  // Matikan Komputer Workstation (Remote Shutdown Windows)
+  const shutdownPCClient = async (pcId) => {
+    setPcClients((prev) =>
+      prev.map((pc) => (pc.id === pcId ? { ...pc, status: 'Shutdown', penggunaAktif: null } : pc))
+    );
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('pc_clients').update({
+          status: 'Shutdown',
+          pengguna_aktif: null,
+          updated_at: new Date().toISOString()
+        }).eq('id', pcId);
+      } catch (err) {
+        console.error('Supabase shutdown sync error:', err);
+      }
+    }
+    showToast(`Perintah matikan workstation dikirim ke ${pcId}. Windows akan segera shut down...`, 'warning');
+  };
+
   // TRIGGER 4: Penyelesaian Tugas Otomatis dari Inspeksi Pengembalian (Akhir)
   const submitReturnInspection = ({ borrowingId, returnInspectionData, fotoAfter }) => {
     const borrowing = borrowings.find((b) => b.id === borrowingId);
@@ -2061,6 +2080,7 @@ export const StudioProvider = ({ children }) => {
         updatePCClient,
         addPCClient,
         deletePCClient,
+        shutdownPCClient,
         clearAllData,
         // SOP, Storage Guide & Battery Tracker
         STUDIO_SOP_RULES,

@@ -12,7 +12,8 @@ import {
   ShieldAlert,
   FastForward,
   Maximize,
-  Minimize
+  Minimize,
+  Power
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
@@ -23,6 +24,7 @@ export const PCKioskClient = () => {
     extendPCSession, 
     simulatePCTimeout, 
     endPCSession, 
+    shutdownPCClient,
     creativeTasks, 
     members,
     currentUser
@@ -716,6 +718,43 @@ export const PCKioskClient = () => {
                 </button>
               </div>
             </form>
+
+            <div style={{
+              marginTop: '1.5rem',
+              paddingTop: '1rem',
+              borderTop: '1px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.78rem',
+              color: '#64748B'
+            }}>
+              <span>Operasional Studio Selesai?</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`MATIKAN WORKSTATION:\n\nApakah Anda yakin ingin mematikan komputer (${currentPC.id}) sekarang?\n\nKomputer akan melakukan proses shut down Windows secara otomatis dan aman.`)) {
+                    shutdownPCClient(currentPC.id);
+                  }
+                }}
+                className="btn btn-secondary btn-sm"
+                style={{
+                  color: '#DC2626',
+                  borderColor: '#FECDD3',
+                  background: '#FFF1F2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontSize: '0.75rem',
+                  padding: '0.35rem 0.75rem',
+                  fontWeight: 600
+                }}
+                title="Matikan komputer studio ini"
+              >
+                <Power size={13} color="#DC2626" />
+                <span>Matikan PC (Shut Down)</span>
+              </button>
+            </div>
           </div>
         </div>
       ) : isTimeExpired ? (
@@ -867,6 +906,32 @@ export const PCKioskClient = () => {
                 >
                   <Lock size={16} />
                   <span>Konfirmasi Selesai & Kunci Workstation</span>
+                </button>
+              </div>
+
+              {/* Opsi Matikan PC */}
+              <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`MATIKAN WORKSTATION:\n\nApakah Anda yakin ingin mematikan komputer (${currentPC.id}) sekarang?\n\nPastikan semua proyek telah disimpan.`)) {
+                      shutdownPCClient(currentPC.id);
+                    }
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#DC2626',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}
+                >
+                  <Power size={14} color="#DC2626" />
+                  <span>Atau Matikan Komputer (Shut Down)</span>
                 </button>
               </div>
             </div>
