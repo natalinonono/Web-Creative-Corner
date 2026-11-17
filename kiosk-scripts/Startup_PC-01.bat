@@ -102,21 +102,22 @@ function Play-VoiceAlarm([string]$audioFileName) {
         if (-not (Test-Path $localAudioPath)) {
             $localAudioPath = "D:\. ANJAYY PROJECT WEB CC\V3\public\audio\$audioFileName"
         }
+        $player = New-Object -ComObject WMPlayer.OCX
         if (Test-Path $localAudioPath) {
-            $player = New-Object -ComObject WMPlayer.OCX
             $player.URL = $localAudioPath
-            $player.controls.play()
+        } else {
+            $player.URL = "https://web-creative-corner.vercel.app/audio/$audioFileName"
         }
+        $player.controls.play()
     } catch {}
 }
 
 function Show-WindowsWarningPopup([string]$studentName, [string]$pcName) {
     try { [System.Media.SystemSounds]::Exclamation.Play() } catch {}
-    Play-VoiceAlarm "peringatan_2_menit.mp3"
     try {
         $wsh = New-Object -ComObject WScript.Shell
         $msg = "Halo $studentName!`n`nSisa waktu pemakaian workstation $pcName tinggal 2 MENIT!`n`nSegera SIMPAN (Save / Ctrl+S) file proyek editing Anda sekarang agar hasil karya tidak hilang!"
-        $wsh.Popup($msg, 8, "PERINGATAN STUDIO CREATIVE CORNER ($pcName)", 48 + 4096)
+        $wsh.Popup($msg, 5, "PERINGATAN STUDIO CREATIVE CORNER ($pcName)", 48 + 4096)
     } catch {}
 }
 
@@ -232,25 +233,25 @@ while ($true) {
             $namaSiswa = if ($pengguna.nama) { $pengguna.nama } else { "Siswa" }
             Write-Host "Peringatan 2 Menit tercapai: Membuka Web Peringatan Kiosk untuk $namaSiswa..."
             
-            # 1. Mainkan suara notifikasi
-            try { [System.Media.SystemSounds]::Exclamation.Play() } catch {}
-            
-            # 2. Munculkan pop-up modal Windows
-            Show-WindowsWarningPopup -studentName $namaSiswa -pcName $PC_ID
-            
-            # 3. BUKA KEMBALI WEB KIOSK DI LAYAR DENGAN NOTIFIKASI PERINGATAN & HITUNG MUNDUR
+            # 1. BUKA KEMBALI WEB KIOSK DI LAYAR TERLEBIH DAHULU (SEGERA POPUP MODAL & TIMER)
             Launch-KioskBrowser "warning=true"
+            
+            # 2. Mainkan Suara Orang Asli Bahasa Indonesia
+            Play-VoiceAlarm "peringatan_2_menit.mp3"
+            
+            # 3. Munculkan popup Windows Notifikasi (5 detik auto-close)
+            Show-WindowsWarningPopup -studentName $namaSiswa -pcName $PC_ID
         }
 
         # Waktu Habis (0 Menit / MENIT KE-5 jika durasi 5 menit)
         if ($now -ge $endTime) {
             Write-Host "Waktu habis (00:00)! Menampilkan Kiosk Pengunci Layar..."
             $state = "EXPIRED"
-            Play-VoiceAlarm "waktu_habis.mp3"
             Close-KioskBrowserOnly
             Start-Sleep -Milliseconds 400
             # Buka kembali Kiosk untuk mengunci layar (Software editing TETAP AMAN di latar belakang)
             Launch-KioskBrowser "expired=true"
+            Play-VoiceAlarm "waktu_habis.mp3"
         }
     }
 

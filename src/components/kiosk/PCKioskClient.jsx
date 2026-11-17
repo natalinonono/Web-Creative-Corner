@@ -210,11 +210,11 @@ export const PCKioskClient = () => {
 
   // Otomatis deteksi sisa durasi <= 2 menit (120 detik) atau parameter url warning=true
   useEffect(() => {
-    if (isActive && !isTimeExpired) {
-      const sisaDetik = currentPC?.penggunaAktif?.sisaDetik;
-      const isParamWarning = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('warning') === 'true';
+    const isParamWarning = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('warning') === 'true';
+    const sisaDetik = currentPC?.penggunaAktif?.sisaDetik;
 
-      if ((isParamWarning || (sisaDetik !== undefined && sisaDetik > 0 && sisaDetik <= 120)) && warningDismissedForId !== selectedPCId) {
+    if (!isTimeExpired && (isParamWarning || (isActive && sisaDetik !== undefined && sisaDetik > 0 && sisaDetik <= 120))) {
+      if (warningDismissedForId !== selectedPCId) {
         setShowWarningModal(true);
         playWarningChime();
       }
@@ -1037,7 +1037,7 @@ export const PCKioskClient = () => {
       )}
 
       {/* MODAL PERINGATAN WAKTU HAMPIR HABIS */}
-      {showWarningModal && isActive && (
+      {showWarningModal && (isActive || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('warning') === 'true')) && (
         <Modal
           isOpen={showWarningModal}
           onClose={() => {
@@ -1107,7 +1107,7 @@ export const PCKioskClient = () => {
             </h3>
 
             <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '1.25rem', lineHeight: '1.5' }}>
-              Halo <strong>{currentPC.penggunaAktif.nama}</strong>, waktu pemakaian Anda pada <strong>{currentPC.id}</strong> tersisa <strong>{formatTime(sisaDetik)}</strong>.<br />
+              Halo <strong>{currentPC?.penggunaAktif?.nama || 'Pengguna'}</strong>, waktu pemakaian Anda pada <strong>{currentPC.id}</strong> tersisa <strong>{formatTime(sisaDetik)}</strong>.<br />
               <strong style={{ color: '#E11D48' }}>Segera SIMPAN (Ctrl+S) file proyek editing Anda di Premiere / Photoshop</strong> sekarang, atau pilih perpanjangan durasi di bawah.
             </p>
 

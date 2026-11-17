@@ -1397,12 +1397,27 @@ export const StudioProvider = ({ children }) => {
     // Sinkronkan sesi aktif ke Supabase Cloud (Tunggu hingga sukses agar tidak terputus saat window ditutup)
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('pc_clients').upsert({
-          id: pcId,
-          status: 'Aktif',
-          pengguna_aktif: sessionData,
-          updated_at: new Date().toISOString()
-        });
+        const { error: updateErr } = await supabase
+          .from('pc_clients')
+          .update({
+            status: 'Aktif',
+            pengguna_aktif: sessionData,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pcId);
+
+        if (updateErr) {
+          console.error('Supabase update error, trying upsert with full fields:', updateErr);
+          const targetPC = pcClients.find((pc) => pc.id === pcId);
+          await supabase.from('pc_clients').upsert({
+            id: pcId,
+            nama_unit: targetPC?.namaUnit || targetPC?.nama_unit || `Workstation ${pcId}`,
+            spesifikasi: targetPC?.spesifikasi || 'Spesifikasi Standar Studio',
+            status: 'Aktif',
+            pengguna_aktif: sessionData,
+            updated_at: new Date().toISOString()
+          });
+        }
       } catch (err) {
         console.error('Supabase startPCSession sync error:', err);
       }
@@ -1541,15 +1556,30 @@ export const StudioProvider = ({ children }) => {
       })
     );
 
-    // Kembalikan status PC ke Tersedia di Supabase Cloud (Upsert)
+    // Kembalikan status PC ke Tersedia di Supabase Cloud (Update)
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('pc_clients').upsert({
-          id: pcId,
-          status: 'Tersedia',
-          pengguna_aktif: null,
-          updated_at: new Date().toISOString()
-        });
+        const { error: updateErr } = await supabase
+          .from('pc_clients')
+          .update({
+            status: 'Tersedia',
+            pengguna_aktif: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pcId);
+
+        if (updateErr) {
+          console.error('Supabase update error on end session, trying upsert:', updateErr);
+          const targetPC = pcClients.find((pc) => pc.id === pcId);
+          await supabase.from('pc_clients').upsert({
+            id: pcId,
+            nama_unit: targetPC?.namaUnit || targetPC?.nama_unit || `Workstation ${pcId}`,
+            spesifikasi: targetPC?.spesifikasi || 'Spesifikasi Standar Studio',
+            status: 'Tersedia',
+            pengguna_aktif: null,
+            updated_at: new Date().toISOString()
+          });
+        }
       } catch (err) {
         console.error('Supabase endPCSession sync error:', err);
       }
