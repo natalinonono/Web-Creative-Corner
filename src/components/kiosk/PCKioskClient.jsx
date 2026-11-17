@@ -13,7 +13,8 @@ import {
   FastForward,
   Maximize,
   Minimize,
-  Power
+  Power,
+  Save
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
@@ -727,13 +728,48 @@ export const PCKioskClient = () => {
               alignItems: 'center',
               justifyContent: 'space-between',
               fontSize: '0.78rem',
-              color: '#64748B'
+              color: '#64748B',
+              flexWrap: 'wrap',
+              gap: '0.5rem'
             }}>
-              <span>Operasional Studio Selesai?</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (window.confirm(`AKSES DARURAT SIMPAN PROYEK (3 MENIT):\n\nBuka layar workstation selama 3 menit khusus untuk menyimpan (Ctrl+S) file proyek editing Premiere/Photoshop Anda?`)) {
+                      await startPCSession({
+                        pcId: currentPC?.id || selectedPCId,
+                        namaSiswa: (currentUser?.nama || 'Siswa Studio') + ' (Akses Simpan Proyek)',
+                        kelas: currentUser?.kelas || 'Umum',
+                        keperluan: 'Penyelamatan & Penyimpanan File Proyek Editing (Ctrl+S)',
+                        tugasTerkaitId: null,
+                        durasiMenit: 3
+                      });
+                    }
+                  }}
+                  className="btn btn-secondary btn-sm"
+                  style={{
+                    color: '#0369A1',
+                    borderColor: '#BAE6FD',
+                    background: '#F0F9FF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    fontSize: '0.75rem',
+                    padding: '0.35rem 0.65rem',
+                    fontWeight: 600
+                  }}
+                  title="Buka layar selama 3 menit khusus untuk Ctrl+S simpan karya Anda"
+                >
+                  <Save size={13} color="#0284C7" />
+                  <span>Lupa Save? Buka 3 Menit</span>
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={() => {
-                  if (window.confirm(`MATIKAN WORKSTATION:\n\nApakah Anda yakin ingin mematikan komputer (${currentPC.id}) sekarang?\n\nKomputer akan melakukan proses shut down Windows secara otomatis dan aman.`)) {
+                  if (window.confirm(`MATIKAN WORKSTATION:\n\nPERINGATAN: Pastikan seluruh file proyek di Premiere Pro / Photoshop telah disimpan (Ctrl+S).\n\nApakah Anda yakin ingin mematikan komputer (${currentPC.id}) sekarang?`)) {
                     shutdownPCClient(currentPC.id);
                   }
                 }}
@@ -749,7 +785,7 @@ export const PCKioskClient = () => {
                   padding: '0.35rem 0.75rem',
                   fontWeight: 600
                 }}
-                title="Matikan komputer studio ini"
+                title="Matikan komputer studio ini secara aman"
               >
                 <Power size={13} color="#DC2626" />
                 <span>Matikan PC (Shut Down)</span>

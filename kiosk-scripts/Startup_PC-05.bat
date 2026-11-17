@@ -158,7 +158,22 @@ while ($true) {
     # 0. DETEKSI PERINTAH SHUT DOWN DARI WEB / KIOSK
     # -------------------------------------------------------------
     if ($status -eq "Shutdown") {
-        Write-Host "Perintah Shut Down terdeteksi dari Creative Corner! Mematikan workstation..."
+        Write-Host "Perintah Shut Down terdeteksi dari Creative Corner..."
+
+        # Cek apakah software editing masih aktif
+        $activeCreativeApps = Get-Process -ErrorAction SilentlyContinue | Where-Object {
+            $_.ProcessName -match "Adobe|Premiere|Photoshop|AfterFX|Audition|Illustrator|CapCut|Resolve"
+        }
+
+        if ($activeCreativeApps) {
+            Write-Host "Peringatan: Software editing masih berjalan ($($activeCreativeApps.ProcessName -join ', '))!"
+            try {
+                $wsh = New-Object -ComObject WScript.Shell
+                $msg = "PERINGATAN SHUTDOWN STUDIO:`n`nSoftware editing ($($activeCreativeApps.ProcessName -join ', ')) masih terbuka!`n`nWindows akan meminta konfirmasi simpan (Save Changes) sebelum mematikan komputer."
+                $wsh.Popup($msg, 4, "PERINGATAN FILE EDITING BELUM DISIMPAN", 48 + 4096)
+            } catch {}
+        }
+
         try {
             # Reset status kembali ke Tersedia di Supabase agar esok hari siap pakai
             $resetBody = @{
@@ -169,8 +184,9 @@ while ($true) {
             Invoke-RestMethod -Uri "$SUPABASE_URL/rest/v1/pc_clients?id=eq.$PC_ID" -Headers $HEADERS -Method Patch -Body $resetBody -ContentType "application/json"
         } catch {}
         
-        # Eksekusi shutdown Windows secara aman (3 detik countdown dengan notifikasi sistem)
-        shutdown.exe /s /t 3 /c "Creative Corner Studio: Mematikan workstation secara aman..."
+        # Eksekusi shutdown Windows secara aman TANPA /f (TIDAK MEMAKSA TUTUP FILE)
+        # Windows otomatis menahan dan meminta "Save changes?" jika ada proyek belum disimpan
+        shutdown.exe /s /t 5 /c "Creative Corner Studio: Mematikan workstation secara aman..."
         exit 0
     }
 
